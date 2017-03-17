@@ -1,0 +1,84 @@
+<?php
+/**
+ * Translation helper tests.
+ *
+ * @package ThemeIsleSDK
+ */
+
+/**
+ * Test translation link functionality.
+ */
+class Translate_Link extends WP_UnitTestCase {
+
+	public function test_default_path() {
+		add_filter(
+			'locale',
+			function () {
+				return 'de_DE';
+			} 
+		);
+		$url = 'https://example.com';
+		$this->assertEquals( $url . '/de', tsdk_translate_link( $url ) );
+		$url = 'https://example.com/some/path';
+		$this->assertEquals( 'https://example.com/de/some/path', tsdk_translate_link( $url ) );
+		$url = 'https://example.com/some/path/';
+		$this->assertEquals( 'https://example.com/de/some/path/', tsdk_translate_link( $url ) );
+	}
+
+	public function test_query() {
+		add_filter(
+			'locale',
+			function () {
+				return 'de_DE';
+			} 
+		);
+		$url = 'https://example.com';
+		$this->assertEquals( 'https://example.com?lang=de', tsdk_translate_link( $url, 'query' ) );
+	}
+
+	public function test_domain() {
+		add_filter(
+			'locale',
+			function () {
+				return 'de_DE';
+			} 
+		);
+		$url = 'https://example.com';
+		$this->assertEquals( 'https://optimole.de', tsdk_translate_link( $url, 'domain', [ 'de_DE' => 'optimole.de' ] ) );
+	}
+
+	public function test_non_existent() {
+		add_filter(
+			'locale',
+			function () {
+				return 'da_DK';
+			}
+		);
+		$url = 'https://example.com';
+		$this->assertEquals( 'https://example.com', tsdk_translate_link( $url ) );
+	}
+
+	public function test_default_languages() {
+		$locales = [
+			'de_DE'        => 'de',
+			'de_DE_formal' => 'de',
+			'es_ES'        => 'es',
+			'fr_FR'        => 'fr',
+			'it_IT'        => 'it',
+			'ja'           => 'ja',
+			'nl_NL'        => 'nl',
+			'nl_NL_formal' => 'nl',
+			'ro_RO'        => 'ro',
+		];
+		$url     = 'https://example.com/some/path';
+		foreach ( $locales as $locale => $code ) {
+			$filter = function () use ( $locale ) {
+				return $locale;
+			};
+			add_filter( 'locale', $filter );
+			$this->assertEquals( 'https://example.com/' . $code . '/some/path', tsdk_translate_link( $url ) );
+			remove_filter( 'locale', $filter );
+		}
+	}
+
+}
