@@ -13,13 +13,5 @@
   ],
   "support"    : {
     "issues": "https://github.com/Codeinwp/themeisle-sdk/issues"
-  },
-  "autoload"   : {
-    "classmap": [
-      "class-loader.php",
-      "class-product.php",
-      "class-updater.php",
-      "class-logger.php"
-    ]
   }
 }
