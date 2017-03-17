@@ -1,0 +1,10 @@
+import './otter.js';
+import './optimole.js';
+import './rop.js';
+import './neve.js';
+import './redirection-for-cf7.js';
+import './hyve.js';
+import './feedzy.js';
+import './wp-full-pay.js';
+import './masteriyo.js';
+import './easy-mcp.js';
