@@ -568,7 +568,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$api_response = $this->api_request();
 			if ( false !== $api_response && is_object( $api_response ) && isset( $api_response->new_version ) ) {
 				if ( version_compare( $this->product->get_version(), $api_response->new_version, '<' ) ) {
-					$_transient_data->response[ $this->product->get_slug() ] = $api_response;
+					$_transient_data->response[ $this->product->get_slug() . '/' . $this->product->get_file() ] = $api_response;
 				}
 			}
 
