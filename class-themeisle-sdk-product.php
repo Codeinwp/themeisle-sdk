@@ -30,6 +30,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		private $type;
 		/**
+		 * @var string $file The file name.
+		 */
+		private $file;
+		/**
 		 * @var string $name The product name.
 		 */
 		private $name;
@@ -120,6 +124,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * Setup props from path.
 		 */
 		public function setup_from_path() {
+			$this->file = basename( $this->basefile );
 			$dir        = dirname( $this->basefile );
 			$this->slug = basename( $dir );
 			$exts       = explode( '.', $this->basefile );
@@ -230,6 +235,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public function get_basefile() {
 			return $this->basefile;
+		}
+
+		/**
+		 * Returns product filename.
+		 *
+		 * @return string The product filename.
+		 */
+		public function get_file() {
+			return $this->file;
 		}
 
 
