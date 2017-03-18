@@ -25,8 +25,7 @@
     - phpenv rehash
     - phpcs --config-set installed_paths $WPCS/wordpress-coding-standards
     - phpenv rehash
-    - cd $PLUGIN_DIR
-    - ls
+    - cd $PLUGIN_DIR/$plugin_slug
 
   script:
     - phpcs -p -s -v -n . --standard=phpcs.xml --extensions=php;
