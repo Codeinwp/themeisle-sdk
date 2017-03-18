@@ -1,17 +1,25 @@
 {
-  "name"       : "codeinwp/themeisle-sdk",
+  "name": "codeinwp/themeisle-sdk",
   "description": "ThemeIsle SDK ",
-  "keywords"   : ["wordpress"],
-  "homepage"   : "https://github.com/Codeinwp/themeisle-sdk",
-  "license"    : "GPL-2.0+",
-  "authors"    : [
+  "keywords": [
+    "wordpress"
+  ],
+  "homepage": "https://github.com/Codeinwp/themeisle-sdk",
+  "license": "GPL-2.0+",
+  "authors": [
     {
-      "name"    : "ThemeIsle team",
-      "email"   : "friends@themeisle.com",
+      "name": "ThemeIsle team",
+      "email": "friends@themeisle.com",
       "homepage": "https://themeisle.com"
     }
   ],
-  "support"    : {
+  "autoload": {
+    "classmap": [
+      "class-themeisle-sdk-loader.php",
+      "class-themeisle-sdk-product.php"
+    ]
+  },
+  "support": {
     "issues": "https://github.com/Codeinwp/themeisle-sdk/issues"
   }
 }
