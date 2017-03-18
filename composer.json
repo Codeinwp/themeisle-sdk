@@ -16,7 +16,9 @@
   "autoload": {
     "classmap": [
       "class-themeisle-sdk-loader.php",
-      "class-themeisle-sdk-product.php"
+      "class-themeisle-sdk-product.php",
+      "class-themeisle-sdk-logger.php",
+      "class-themeisle-sdk-licenser.php"
     ]
   },
   "support": {

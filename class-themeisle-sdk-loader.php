@@ -7,13 +7,15 @@
  * @copyright   Copyright (c) 2017, Marius Cristea
  * @license     http://opensource.org/licenses/gpl-3.0.php GNU Public License
  * @since       1.0.0
- *
  */
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
+	/**
+	 * Singleton loader for ThemeIsle SDK.
+	 */
 	final class ThemeIsle_SDK_Loader {
 		/**
 		 * @var ThemeIsle_SDK_Loader instance The singleton instance
@@ -42,15 +44,30 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			}
 			$product_object                                = new ThemeIsle_SDK_Product( $basefile );
 			self::$products[ $product_object->get_slug() ] = $product_object;
+			// Based on the Wordpress Available file header we enable the logger or not.
+			if ( ! $product_object->is_wordpress_available() ) {
+				$logger = new ThemeIsle_SDK_Logger( $product_object );
+				$logger->enable();
+				$licenser = new ThemeIsle_SDK_Licenser( $product_object );
+				$licenser->enable();
+			}
 
 			return self::$instance;
 		}
 
+		/**
+		 * Setup loader hookds.
+		 */
 		public function setup_hooks() {
 			add_filter( 'extra_plugin_headers', array( $this, 'add_extra_headers' ) );
 			add_filter( 'extra_theme_headers', array( $this, 'add_extra_headers' ) );
 		}
 
+		/**
+		 * @param array $headers The extra headers.
+		 *
+		 * @return array The new headers.
+		 */
 		function add_extra_headers( $headers ) {
 
 			if ( ! in_array( 'Requires License', $headers ) ) {
