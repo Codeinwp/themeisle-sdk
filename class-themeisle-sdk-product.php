@@ -105,7 +105,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return array Debug info.
 		 */
 		public function __debugInfo() {
-			return [
+			return array(
 				'name'                => $this->name,
 				'slug'                => $this->slug,
 				'version'             => $this->version,
@@ -116,7 +116,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				'store_url'           => $this->store_url,
 				'wordpress_available' => $this->wordpress_available,
 				'requires_license'    => $this->requires_license,
-			];
+			);
 
 		}
 
