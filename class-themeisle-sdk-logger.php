@@ -65,7 +65,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 				'method'      => 'POST',
 				'timeout'     => 3,
 				'redirection' => 5,
-				'headers'     => array( 'X-ThemeIsle-Event' => 'log_site' ),
+				'headers'     => array(
+					'X-ThemeIsle-Event' => 'log_site',
+				),
 				'body'        => array(
 					'site'    => get_site_url(),
 					'product' => $this->product->get_slug(),

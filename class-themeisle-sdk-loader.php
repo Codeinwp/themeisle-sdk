@@ -46,10 +46,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			self::$products[ $product_object->get_slug() ] = $product_object;
 			// Based on the Wordpress Available file header we enable the logger or not.
 			if ( ! $product_object->is_wordpress_available() ) {
-				$logger = new ThemeIsle_SDK_Logger( $product_object );
-				$logger->enable();
 				$licenser = new ThemeIsle_SDK_Licenser( $product_object );
 				$licenser->enable();
+			}
+			// We enable the logger feature.
+			if ( $product_object->is_logger_active() ) {
+				$logger = new ThemeIsle_SDK_Logger( $product_object );
+				$logger->enable();
 			}
 
 			return self::$instance;
@@ -69,11 +72,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 		 * @return array The new headers.
 		 */
 		function add_extra_headers( $headers ) {
-
 			if ( ! in_array( 'Requires License', $headers ) ) {
 				$headers[] = 'Requires License';
 			}
-
 			if ( ! in_array( 'WordPress Available', $headers ) ) {
 				$headers[] = 'WordPress Available';
 			}

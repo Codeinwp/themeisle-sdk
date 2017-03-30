@@ -187,7 +187,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 					return false;
 				}
 			} else {
-				$license = get_option( $this->product->get_key() . '_hide_' . $hide, '' );;
+				$license = get_option( $this->product->get_key() . '_hide_' . $hide, '' );
 				if ( $license === 'yes' ) {
 					return false;
 				}

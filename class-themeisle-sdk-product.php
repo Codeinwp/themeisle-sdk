@@ -83,7 +83,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		public function setup_from_fileheaders() {
 			$file_headers = array();
 			if ( $this->type == 'plugin' ) {
-
 				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 				$file_headers = get_plugin_data( $this->basefile );
 			}
@@ -246,6 +245,21 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			return $this->file;
 		}
 
+		/**
+		 * We log the user website and product version.
+		 *
+		 * @return bool Either we log the data or not.
+		 */
+		public function is_logger_active() {
+			// If is not available on wordpress log this automatically.
+			if ( ! $this->is_wordpress_available() ) {
+				return true;
+			} else {
+				// If we have the product on wprog, by default this will be false
+				// and we can change it in each product.
+				return apply_filters( $this->get_key() . '_logger_flag', false );
+			}
+		}
 
 	}
 endif;
