@@ -61,6 +61,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @var string $version The product version.
 		 */
 		private $version;
+		/**
+		 * @var string $feedback_types All the feedback types the product supports
+		 */
+		private $feedback_types = array( 'deactivate' );
 
 		/**
 		 * ThemeIsle_SDK_Product constructor.
@@ -243,6 +247,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public function get_file() {
 			return $this->file;
+		}
+
+		/**
+		 * Returns feedback types
+		 *
+		 * @return array The feedback types.
+		 */
+		public function get_feedback_types() {
+			return apply_filters( $this->get_key() . '_feedback_types', $this->feedback_types );
 		}
 
 		/**
