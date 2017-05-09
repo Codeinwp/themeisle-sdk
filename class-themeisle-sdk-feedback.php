@@ -25,7 +25,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 		/**
 		 * @var string $feedback_url Url where to send the feedback
 		 */
-		private $feedback_url = 'http://localhost:81/wp-json/__pirate_feedback_/v1/feedback';
+		private $feedback_url = 'http://feedback.themeisle.com/wordpress/wp-json/__pirate_feedback_/v1/feedback';
 
 		/**
 		 * ThemeIsle_SDK_Feedback constructor.
@@ -47,7 +47,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
             $slug               = $this->product->get_slug();
             $attributes['slug'] = $slug;
 
-            wp_remote_post( $this->feedback_url, array( 'body' => $attributes ) );
+            $response           = wp_remote_post( $this->feedback_url, array( 'body' => $attributes ) );
         }
 
         function randomize_options( $options ) {
