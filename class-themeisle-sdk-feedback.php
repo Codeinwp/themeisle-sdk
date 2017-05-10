@@ -36,33 +36,35 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 			if ( $product_object instanceof ThemeIsle_SDK_Product ) {
 				$this->product      = $product_object;
 			}
-            $this->setup_hooks();
+			$this->setup_hooks();
 		}
 
-        public function setup_hooks() {
-            $this->setup_hooks_child();
-        }
+		public function setup_hooks() {
+			$this->setup_hooks_child();
+		}
 
-        protected function call_api( $attributes ) {
-            $slug               = $this->product->get_slug();
-            $attributes['slug'] = $slug;
+		protected function call_api( $attributes ) {
+			$slug               = $this->product->get_slug();
+			$attributes['slug'] = $slug;
 
-            $response           = wp_remote_post( $this->feedback_url, array( 'body' => $attributes ) );
-        }
+			$response           = wp_remote_post( $this->feedback_url, array(
+				'body' => $attributes,
+			) );
+		}
 
-        function randomize_options( $options ) {
-            $new    = array();
-            $keys   = array_keys( $options );
-            shuffle( $keys );
+		function randomize_options( $options ) {
+			$new    = array();
+			$keys   = array_keys( $options );
+			shuffle( $keys );
 
-            foreach ( $keys as $key ) {
-                $new[ $key ] = $options[ $key ];
-            }
+			foreach ( $keys as $key ) {
+				$new[ $key ] = $options[ $key ];
+			}
 
-            return $new;
-        }
+			return $new;
+		}
 
-        protected abstract function setup_hooks_child();
+		protected abstract function setup_hooks_child();
 
 	}
 endif;
