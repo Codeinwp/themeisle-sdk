@@ -61,6 +61,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		private $heading        = 'If you have a moment, please let us know why you are deactivating:';
 
 		/**
+		 * @var string $button_submit_before The text of the deactivate button before an option is chosen
+		 */
+		private $button_submit_before  = 'Skip &amp; Deactivate';
+
+		/**
 		 * @var string $button_submit The text of the deactivate button
 		 */
 		private $button_submit  = 'Submit &amp; Deactivate';
@@ -87,7 +92,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			if ( 'plugins.php' === $pagenow ) {
 				add_action( 'admin_head', array( $this, 'load_resources' ) );
 			}
-			add_action( 'wp_ajax_' . __CLASS__, array( $this, 'post_deactivate' ) );
+			add_action( 'wp_ajax_' . $this->product->get_key() . __CLASS__, array( $this, 'post_deactivate' ) );
 		}
 
 		/**
@@ -99,9 +104,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			$id     = $this->product->get_key() . '_deactivate';
 
 			$this->add_css();
-			$this->add_js( '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
+			$this->add_js( $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
 
-			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html() . '</div>';
+			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html( $this->product->get_key() ) . '</div>';
 		}
 
 		/**
@@ -123,35 +128,50 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * Loads the js
 		 *
+		 * @param string $key The product key.
 		 * @param string $src The url that will hijack the deactivate button url.
 		 */
-		function add_js( $src ) {
+		function add_js( $key, $src ) {
 ?>
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($){
 					$(document).ready(function(){
 						var href = $('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').attr('href');
-						$('#ti-deactivate-no').on('click', function(e){
+						$('#<?php echo $key;?> #ti-deactivate-no').on('click', function(e){
 							e.preventDefault();
 							e.stopPropagation();
 							tb_remove();
 						});
 
-						$('ul.ti-list label, ul.ti-list input[name="ti-deactivate-option"]').on('click', function(e){
-							$('#ti-deactivate-yes').removeAttr('disabled');
+						$('#<?php echo $key;?> ul.ti-list label, #<?php echo $key;?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function(e){
+							$('#<?php echo $key;?> #ti-deactivate-yes').val($('#<?php echo $key;?> #ti-deactivate-yes').attr('data-after-text'));
+
+							var radio = $(this).prop('tagName') === 'LABEL' ? $(this).parent() : $(this);
+							if(radio.parent().find('textarea').length > 0 && radio.parent().find('textarea').val().length === 0){
+								$('#<?php echo $key;?> #ti-deactivate-yes').attr('disabled', 'disabled');
+								radio.parent().find('textarea').on('keyup', function(ee){
+									if($(this).val().length === 0){
+										$('#<?php echo $key;?> #ti-deactivate-yes').attr('disabled', 'disabled');
+									} else {
+										$('#<?php echo $key;?> #ti-deactivate-yes').removeAttr('disabled');
+									}
+								});
+							} else {
+								$('#<?php echo $key;?> #ti-deactivate-yes').removeAttr('disabled');
+							}
 						});
 
-						$('#ti-deactivate-yes').attr('data-ti-action', href).on('click', function(e){
+						$('#<?php echo $key;?> #ti-deactivate-yes').attr('data-ti-action', href).on('click', function(e){
 							e.preventDefault();
 							e.stopPropagation();
 							$.ajax({
 								url     : ajaxurl,
 								method  : 'post',
 								data    : {
-									'action'    : '<?php echo __CLASS__;?>',
+									'action'    : '<?php echo $key . __CLASS__;?>',
 									'nonce'     : '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
-									'id'        : $('input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
-									'msg'       : $('input[name="ti-deactivate-option"]:checked').parent().find('textarea').val()
+									'id'        : $('#<?php echo $key;?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
+									'msg'       : $('#<?php echo $key;?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val()
 								},
 							});
 							location.href = $(this).attr('data-ti-action');
@@ -165,10 +185,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 
 		/**
 		 * Generates the HTML
+		 *
+		 * @param string $key The product key.
 		 */
-		function get_html() {
+		function get_html( $key ) {
 			$heading        = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $this->heading );
 			$options        = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $this->options ) );
+			$button_submit_before  = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit_before', $this->button_submit_before );
 			$button_submit  = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $this->button_submit );
 			$button_cancel  = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_cancel', $this->button_cancel );
 
@@ -177,7 +200,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			$list           = '';
 			foreach ( $options as $title => $attributes ) {
 				$id         = $attributes['id'];
-				$list       .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $id . '"><label for="' . $id . '">' . __( $title ) . '</label>';
+				$list       .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . __( $title ) . '</label>';
 				if ( array_key_exists( 'type', $attributes ) ) {
 					$list   .= '<div>';
 					$placeholder    = array_key_exists( 'placeholder', $attributes ) ? __( $attributes['placeholder'] ) : '';
@@ -194,15 +217,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				$list       .= '</li>';
 			}
 
-			return ''
+			return '<div id="' . $this->product->get_key() . '">'
 				. '<h3>' . $heading . '</h3>'
 				. '<ul class="ti-list">' . $list . '</ul>'
 				. '<div class="actions">'
-				. get_submit_button( __( $button_submit ), 'secondary', 'ti-deactivate-yes', false, array(
-					'disabled' => 'disabled',
+				. get_submit_button( __( $button_submit_before ), 'secondary', 'ti-deactivate-yes', false, array(
+					'data-after-text'   => $button_submit,
 				) )
 				. get_submit_button( __( $button_cancel ), 'primary', 'ti-deactivate-no', false )
-				. '</div>';
+				. '</div></div>';
 		}
 
 		/**
@@ -211,11 +234,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		function post_deactivate() {
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-			$this->call_api( array(
-				'type' => 'deactivate',
-				'id' => $_POST['id'],
-				'comment' => isset( $_POST['msg'] ) ? $_POST['msg'] : '',
-			) );
+			if ( ! empty( $_POST['id'] ) ) {
+				$this->call_api( array(
+					'type' => 'deactivate',
+					'id' => $_POST['id'],
+					'comment' => isset( $_POST['msg'] ) ? $_POST['msg'] : '',
+				) );
+			}
 		}
 	}
 endif;
