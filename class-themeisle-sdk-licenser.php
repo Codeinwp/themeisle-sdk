@@ -307,8 +307,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$api_params = array(
 				'edd_action' => 'check_license',
 				'license'    => $license,
-				'item_name'  => urlencode( $this->product->get_name() ),
-				'url'        => urlencode( home_url() ),
+				'item_name'  => rawurlencode( $this->product->get_name() ),
+				'url'        => rawurlencode( home_url() ),
 			);
 			// Call the custom API.
 			$response = wp_remote_get( add_query_arg( $api_params, $this->product->get_store_url() ), array(
@@ -368,8 +368,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				$license    = $_POST[ $this->product->get_key() . '_license' ];
 				$api_params = array(
 					'license'   => $license,
-					'item_name' => urlencode( $this->product->get_name() ),
-					'url'       => urlencode( home_url() ),
+					'item_name' => rawurlencode( $this->product->get_name() ),
+					'url'       => rawurlencode( home_url() ),
 				);
 				if ( $status != 'valid' ) {
 					// data to send in our API request
@@ -509,7 +509,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 					'name'       => $this->product->get_name(),
 					'slug'       => $this->product->get_slug(),
 					'author'     => $this->product->get_store_name(),
-					'url'        => urlencode( home_url() ),
+					'url'        => rawurlencode( home_url() ),
 				);
 				$response   = wp_remote_post( $this->product->get_store_url(), array(
 					'timeout'   => 15,
@@ -594,10 +594,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$api_params = array(
 				'edd_action' => 'get_version',
 				'license'    => $this->license_key,
-				'name'       => urlencode( $this->product->get_name() ),
-				'slug'       => urlencode( $this->product->get_slug() ),
+				'name'       => rawurlencode( $this->product->get_name() ),
+				'slug'       => rawurlencode( $this->product->get_slug() ),
 				'author'     => $this->product->get_store_name(),
-				'url'        => urlencode( home_url() ),
+				'url'        => rawurlencode( home_url() ),
 			);
 			$request    = wp_remote_post( $this->product->get_store_url(), array(
 				'timeout'   => 15,
