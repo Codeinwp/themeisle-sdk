@@ -103,7 +103,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 
 			$id     = $this->product->get_key() . '_deactivate';
 
-			$this->add_css();
+			$this->add_css( $this->product->get_key() );
 			$this->add_js( $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
 
 			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html( $this->product->get_key() ) . '</div>';
@@ -111,15 +111,20 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 
 		/**
 		 * Loads the css
+		 *
+		 * @param string $key The product key.
 		 */
-		function add_css() {
+		function add_css( $key ) {
 ?>
-			<style type="text/css" id="ti-deactivate-css">
+			<style type="text/css" id="<?php echo $key;?>ti-deactivate-css">
 				input[name="ti-deactivate-option"] ~ div {
 					display: none;
 				}
 				input[name="ti-deactivate-option"]:checked ~ div {
 					display: block;
+				}
+				#TB_window.thickbox-loading:before {
+					background: none !important;
 				}
 			</style>
 <?php
