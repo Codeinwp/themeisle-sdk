@@ -105,7 +105,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$invalid_string    = apply_filters( $this->product->get_key() . '_lc_invalid_string', 'Invalid' );
 			$license_message   = apply_filters( $this->product->get_key() . '_lc_license_message', 'Enter your license from %s purchase history in order to get %s updates' );
 
-			echo '<p ><input ' . ( ( $status === 'valid' ) ? ( 'style="border:1px solid #7ad03a; "' ) : '' ) . ' type="text" id="' . $this->product->get_key() . '_license" name="' . $this->product->get_key() . '_license" value="' . $value . '" /><a ' . ( ( $status === 'valid' ) ? ( 'style="color:#fff;background:  #7ad03a; display: inline-block;text-decoration: none;font-size: 13px;line-height: 26px;height: 26px; margin-left:5px; padding: 0 10px 1px;  -webkit-border-radius: 3px;border-radius: 3px; ">' . $valid_string ) : ( 'style="color:#fff;background:  #dd3d36; display: inline-block;text-decoration: none;font-size: 13px;line-height: 26px;height: 26px; margin-left:5px; padding: 0 10px 1px;  -webkit-border-radius: 3px;border-radius: 3px; ">' . $invalid_string ) ) . ' </a>&nbsp;&nbsp;&nbsp;<button name="' . $this->product->get_key() . '_btn_trigger" ' . ( ( $status === 'valid' ) ? ( ' class="button button-primary">' . $deactivate_string ) : ( ' class="button button-primary" value="yes" type="submit" >' . $activate_string ) ) . ' </button></p><p class="description">' . sprintf( $license_message, '<a  href="' . $this->product->get_store_url() . '">' . $this->product->get_store_url() . '</a> ', $this->product->get_type() ) . '</p>';
+			echo '<p ><input ' . ( ( $status === 'valid' ) ? ( 'style="border:1px solid #7ad03a; "' ) : '' ) . ' type="text" id="' . $this->product->get_key() . '_license" name="' . $this->product->get_key() . '_license" value="' . $value . '" /><a ' . ( ( $status === 'valid' ) ? ( 'style="color:#fff;background:  #7ad03a; display: inline-block;text-decoration: none;font-size: 13px;line-height: 26px;height: 26px; margin-left:5px; padding: 0 10px 1px;  -webkit-border-radius: 3px;border-radius: 3px; ">' . $valid_string ) : ( 'style="color:#fff;background:  #dd3d36; display: inline-block;text-decoration: none;font-size: 13px;line-height: 26px;height: 26px; margin-left:5px; padding: 0 10px 1px;  -webkit-border-radius: 3px;border-radius: 3px; ">' . $invalid_string ) ) . ' </a>&nbsp;&nbsp;&nbsp;<button name="' . $this->product->get_key() . '_btn_trigger" ' . ( ( $status === 'valid' ) ? ( ' class="button button-primary">' . $deactivate_string ) : ( ' class="button button-primary" value="yes" type="submit" >' . $activate_string ) ) . ' </button></p><p class="description">' . sprintf( $license_message, '<a  href="' . $this->product->get_store_url() . '">' . $this->product->get_store_name() . '</a> ', $this->product->get_type() ) . '</p>';
 
 		}
 
@@ -307,8 +307,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$api_params = array(
 				'edd_action' => 'check_license',
 				'license'    => $license,
-				'item_name'  => urlencode( $this->product->get_name() ),
-				'url'        => urlencode( home_url() ),
+				'item_name'  => rawurlencode( $this->product->get_name() ),
+				'url'        => rawurlencode( home_url() ),
 			);
 			// Call the custom API.
 			$response = wp_remote_get( add_query_arg( $api_params, $this->product->get_store_url() ), array(
@@ -368,8 +368,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				$license    = $_POST[ $this->product->get_key() . '_license' ];
 				$api_params = array(
 					'license'   => $license,
-					'item_name' => urlencode( $this->product->get_name() ),
-					'url'       => urlencode( home_url() ),
+					'item_name' => rawurlencode( $this->product->get_name() ),
+					'url'       => rawurlencode( home_url() ),
 				);
 				if ( $status != 'valid' ) {
 					// data to send in our API request
@@ -509,7 +509,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 					'name'       => $this->product->get_name(),
 					'slug'       => $this->product->get_slug(),
 					'author'     => $this->product->get_store_name(),
-					'url'        => urlencode( home_url() ),
+					'url'        => rawurlencode( home_url() ),
 				);
 				$response   = wp_remote_post( $this->product->get_store_url(), array(
 					'timeout'   => 15,
@@ -594,10 +594,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			$api_params = array(
 				'edd_action' => 'get_version',
 				'license'    => $this->license_key,
-				'name'       => urlencode( $this->product->get_name() ),
-				'slug'       => urlencode( $this->product->get_slug() ),
+				'name'       => rawurlencode( $this->product->get_name() ),
+				'slug'       => rawurlencode( $this->product->get_slug() ),
 				'author'     => $this->product->get_store_name(),
-				'url'        => urlencode( home_url() ),
+				'url'        => rawurlencode( home_url() ),
 			);
 			$request    = wp_remote_post( $this->product->get_store_url(), array(
 				'timeout'   => 15,
