@@ -137,31 +137,31 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				(function ($){
 					$(document).ready(function(){
 						var href = $('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').attr('href');
-						$('#<?php echo $key;?> #ti-deactivate-no').on('click', function(e){
+						$('#<?php echo $key;?>ti-deactivate-no').on('click', function(e){
 							e.preventDefault();
 							e.stopPropagation();
 							tb_remove();
 						});
 
 						$('#<?php echo $key;?> ul.ti-list label, #<?php echo $key;?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function(e){
-							$('#<?php echo $key;?> #ti-deactivate-yes').val($('#<?php echo $key;?> #ti-deactivate-yes').attr('data-after-text'));
+							$('#<?php echo $key;?>ti-deactivate-yes').val($('#<?php echo $key;?>ti-deactivate-yes').attr('data-after-text'));
 
 							var radio = $(this).prop('tagName') === 'LABEL' ? $(this).parent() : $(this);
 							if(radio.parent().find('textarea').length > 0 && radio.parent().find('textarea').val().length === 0){
-								$('#<?php echo $key;?> #ti-deactivate-yes').attr('disabled', 'disabled');
+								$('#<?php echo $key;?>ti-deactivate-yes').attr('disabled', 'disabled');
 								radio.parent().find('textarea').on('keyup', function(ee){
 									if($(this).val().length === 0){
-										$('#<?php echo $key;?> #ti-deactivate-yes').attr('disabled', 'disabled');
+										$('#<?php echo $key;?>ti-deactivate-yes').attr('disabled', 'disabled');
 									} else {
-										$('#<?php echo $key;?> #ti-deactivate-yes').removeAttr('disabled');
+										$('#<?php echo $key;?>ti-deactivate-yes').removeAttr('disabled');
 									}
 								});
 							} else {
-								$('#<?php echo $key;?> #ti-deactivate-yes').removeAttr('disabled');
+								$('#<?php echo $key;?>ti-deactivate-yes').removeAttr('disabled');
 							}
 						});
 
-						$('#<?php echo $key;?> #ti-deactivate-yes').attr('data-ti-action', href).on('click', function(e){
+						$('#<?php echo $key;?>ti-deactivate-yes').attr('data-ti-action', href).on('click', function(e){
 							e.preventDefault();
 							e.stopPropagation();
 							$.ajax({
@@ -221,10 +221,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				. '<h3>' . $heading . '</h3>'
 				. '<ul class="ti-list">' . $list . '</ul>'
 				. '<div class="actions">'
-				. get_submit_button( __( $button_submit_before ), 'secondary', 'ti-deactivate-yes', false, array(
+				. get_submit_button( __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
 					'data-after-text'   => $button_submit,
 				) )
-				. get_submit_button( __( $button_cancel ), 'primary', 'ti-deactivate-no', false )
+				. get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
 				. '</div></div>';
 		}
 
