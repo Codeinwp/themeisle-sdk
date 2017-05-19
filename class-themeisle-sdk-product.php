@@ -64,7 +64,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		/**
 		 * @var string $feedback_types All the feedback types the product supports
 		 */
-		private $feedback_types = array( 'deactivate' );
+		private $feedback_types = array( 'deactivate', 'review' );
 
 		/**
 		 * ThemeIsle_SDK_Product constructor.

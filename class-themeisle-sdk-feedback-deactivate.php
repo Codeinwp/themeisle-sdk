@@ -145,8 +145,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 						$('#<?php echo $key;?>ti-deactivate-no').on('click', function(e){
 							e.preventDefault();
 							e.stopPropagation();
-                            $('body').unbind('thickbox:removed');
-                            tb_remove();
+							$('body').unbind('thickbox:removed');
+							tb_remove();
 						});
 
 						$('#<?php echo $key;?> ul.ti-list label, #<?php echo $key;?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function(e){

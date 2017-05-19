@@ -76,5 +76,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			) );
 		}
 
+        function show_notification() {
+            error_log("showing logger");
+        }
+
+        function hide_notification() {
+            error_log("hiding logger");
+        }
+
 	}
 endif;
