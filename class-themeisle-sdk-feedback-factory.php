@@ -18,7 +18,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Factory' ) ) :
 	 */
 	class ThemeIsle_SDK_Feedback_Factory {
 
-        private $_instances     = array();
+		/**
+		 * @var array $instances collection of the instances that are registered with the factory
+		 */
+		private $_instances     = array();
 
 		/**
 		 * ThemeIsle_SDK_Feedback_Factory constructor.
@@ -31,14 +34,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Factory' ) ) :
 				foreach ( $feedback_types as $type ) {
 					$class      = 'ThemeIsle_SDK_Feedback_' . ucwords( $type );
 					$instance   = new $class( $product_object );
-                    $this->_instances[ $type ] = $instance;
+					$this->_instances[ $type ] = $instance;
 					$instance->setup_hooks();
 				}
 			}
 		}
 
-        public function get_instances() {
-            return $this->_instances;
-        }
+		/**
+		 * Get the registered instances
+		 */
+		public function get_instances() {
+			return $this->_instances;
+		}
 	}
 endif;

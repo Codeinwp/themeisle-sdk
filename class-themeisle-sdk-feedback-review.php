@@ -48,19 +48,22 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-            if ( ! $this->product->is_wordpress_available() ) {
-                $this->disable();
-                return false;
-            }
-            $show   = get_option( $this->product->get_key() . '_review_flag', 'yes' );
-            if ( 'no' === $show ) {
-                return false;
-            }
-            add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-            return true;
-        }
+			if ( ! $this->product->is_wordpress_available() ) {
+				$this->disable();
+				return false;
+			}
+			$show   = get_option( $this->product->get_key() . '_review_flag', 'yes' );
+			if ( 'no' === $show ) {
+				return false;
+			}
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+			return true;
+		}
 
-        function admin_notices() {
+		/**
+		 * Shows the admin notice
+		 */
+		function admin_notices() {
 			$id     = $this->product->get_key() . '_review';
 
 			$this->add_css( $this->product->get_key() );
@@ -91,20 +94,20 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			<script type="text/javascript" id="<?php echo $key;?>ti-review-js">
 				(function ($){
 					$(document).ready(function(){
-                        $('.<?php echo $key?>-ti-review').on('click', function(e){
+						$('.<?php echo $key?>-ti-review').on('click', function(e){
 
-                            $.ajax({
-                                url         : ajaxurl,
-                                method      : "post",
-                                data        : {
-                                    'nonce'     : '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
-                                    'action'    : '<?php echo $this->product->get_key() . __CLASS__;?>'
-                                },
-                                success     : function(){
-                                    $('#<?php echo $key;?>-review-notification').parent().parent().hide();
-                                }
-                            });
-                        });
+							$.ajax({
+								url         : ajaxurl,
+								method      : "post",
+								data        : {
+									'nonce'     : '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
+									'action'    : '<?php echo $this->product->get_key() . __CLASS__;?>'
+								},
+								success     : function(){
+									$('#<?php echo $key;?>-review-notification').parent().parent().hide();
+								}
+							});
+						});
 					});
 				})(jQuery);
 			</script>
@@ -117,9 +120,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		 * @param string $key The product key.
 		 */
 		function get_html( $key ) {
-            $link           = '<a class="' . $key . '-ti-review" href="https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#new-post" target="_blank">';
+			$link           = '<a class="' . $key . '-ti-review" href="https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#new-post" target="_blank">';
 			$heading        = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
-            $heading        = str_replace( array( '{product}', '{link}', '{/link}' ), array( $this->product->get_name(), $link, '</a>' ), $heading );
+			$heading        = str_replace( array( '{product}', '{link}', '{/link}' ), array( $this->product->get_name(), $link, '</a>' ), $heading );
 			$button_cancel  = apply_filters( $this->product->get_key() . '_feedback_review_button_cancel', $this->button_cancel );
 
 			return '<div id="' . $this->product->get_key() . '-review-notification">'
@@ -135,19 +138,28 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		function dismiss() {
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-            $this->disable();
+			$this->disable();
 		}
 
-        public function hide_notification() {
-            $this->disable();
-        }
+		/**
+		 * Hides the notification
+		 */
+		public function hide_notification() {
+			$this->disable();
+		}
 
-        protected function disable() {
-            update_option( $this->product->get_key() . '_review_flag', 'no' );
-        }
+		/**
+		 * Disables the notification
+		 */
+		protected function disable() {
+			update_option( $this->product->get_key() . '_review_flag', 'no' );
+		}
 
-        protected function enable() {
-            update_option( $this->product->get_key() . '_review_flag', 'yes' );
-        }
+		/**
+		 * Enables the notification
+		 */
+		protected function enable() {
+			update_option( $this->product->get_key() . '_review_flag', 'yes' );
+		}
 	}
 endif;
