@@ -55,10 +55,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		function show_notification() {
             $show   = get_option( $this->product->get_key() . '_review_flag', 'yes' );
             if ( 'no' === $show ) {
-                error_log("NOT showing review");
+                error_log("NOT showing review: " . $this->product->get_key());
                 return false;
             }
-            error_log("showing review");
+            error_log("showing review: ". $this->product->get_key());
 
 			$id     = $this->product->get_key() . '_review';
 
@@ -127,7 +127,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		}
 
         public function hide_notification() {
-            error_log("hiding review");
+            error_log("hiding review: " . $this->product->get_key());
             update_option( $this->product->get_key() . '_review_flag', 'no' );
         }
 	}

@@ -86,17 +86,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
         function show_notification() {
             $show   = get_option( $this->product->get_key() . '_logger_flag', true );
             if ( true === $show ) {
-                error_log("showing logger");
+                error_log("showing logger: " . $this->product->get_key());
                 return true;
             }
-            error_log("NOT showing logger");
+            error_log("NOT showing logger: " . $this->product->get_key());
             return false;
         }
 
         public function hide_notification() {
             $show   = get_option( $this->product->get_key() . '_logger_flag', true );
             if ( true === $show ) {
-                error_log("hiding logger");
+                error_log("hiding logger: " . $this->product->get_key());
                 // if the notification was showing and no action was taken, hide it
                 update_option( $this->product->get_key() . '_logger_flag', 'no' );
             }
