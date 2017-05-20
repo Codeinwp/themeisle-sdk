@@ -44,6 +44,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 				$this->product      = $product_object;
 				$this->product_cron = $product_object->get_key() . '_log_activity';
 			}
+			add_action( 'wp_ajax_' . $this->product->get_key() . __CLASS__, array( $this, 'dismiss' ) );
 		}
 
 
@@ -76,12 +77,29 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			) );
 		}
 
-        function show_notification() {
-            error_log("showing logger");
+        function dismiss() {
+			check_ajax_referer( (string) __CLASS__, 'nonce' );
+
+            update_option( $this->product->get_key() . '_logger_flag', $_POST['enable'] );
         }
 
-        function hide_notification() {
-            error_log("hiding logger");
+        function show_notification() {
+            $show   = get_option( $this->product->get_key() . '_logger_flag', true );
+            if ( true === $show ) {
+                error_log("showing logger");
+                return true;
+            }
+            error_log("NOT showing logger");
+            return false;
+        }
+
+        public function hide_notification() {
+            $show   = get_option( $this->product->get_key() . '_logger_flag', true );
+            if ( true === $show ) {
+                error_log("hiding logger");
+                // if the notification was showing and no action was taken, hide it
+                update_option( $this->product->get_key() . '_logger_flag', 'no' );
+            }
         }
 
 	}

@@ -42,30 +42,40 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 
         private function setup_hooks()
         {
-            add_action( 'admin_head', array( $this, 'show_notification' );
+            add_action( 'admin_head', array( $this, 'show_notification' ) );
         }
 
-        private function show_notification()
+        function show_notification()
         {
             $last       = get_option( 'ti_sdk_notification_last', array() );
-                error_log('show_notification ti_sdk_notification_last = ' . print_r($last,true));
+//error_log(time() .' show_notification ti_sdk_notification_last = ' . print_r($last,true));
+            $instances      = get_option( 'ti_sdk_notifications' );
+//error_log('show_notification instances = ' . print_r($instances,true));
 
-            if ( ! $last || ( is_array( $last ) && time() - $last['time'] > self::NOTIFICATION_INTERVAL_HOURS ) ) {
-                $last_class     = $last ? $last['class'] : null;
-                $instances      = get_option( 'ti_sdk_notifications' );
+            if ( ! $last || ( is_array( $last ) && time() - $last['time'] > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) ) {
+                $last_key       = $last ? $last['key'] : null;
                 if ( $instances ) {
                     $keys       = array_keys( $instances );
                     $values     = array_values( $instances );
-                    $index      = $last ? array_search( $last_class, $keys ) : -1;
-error_log("index $index");
-                    $now_class  = $index >= count( $values ) ? $values[ 0 ] ? $values[ $index + 1 ];
-error_log("now_class " . print_r($now_class,true));
-                    $last_class->hide_notification();
+//error_log("last_key = $last_key, keys = " . print_r($keys,true) . ", values = " . print_r($values,true));
+                    $index      = $last ? array_search( $last_key, $keys ) : -1;
+//error_log("index $index");
+                    $now_class  = $index >= count( $values ) - 1 ? $values[ 0 ] : $values[ $index + 1 ];
+                    $now_key    = $index >= count( $keys ) - 1 ? $keys[ 0 ] : $keys[ $index + 1 ];
+//error_log("now_key $now_key");
+                    if ( $last_key ) {
+                        $last_class = $instances[ $last_key ];
+                        $last_class->hide_notification();
+                    }
                     if ( $now_class->show_notification() ) {
-                        update_option( 'ti_sdk_notification_last', array( 'time' => time(), 'class' => $now_class ) );
-                error_log('show_notification ti_sdk_notification_last set to = ' . print_r(array( 'time' => time(), 'class' => $now_class ),true));
+                        update_option( 'ti_sdk_notification_last', array( 'time' => time(), 'key' => $now_key ) );
+//error_log('show_notification ti_sdk_notification_last set to = ' . print_r(array( 'time' => time(), 'key' => $now_key ),true));
                     }
                 }
+            } elseif ( $last && $instances ) {
+//error_log("last_key = " . $last['key']);
+                $now_class  = $instances[ $last['key'] ];
+                $now_class->show_notification();
             }
         }
 	}
