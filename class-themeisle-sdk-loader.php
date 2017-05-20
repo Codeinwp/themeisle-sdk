@@ -52,8 +52,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 				$licenser->enable();
 			}
 
-			if ( $product_object->is_wordpress_available() ) {
-                $logger = new ThemeIsle_SDK_Logger( $product_object );
+            $logger = new ThemeIsle_SDK_Logger( $product_object );
+            if ( ! $product_object->is_wordpress_available() ) {
+                $logger->enable();
+            } else {
                 $notifications[]    = $logger;
             }
 
@@ -61,8 +63,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			if ( 'plugin' === $product_object->get_type() ) {
 				$feedback   = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
                 $instances  = $feedback->get_instances();
-                // add the review feedback to the notification manager
-                if ( array_key_exists( 'review', $instances ) ) {
+                // add the review feedback to the notification manager if this plugin is availalbe on WP
+                if ( array_key_exists( 'review', $instances ) && $product_object->is_wordpress_available() ) {
                     $notifications[]    = $instances['review'];
                 }
 			}

@@ -21,12 +21,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading        = 'Love using {product}? Please review {link}here{/link}';
-
-		/**
-		 * @var string $button_submit The text of the deactivate button
-		 */
-		private $button_submit  = 'Sure I\'d love to help';
+		private $heading        = 'Love using {product}? Please review it {link}here{/link}';
 
 		/**
 		 * @var string $button_cancel The text of the cancel button
@@ -53,20 +48,25 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-            $show   = get_option( $this->product->get_key() . '_review_flag', 'yes' );
-            if ( 'no' === $show ) {
-                error_log("NOT showing review: " . $this->product->get_key());
+            if ( ! $this->product->is_wordpress_available() ) {
+                $this->disable();
                 return false;
             }
-            error_log("showing review: ". $this->product->get_key());
+            $show   = get_option( $this->product->get_key() . '_review_flag', 'yes' );
+            if ( 'no' === $show ) {
+                return false;
+            }
+            add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+            return true;
+        }
 
+        function admin_notices() {
 			$id     = $this->product->get_key() . '_review';
 
 			$this->add_css( $this->product->get_key() );
 			$this->add_js( $this->product->get_key() );
 
-			echo '<div id="' . $id . '" style="display:none;" class="themeisle-review-box">' . $this->get_html( $this->product->get_key() ) . '</div>';
-            return true;
+			echo '<div class="notice"><div id="' . $id . '" class="themeisle-review-box">' . $this->get_html( $this->product->get_key() ) . '</div></div>';
 		}
 
 		/**
@@ -91,6 +91,20 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			<script type="text/javascript" id="<?php echo $key;?>ti-review-js">
 				(function ($){
 					$(document).ready(function(){
+                        $('.<?php echo $key?>-ti-review').on('click', function(e){
+
+                            $.ajax({
+                                url         : ajaxurl,
+                                method      : "post",
+                                data        : {
+                                    'nonce'     : '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
+                                    'action'    : '<?php echo $this->product->get_key() . __CLASS__;?>'
+                                },
+                                success     : function(){
+                                    $('#<?php echo $key;?>-review-notification').parent().parent().hide();
+                                }
+                            });
+                        });
 					});
 				})(jQuery);
 			</script>
@@ -103,17 +117,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		 * @param string $key The product key.
 		 */
 		function get_html( $key ) {
-            $link           = '<a href="https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#new-post" target="_blank">';
+            $link           = '<a class="' . $key . '-ti-review" href="https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#new-post" target="_blank">';
 			$heading        = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
             $heading        = str_replace( array( '{product}', '{link}', '{/link}' ), array( $this->product->get_name(), $link, '</a>' ), $heading );
-			$button_submit  = apply_filters( $this->product->get_key() . '_feedback_review_button_submit', $this->button_submit );
 			$button_cancel  = apply_filters( $this->product->get_key() . '_feedback_review_button_cancel', $this->button_cancel );
 
 			return '<div id="' . $this->product->get_key() . '-review-notification">'
 				. '<h3>' . $heading . '</h3>'
 				. '<div class="actions">'
-				. get_submit_button( __( $button_submit ), 'secondary', $this->product->get_key() . 'ti-review-yes', false )
-				. get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-review-no', false )
+				. get_submit_button( __( $button_cancel ), 'primary ' . $this->product->get_key() . '-ti-review', $this->product->get_key() . 'ti-review-no', false )
 				. '</div></div>';
 		}
 
@@ -123,12 +135,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		function dismiss() {
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-            update_option( $this->product->get_key() . '_review_flag', 'no' );
+            $this->disable();
 		}
 
         public function hide_notification() {
-            error_log("hiding review: " . $this->product->get_key());
+            $this->disable();
+        }
+
+        protected function disable() {
             update_option( $this->product->get_key() . '_review_flag', 'no' );
+        }
+
+        protected function enable() {
+            update_option( $this->product->get_key() . '_review_flag', 'yes' );
         }
 	}
 endif;
