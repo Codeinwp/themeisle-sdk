@@ -80,6 +80,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 			if ( is_wp_error( $feed ) ) {
 				return '';
 			}
+
 			$feed->enable_cache( true );
 			$feed->enable_order_by_date( true );
 			$feed->set_cache_class( 'WP_Feed_Cache' );
@@ -190,7 +191,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					</li>
 					<?php
 				}
+
+                    $recommend_plugin       = apply_filters( 'ti_dw_recommend_plugin', array() );
+                    if( $recommend_plugin && is_array( $recommend_plugin ) ) {
+                        add_thickbox();
 				?>
+                    <p>
+                        <span class="ti-dw-recommend-plugin"><?php _e('Popular Plugin');?>: </span>
+                        <?php echo $recommend_plugin['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url('plugin-install.php?tab=plugin-information&plugin=' . $recommend_plugin['slug'] . '&TB_iframe=true&width=600&height=500');?>"><?php _e('Install');?></a>)
+                    </p>
+
+                <?php
+                    }
+                ?>
 			</ul>
 
 			<?php
