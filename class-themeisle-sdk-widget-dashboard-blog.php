@@ -18,7 +18,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 	 */
 	class ThemeIsle_SDK_Widget_Dashboard_Blog extends ThemeIsle_SDK_Widget {
 
-        private static $_instance;
+		/**
+		 * @var array instance The instances.
+		 */
+		private static $_instance;
 
 		/**
 		 * ThemeIsle_SDK_Widget_Dashboard_Blog constructor.
@@ -26,25 +29,28 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		 * @param ThemeIsle_SDK_Product $product_object The product object.
 		 */
 		public function __construct( $product_object ) {
-            self::$_instance        = $this;
+			self::$_instance        = $this;
 			parent::__construct( $product_object );
 		}
 
-        public static function instance() {
-            return self::$_instance;
-        }
+		/**
+		 * Returns the singleton instance
+		 */
+		public static function instance() {
+			return self::$_instance;
+		}
 
 		/**
 		 * Registers the hooks
 		 */
 		public function setup_hooks_child() {
-            $already_showing        = get_transient( (string) __CLASS__ );
-            if ( $already_showing ) {
-                return;
-            }
+			$already_showing        = get_transient( (string) __CLASS__ );
+			if ( $already_showing ) {
+				return;
+			}
 
-            set_transient( (string) __CLASS__, true, 10 );
-            $this->setup_vars();
+			set_transient( (string) __CLASS__, true, 10 );
+			$this->setup_vars();
 			add_action( 'wp_dashboard_setup', array( &$this, 'add_widget' ) );
 			add_action( 'wp_network_dashboard_setup', array( &$this, 'add_widget' ) );
 		}
@@ -192,18 +198,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					<?php
 				}
 
-                    $recommend_plugin       = apply_filters( 'ti_dw_recommend_plugin', array() );
-                    if( $recommend_plugin && is_array( $recommend_plugin ) ) {
-                        add_thickbox();
+					$recommend_plugin       = apply_filters( 'ti_dw_recommend_plugin', array() );
+				if ( $recommend_plugin && is_array( $recommend_plugin ) ) {
+					add_thickbox();
 				?>
-                    <p>
-                        <span class="ti-dw-recommend-plugin"><?php _e('Popular Plugin');?>: </span>
-                        <?php echo $recommend_plugin['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url('plugin-install.php?tab=plugin-information&plugin=' . $recommend_plugin['slug'] . '&TB_iframe=true&width=600&height=500');?>"><?php _e('Install');?></a>)
-                    </p>
+				<p>
+				<span class="ti-dw-recommend-plugin"><?php _e( 'Popular Plugin' );?>: </span>
+				<?php echo $recommend_plugin['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $recommend_plugin['slug'] . '&TB_iframe=true&width=600&height=500' );?>"><?php _e( 'Install' );?></a>)
+				</p>
 
-                <?php
-                    }
-                ?>
+				<?php
+				}
+				?>
 			</ul>
 
 			<?php
