@@ -53,6 +53,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 			$this->setup_vars();
 			add_action( 'wp_dashboard_setup', array( &$this, 'add_widget' ) );
 			add_action( 'wp_network_dashboard_setup', array( &$this, 'add_widget' ) );
+			add_filter( 'ti_dw_recommend_plugin_or_theme', array( &$this, 'recommend_plugin_or_theme' ) );
 		}
 
 		/**
@@ -198,22 +199,48 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					<?php
 				}
 
-					$recommend_plugin       = apply_filters( 'ti_dw_recommend_plugin', array() );
-				if ( $recommend_plugin && is_array( $recommend_plugin ) ) {
+				$recommend      = apply_filters( 'ti_dw_recommend_plugin_or_theme', array() );
+				if ( $recommend && is_array( $recommend ) ) {
 					add_thickbox();
+					foreach ( $recommend as $datum ) {
+						$type       = $datum['type'];
+						$url        = 'theme-install.php?theme=' . $datum['slug'];
+						if ( 'plugin' === $type ) {
+							$url    = 'plugin-install.php?tab=plugin-information&plugin=' . $datum['slug'];
+						}
 				?>
 				<p>
-				<span class="ti-dw-recommend-plugin"><?php _e( 'Popular Plugin' );?>: </span>
-				<?php echo $recommend_plugin['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $recommend_plugin['slug'] . '&TB_iframe=true&width=600&height=500' );?>"><?php _e( 'Install' );?></a>)
+				<span class="ti-dw-recommend"><?php _e( sprintf( 'Popular %s', ucwords( $type ) ) );?>: </span>
+				<?php echo $datum['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url( $url . '&TB_iframe=true&width=600&height=500' );?>"><?php _e( 'Install' );?></a>)
 				</p>
 
 				<?php
+					}
 				}
 				?>
 			</ul>
 
 			<?php
 
+		}
+
+		/**
+		 * Contact the API and fetch the recommended plugins/themes
+		 */
+		function recommend_plugin_or_theme() {
+			// contact API
+			return array(
+				array(
+					'type'      => 'plugin',
+					'slug'      => 'visualizer',
+					'name'      => 'Visualizer',
+				),
+				array(
+					'type'      => 'theme',
+					'slug'      => 'businesso',
+					'name'      => 'businesso',
+				),
+			);
 		}
 	}
 endif;
