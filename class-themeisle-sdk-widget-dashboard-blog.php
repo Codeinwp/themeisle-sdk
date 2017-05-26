@@ -176,7 +176,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 
 							$url = add_query_arg( array(
 								'tab' => 'plugin-information',
-								'theme' => $recommend['slug'],
+								'plugin' => $recommend['slug'],
 							), network_admin_url( 'plugin-install.php' ) );
 						}
 						?>
