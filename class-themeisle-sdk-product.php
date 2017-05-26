@@ -67,6 +67,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		private $feedback_types = array( 'deactivate' );
 
 		/**
+		 * @var string $widget_types All the widget types the product supports
+		 */
+		private $widget_types = array( 'dashboard_blog' );
+
+		/**
 		 * ThemeIsle_SDK_Product constructor.
 		 *
 		 * @param string $basefile Product basefile.
@@ -256,6 +261,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public function get_feedback_types() {
 			return apply_filters( $this->get_key() . '_feedback_types', $this->feedback_types );
+		}
+
+		/**
+		 * Returns widget types
+		 *
+		 * @return array The widget types.
+		 */
+		public function get_widget_types() {
+			return apply_filters( $this->get_key() . '_widget_types', $this->widget_types );
 		}
 
 		/**
