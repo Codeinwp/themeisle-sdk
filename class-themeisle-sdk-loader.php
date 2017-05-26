@@ -54,10 +54,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 				$logger = new ThemeIsle_SDK_Logger( $product_object );
 				$logger->enable();
 			}
-
-			// only enable for plugins
-			if ( 'plugin' === $product_object->get_type() ) {
-				$feedback   = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
+ 
+			// If we should load the uninstall feedback or no.
+			if ( $product_object->require_uninstall_feedback() ) {
+				$feedback = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() ); 
 			}
 
 			$widgets    = new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
