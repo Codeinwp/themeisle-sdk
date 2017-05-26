@@ -164,21 +164,32 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 
 				$recommend = apply_filters( 'themeisle_sdk_recommend_plugin_or_theme', array() );
 				if ( is_array( $recommend ) && ! empty( $recommend ) ) {
-					add_thickbox();
+
 					$type = $recommend['type'];
-					$url  = 'theme-install.php?theme=' . $recommend['slug'];
-					if ( 'plugin' === $type ) {
-						$url = 'plugin-install.php?tab=plugin-information&plugin=' . $recommend['slug'];
-					}
-					?>
-					<li class="ti-dw-recommend-item">
-							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>:
+					if ( ( $type == 'theme' && current_user_can( 'install_themes' ) ) || ( $type == 'plugin' && current_user_can( 'install_plugins' ) ) ) {
+						add_thickbox();
+						$url = add_query_arg( array(
+							'theme' => $recommend['slug'],
+						), network_admin_url( 'theme-install.php' ) );
+
+						if ( 'plugin' === $type ) {
+
+							$url = add_query_arg( array(
+								'tab' => 'plugin-information',
+								'theme' => $recommend['slug'],
+							), network_admin_url( 'plugin-install.php' ) );
+						}
+						?>
+						<li class="ti-dw-recommend-item">
+							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>
+								:
 								<?php echo trim( str_replace( array( 'lite', 'Lite' ), '', $recommend['name'] ) ); ?>
 								(<a class="thickbox open-plugin-details-modal"
-								    href="<?php echo admin_url( $url . '&TB_iframe=true&width=600&height=500' ); ?>"><?php _e( 'Install' ); ?></a>)</span>
-					</li>
+								    href="<?php echo  $url . '&TB_iframe=true&width=600&height=500' ; ?>"><?php _e( 'Install' ); ?></a>)</span>
+						</li>
 
-					<?php
+						<?php
+					}
 				}
 				?>
 			</ul>
