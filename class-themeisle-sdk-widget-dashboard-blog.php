@@ -21,7 +21,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		/**
 		 * @var array instance The instances.
 		 */
-		private static $_instance;
+		protected $product;
 
 		/**
 		 * ThemeIsle_SDK_Widget_Dashboard_Blog constructor.
@@ -29,31 +29,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		 * @param ThemeIsle_SDK_Product $product_object The product object.
 		 */
 		public function __construct( $product_object ) {
-			self::$_instance        = $this;
+			$this->product = $product_object;
 			parent::__construct( $product_object );
-		}
-
-		/**
-		 * Returns the singleton instance
-		 */
-		public static function instance() {
-			return self::$_instance;
 		}
 
 		/**
 		 * Registers the hooks
 		 */
 		public function setup_hooks_child() {
-			$already_showing        = get_transient( (string) __CLASS__ );
-			if ( $already_showing ) {
-				return;
-			}
-
-			set_transient( (string) __CLASS__, true, 10 );
 			$this->setup_vars();
 			add_action( 'wp_dashboard_setup', array( &$this, 'add_widget' ) );
 			add_action( 'wp_network_dashboard_setup', array( &$this, 'add_widget' ) );
-			add_filter( 'ti_dw_recommend_plugin_or_theme', array( &$this, 'recommend_plugin_or_theme' ) );
+			add_filter( 'themeisle_sdk_recommend_plugin_or_theme', array( &$this, 'recommend_plugin_or_theme' ) );
 		}
 
 		/**
@@ -64,11 +51,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 			$this->feeds          = apply_filters( 'themeisle_sdk_dashboard_widget_feeds', array(
 				'https://themeisle.com/blog/feed'
 			) );
-			$abs                  = untrailingslashit( ( dirname( __FILE__ ) ) );
-			$parts                = str_replace( untrailingslashit( ABSPATH ), '', $abs );
-			$parts                = explode( DIRECTORY_SEPARATOR, $parts );
-			$parts                = array_filter( $parts );
-			$this->script_url     = site_url() . '/' . implode( '/', $parts );
 		}
 
 		/**
@@ -88,36 +70,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 				return '';
 			}
 
-			$feed->enable_cache( true );
-			$feed->enable_order_by_date( true );
-			$feed->set_cache_class( 'WP_Feed_Cache' );
-			$feed->set_file_class( 'WP_SimplePie_File' );
-			$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 7200, $this->feeds ) );
-			do_action_ref_array( 'wp_feed_options', array( $feed, $this->feeds ) );
-			$feed->strip_comments( true );
-			$feed->strip_htmltags( array(
-				'base',
-				'blink',
-				'body',
-				'doctype',
-				'embed',
-				'font',
-				'form',
-				'frame',
-				'frameset',
-				'html',
-				'iframe',
-				'input',
-				'marquee',
-				'meta',
-				'noscript',
-				'object',
-				'param',
-				'script',
-				'style',
-			) );
-			$feed->init();
-			$feed->handle_content_type();
 			$items = $feed->get_items( 0, 5 );
 			foreach ( (array) $items as $item ) {
 				$this->items[] = array(
@@ -138,8 +90,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		function render_dashboard_widget() {
 			?>
 			<style type="text/css">
+				#themeisle ul {
+					margin-bottom: 0px;
+				}
+
+				#themeisle ul li.ti-dw-recommend-item {
+
+					padding-left: 7px;
+					border-top: 1px solid #eee;
+					padding-top: 3px;
+				}
+
 				#themeisle h2.hndle {
-					background-image: url(<?php echo $this->script_url; ?>/logo.png);
+					background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAdCAYAAABWk2cPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALfSURBVEhL7VW/ayJBFL7/5ZqziBzIcSCHxUE4hAiCgnAQsBASOAikEAIeCAaCiJAyIBICQURYwoJoEUmxa6MWioWxURu30mq77b57s86acX+oOQhp8sFjdmbfzrfve2/efMI74IP0VTB0gz/th/8iNbQxOt0eOmoN6WgAn78cwJeoYcLf78KrSPVneU3isEQZoz0D3pt03jhDrDTERJXxWM3A5yAOIPmgce/t2IvUGFzjkDa+7C5RTx0gWbxG0v8bBXUG3fLReigk4rh55gtbsAfpGDfhVTS+VA19bYbH7BkqU/56AzNU7nrYpbI7qfbEcxfBkSOHJGO27Vk0htqEYoXvARdS+tsEJyAJY1GRkOxnGTdq2zuaRZOkJ1Wi1+h7ODlJB/l1kYRKZVyKhMwoSmUw5M4uWMhIcl9f1l1qB2m/aMkZQIE2d5BeDTGiSD0VfC4jZPmSKiO+LMJGuoRE1bkiOIW00CAdW3NuxzLmxhD1hyHmug7dbBRD9KdLc4dR6Zfgn0ffXN2EjVSMLIcOrWxuwiyyPhYGI7X0m/agqPeIib5+yit/LWILKYuUlrTa5kbMwjko7J0AXc1RLZwifRF58Us1YXMzYSMV5WQ5ZWsG5VnYaG1BxM7zKBRzOAkHac460gxK9sUnVBqbu9rhKCS9lRaq1/poCeUq7tL6uPnjSLeoBRo9/KXjslqP4Na1gbiQssiULK9gP+VVqPnFQMblnwi+WmTfIji5amLES1mn/mz9yCFVuddZdiFlIJlTK+JtH2/AaPMogzipzrZ+4yQ1qCL1JSaNDL6bf81y1aOb5R6Vhow6G1tPNK9Borl0R2NLRiEaxNEF9Wa3yrHBSarTbeHot7ySqVmYR4AucDYuaJyzkfptZ0e/FeGa03m3jOQPizCAo0QG9W2ktL5HgGt45JRgaBh1x9R1WHY0KCTnLZOW5Kw0miuZq01ITGa6Z18Db9I3xAfpm+IdSIF/du91gSA2+I8AAAAASUVORK5CYII=');
 					background-repeat: no-repeat;
 					background-position: 90% 50%;
 					background-size: 29px;
@@ -199,23 +162,23 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					<?php
 				}
 
-				$recommend      = apply_filters( 'ti_dw_recommend_plugin_or_theme', array() );
-				if ( $recommend && is_array( $recommend ) ) {
+				$recommend = apply_filters( 'themeisle_sdk_recommend_plugin_or_theme', array() );
+				if ( is_array( $recommend ) && ! empty( $recommend ) ) {
 					add_thickbox();
-					foreach ( $recommend as $datum ) {
-						$type       = $datum['type'];
-						$url        = 'theme-install.php?theme=' . $datum['slug'];
-						if ( 'plugin' === $type ) {
-							$url    = 'plugin-install.php?tab=plugin-information&plugin=' . $datum['slug'];
-						}
-				?>
-				<p>
-				<span class="ti-dw-recommend"><?php _e( sprintf( 'Popular %s', ucwords( $type ) ) );?>: </span>
-				<?php echo $datum['name'];?> (<a class="thickbox open-plugin-details-modal" href="<?php echo admin_url( $url . '&TB_iframe=true&width=600&height=500' );?>"><?php _e( 'Install' );?></a>)
-				</p>
-
-				<?php
+					$type = $recommend['type'];
+					$url  = 'theme-install.php?theme=' . $recommend['slug'];
+					if ( 'plugin' === $type ) {
+						$url = 'plugin-install.php?tab=plugin-information&plugin=' . $recommend['slug'];
 					}
+					?>
+					<li class="ti-dw-recommend-item">
+							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>:
+								<?php echo trim( str_replace( array( 'lite', 'Lite' ), '', $recommend['name'] ) ); ?>
+								(<a class="thickbox open-plugin-details-modal"
+								    href="<?php echo admin_url( $url . '&TB_iframe=true&width=600&height=500' ); ?>"><?php _e( 'Install' ); ?></a>)</span>
+					</li>
+
+					<?php
 				}
 				?>
 			</ul>
@@ -225,35 +188,132 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		}
 
 		/**
+		 * Either the current product is installed or not.
+		 *
+		 * @param array $val The current recommended product.
+		 *
+		 * @return bool Either we should exclude the plugin or not.
+		 */
+		public function remove_current_products( $val ) {
+			if ( $val['type'] === 'theme' ) {
+				$exist = wp_get_theme( $val['slug'] );
+
+				return ! $exist->exists();
+			} else {
+				$all_plugins = array_keys( get_plugins() );
+				foreach ( $all_plugins as $slug ) {
+					if ( strpos( $slug, $val['slug'] ) !== false ) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		/**
+		 * Fetch themes from wporg api.
+		 *
+		 * @param string $author The author name.
+		 *
+		 * @return array The list of themes.
+		 */
+		function get_themes_from_wporg( $author ) {
+			$products = wp_remote_get(
+				'https://api.wordpress.org/themes/info/1.1/?action=query_themes&request[author]=' . $author . '&request[per_page]=30&request[fields][active_installs]=true'
+			);
+			$products = json_decode( wp_remote_retrieve_body( $products ) );
+			if ( is_object( $products ) ) {
+				$products = isset( $products->themes ) ? $products->themes : array();
+			} else {
+				$products = array();
+			}
+
+			return $products;
+		}
+
+		/**
+		 * Fetch plugin from wporg api.
+		 *
+		 * @param string $author The author slug.
+		 *
+		 * @return array The list of plugins for the selected author.
+		 */
+		function get_plugins_from_wporg( $author ) {
+			$products = wp_remote_get(
+				'https://api.wordpress.org/plugins/info/1.1/?action=query_plugins&request[author]=' . $author . '&request[author]=codeinwp&request[per_page]=20&request[fields][active_installs]=true'
+			);
+			$products = json_decode( wp_remote_retrieve_body( $products ) );
+			if ( is_object( $products ) ) {
+				$products = isset( $products->plugins ) ? $products->plugins : array();
+			} else {
+				$products = array();
+			}
+
+			return $products;
+		}
+
+		/**
+		 * Fetch products from the recomended section.
+		 *
+		 * @return array|mixed The list of products to use in recomended section.
+		 */
+		function get_product_from_api() {
+			if ( false === ( $products = get_transient( 'themeisle_sdk_products' ) ) ) {
+				$products         = array();
+				$themeisle_themes = $this->get_themes_from_wporg( 'themeisle' );
+				$codeinwp_themes  = $this->get_themes_from_wporg( 'codeinwp' );
+
+				$themeisle_plugins = $this->get_plugins_from_wporg( 'themeisle' );
+				$codeinwp_plugins  = $this->get_plugins_from_wporg( 'codeinwp' );
+
+				$all_themes = array_merge( $themeisle_themes, $codeinwp_themes );
+				foreach ( $all_themes as $theme ) {
+					if ( $theme->active_installs < 4999 ) {
+						continue;
+					}
+					$products[] = array(
+						'name'     => $theme->name,
+						'type'     => 'theme',
+						'slug'     => $theme->slug,
+						'installs' => $theme->active_installs,
+					);
+				}
+				$all_plugins = array_merge( $themeisle_plugins, $codeinwp_plugins );
+				foreach ( $all_plugins as $plugin ) {
+					if ( $plugin->active_installs < 5999 ) {
+						continue;
+					}
+					$products[] = array(
+						'name'     => $plugin->name,
+						'type'     => 'plugin',
+						'slug'     => $plugin->slug,
+						'installs' => $plugin->active_installs,
+					);
+				}
+				set_transient( 'themeisle_sdk_products', $products, 6 * HOUR_IN_SECONDS );
+			}
+
+			return $products;
+		}
+
+		/**
 		 * Contact the API and fetch the recommended plugins/themes
 		 */
 		function recommend_plugin_or_theme() {
-			// contact API
-			return array(
-				array(
-					'type'      => 'plugin',
-					'slug'      => 'visualizer',
-					'name'      => 'Visualizer',
-				),
-				array(
-					'type'      => 'theme',
-					'slug'      => 'businesso',
-					'name'      => 'businesso',
-				),
-			);
+			$products = $this->get_product_from_api();
+			if ( ! is_array( $products ) ) {
+				$products = array();
+			}
+			$products = array_filter( $products, array( $this, 'remove_current_products' ) );
+			$products = array_merge( $products );
+			if ( count( $products ) > 1 ) {
+				shuffle( $products );
+				$products = array_slice( $products, 0, 1 );
+			}
+			$to_recommend = isset( $products[0] ) ? $products[0] : $products;
+
+			return $to_recommend;
 		}
 	}
 endif;
-
-if ( ! function_exists( 'themeisle_dashboard_widget' ) ) {
-	/**
-	 * The helper method to run the class
-	 *
-	 * @return the instance.
-	 */
-	function themeisle_dashboard_widget() {
-		return ThemeIsle_SDK_Widget_Dashboard_Blog::instance();
-	}
-}
-
-themeisle_dashboard_widget();
