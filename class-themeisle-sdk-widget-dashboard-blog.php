@@ -98,7 +98,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 
 					padding-left: 7px;
 					border-top: 1px solid #eee;
-					padding-top: 3px;
+
+					margin-bottom: 0px;
+					padding-top: 6px;
 				}
 
 				#themeisle h2.hndle {
@@ -144,6 +146,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					text-align: center;
 				}
 
+
+				.ti-dw-recommend-item span {
+					color: #72777c;
+				}
+
 			</style>
 			<ul>
 				<?php
@@ -175,17 +182,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 						if ( 'plugin' === $type ) {
 
 							$url = add_query_arg( array(
-								'tab' => 'plugin-information',
+								'tab'    => 'plugin-information',
 								'plugin' => $recommend['slug'],
 							), network_admin_url( 'plugin-install.php' ) );
 						}
 						?>
-						<li class="ti-dw-recommend-item">
+						<li class="ti-dw-recommend-item ">
 							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>
-								:
-								<?php echo trim( str_replace( array( 'lite', 'Lite' ), '', $recommend['name'] ) ); ?>
-								(<a class="thickbox open-plugin-details-modal"
-								    href="<?php echo  $url . '&TB_iframe=true&width=600&height=500' ; ?>"><?php _e( 'Install' ); ?></a>)</span>
+								: </span><?php echo trim( str_replace( array(
+									'lite',
+									'Lite',
+								), '', $recommend['name'] ) ); ?>
+							(<a class="thickbox open-plugin-details-modal"
+								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
 						</li>
 
 						<?php
