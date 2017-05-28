@@ -22,7 +22,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		/**
 		 * @var string $logging_url Url where to send the logs
 		 */
-		private $logging_url = 'http://log.themeisle.com/wordpress/wp-json/__pirate_logs_/v1/logs/';
+		private $logging_url = 'http://log.themeisle.com/wp-json/v1/logs/';
 
 		/**
 		 * @var ThemeIsle_SDK_Product $product Themeisle Product.
