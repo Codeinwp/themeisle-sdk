@@ -45,7 +45,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			$product_object                                = new ThemeIsle_SDK_Product( $basefile );
 			self::$products[ $product_object->get_slug() ] = $product_object;
 
-			$notifications      = array();
+			$notifications = array();
 			// Based on the Wordpress Available file header we enable the logger or not.
 			if ( ! $product_object->is_wordpress_available() ) {
 				$licenser = new ThemeIsle_SDK_Licenser( $product_object );
@@ -53,30 +53,22 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			}
 
 			$logger = new ThemeIsle_SDK_Logger( $product_object );
-			if ( ! $product_object->is_wordpress_available() ) {
+			if ( $product_object->is_logger_active() ) {
 				$logger->enable();
 			} else {
-				$notifications[]    = $logger;
-			}
- 
-			// only enable for plugins
-			if ( 'plugin' === $product_object->get_type() ) {
-				$feedback   = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
-				$instances  = $feedback->get_instances();
-				// add the review feedback to the notification manager if this plugin is availalbe on WP
-				if ( array_key_exists( 'review', $instances ) && $product_object->is_wordpress_available() ) {
-					$notifications[]    = $instances['review'];
-				}
+				$notifications[] = $logger;
 			}
 
+			$feedback  = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
+
+			$instances = $feedback->get_instances();
+			if ( array_key_exists( 'review', $instances ) ) {
+				$notifications[] = $instances['review'];
+			}
 			new ThemeIsle_SDK_Notification_Manager( $product_object, $notifications );
- 
-			// If we should load the uninstall feedback or no.
-			if ( $product_object->require_uninstall_feedback() ) {
-				$feedback = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
-			}
 
-			$widgets    = new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() ); 
+			new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
+
 			return self::$instance;
 		}
 

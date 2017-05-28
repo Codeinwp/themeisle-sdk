@@ -37,17 +37,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading        = 'Love using {product}? Enable logging?';
+		private $heading = 'Do you enjoy {product}? Become a contributor by opting in to our anonymous plugin data tracking. We guarantee no sensitive data is collected.';
 
 		/**
 		 * @var string $button_submit The text of the submit button
 		 */
-		private $button_submit  = 'Sure';
+		private $button_submit = 'Sure, I would love to help.';
 
 		/**
 		 * @var string $button_cancel The text of the cancel button
 		 */
-		private $button_cancel  = 'No, thanks';
+		private $button_cancel = 'No, thanks.';
 
 		/**
 		 * ThemeIsle_SDK_Logger constructor.
@@ -99,8 +99,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		function dismiss() {
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-			$flag       = intval( $_POST['enable'] ) === 1;
-			update_option( $this->product->get_key() . '_logger_flag', $flag );
+			$flag = intval( $_POST['enable'] ) === 1;
+			update_option( $this->product->get_key() . '_logger_flag', ( $flag ? 'yes' : 'no' ) );
+
 			if ( true === $flag ) {
 				$this->enable();
 			}
@@ -110,11 +111,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-			$show   = get_option( $this->product->get_key() . '_logger_flag', true );
-			if ( true === $show ) {
+			$show = $this->product->is_logger_active();
+
+			if ( ! $show ) {
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -122,11 +126,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * Shows the admin notice
 		 */
 		function admin_notices() {
-			$id     = $this->product->get_key() . '_logger';
+			$id = $this->product->get_key() . '_logger';
 
-			$this->add_js( $this->product->get_key() );
+			$this->add_media( $this->product->get_key() );
 
-			echo '<div class="notice"><div id="' . $id . '" class="themeisle-logger-box">' . $this->get_html( $this->product->get_key() ) . '</div></div>';
+			echo '<div class="notice notice-success is-dismissible "  id="' . $this->product->get_key() . '-logger-notification" ><div id="' . $id . '" class="themeisle-logger-box">' . $this->get_html( $this->product->get_key() ) . '</div></div>';
 		}
 
 		/**
@@ -135,21 +139,25 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * @param string $key The product key.
 		 */
 		function get_html( $key ) {
-			$heading        = apply_filters( $this->product->get_key() . '_logger_heading', $this->heading );
-			$heading        = str_replace( array( '{product}' ), array( $this->product->get_name() ), $heading );
-			$button_submit  = apply_filters( $this->product->get_key() . '_logger_button_submit', $this->button_submit );
-			$button_cancel  = apply_filters( $this->product->get_key() . '_logger_button_cancel', $this->button_cancel );
+			$heading       = apply_filters( $this->product->get_key() . '_logger_heading', $this->heading );
+			$heading       = str_replace( array( '{product}' ), array(
+				str_replace( 'Lite', '', $this->product->get_name() )
+				),
+				$heading
+			);
+			$button_submit = apply_filters( $this->product->get_key() . '_logger_button_submit', $this->button_submit );
+			$button_cancel = apply_filters( $this->product->get_key() . '_logger_button_cancel', $this->button_cancel );
 
-			return '<div id="' . $this->product->get_key() . '-logger-notification">'
-				. '<h3>' . $heading . '</h3>'
-				. '<div class="actions">'
-				. get_submit_button( __( $button_submit ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
-					'data-ti-log-enable' => true,
-				) )
-				. get_submit_button( __( $button_cancel ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
-					'data-ti-log-enable' => false,
-				) )
-				. '</div></div>';
+			return '<div >'
+			       . '<p>' . $heading . '</p>'
+			       . '<div class="actions">'
+			       . get_submit_button( __( $button_submit ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
+					   'data-ti-log-enable' => true,
+				   ) )
+			       . get_submit_button( __( $button_cancel ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
+					   'data-ti-log-enable' => false,
+				   ) )
+			       . '</div></div>';
 		}
 
 		/**
@@ -157,41 +165,39 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 *
 		 * @param string $key The product key.
 		 */
-		function add_js( $key ) {
-?>
-			<script type="text/javascript" id="<?php echo $key;?>ti-logger-js">
-				(function ($){
-					$(document).ready(function(){
-						$('.<?php echo $key?>-ti-logger').on('click', function(e){
+		function add_media( $key ) {
+			?>
+			<style type="text/css">
+				#<?php echo $key; ?>-logger-notification {
+					padding-bottom: 5px;
+				}
+
+				#<?php echo $key; ?>-logger-notification .button {
+					margin-left: 5px;
+				}
+			</style>
+			<script type="text/javascript" id="<?php echo $key; ?>ti-logger-js">
+				(function ($) {
+					$(document).ready(function () {
+						$('.<?php echo $key?>-ti-logger').on('click', function (e) {
 
 							$.ajax({
-								url         : ajaxurl,
-								method      : "post",
-								data        : {
-									'nonce'     : '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
-									'action'    : '<?php echo $this->product->get_key() . __CLASS__;?>',
-									'enable'    : $(this).attr('data-ti-log-enable')
+								url: ajaxurl,
+								method: "post",
+								data: {
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
+									'action': '<?php echo $this->product->get_key() . __CLASS__;?>',
+									'enable': $(this).attr('data-ti-log-enable')
 								},
-								success     : function(){
-									$('#<?php echo $key;?>-logger-notification').parent().parent().hide();
+								success: function () {
+									$('#<?php echo $key;?>-logger-notification').hide();
 								}
 							});
 						});
 					});
 				})(jQuery);
 			</script>
-<?php
-		}
-
-		/**
-		 * Hides the notification
-		 */
-		public function hide_notification() {
-			$show   = get_option( $this->product->get_key() . '_logger_flag', true );
-			if ( true === $show ) {
-				// if the notification was showing and no action was taken, hide it
-				update_option( $this->product->get_key() . '_logger_flag', 'no' );
-			}
+			<?php
 		}
 
 	}

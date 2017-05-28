@@ -46,6 +46,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		private $store_url;
 		/**
+		 * @var int $install The date of install.
+		 */
+		private $install;
+		/**
 		 * @var string $store_name The store name.
 		 */
 		private $store_name;
@@ -64,7 +68,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		/**
 		 * @var string $feedback_types All the feedback types the product supports
 		 */
-		private $feedback_types = array( 'deactivate', 'review' );
+		private $feedback_types = array();
 
 		/**
 		 * @var string $widget_types All the widget types the product supports
@@ -84,6 +88,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 					$this->setup_from_fileheaders();
 				}
 			}
+			$install = get_option( $this->get_key() . '_install', 0 );
+			if ( $install === 0 ) {
+				update_option( $this->get_key() . '_install', time() );
+			}
+			$this->install = $install;
 		}
 
 		/**
@@ -104,7 +113,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			$this->requires_license    = ( $file_headers['Requires License'] == 'yes' ) ? true : false;
 			$this->wordpress_available = ( $file_headers['WordPress Available'] == 'yes' ) ? true : false;
 			$this->version             = $file_headers['Version'];
-
+			if ( $this->require_uninstall_feedback() ) {
+				$this->feedback_types[] = 'deactivate';
+			}
+			if ( $this->is_wordpress_available() && $this->get_type() === 'plugin' ) {
+				$this->feedback_types[] = 'review';
+			}
 		}
 
 		/**
@@ -284,8 +298,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			} else {
 				// If we have the product on wprog, by default this will be false
 				// and we can change it in each product.
-				return apply_filters( $this->get_key() . '_logger_flag', false );
+				return ( get_option( $this->get_key() . '_logger_flag', 'no' ) === 'yes' );
 			}
+		}
+
+		/**
+		 * Return the install timestamp.
+		 *
+		 * @return int The install timestamp.
+		 */
+		public function get_install_time() {
+			return $this->install;
 		}
 
 		/**

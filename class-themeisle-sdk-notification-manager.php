@@ -17,8 +17,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 	 * Notification manager model for ThemeIsle SDK.
 	 */
 	class ThemeIsle_SDK_Notification_Manager {
-
-		const NOTIFICATION_INTERVAL_HOURS       = 1;
+		/**
+		 * Time between notifications.
+		 */
+		const NOTIFICATION_INTERVAL_HOURS = 0.1;
+		/**
+		 * @var array Notifications for the current product.
+		 */
+		private $notifications = array();
 
 		/**
 		 * ThemeIsle_SDK_Notification_Manager constructor.
@@ -27,12 +33,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		 * @param array                 $callbacks the objects that will be called when a notification is due.
 		 */
 		public function __construct( $product_object, $callbacks ) {
-			if ( $product_object instanceof ThemeIsle_SDK_Product && $callbacks && is_array( $callbacks ) ) {
-				$instances      = get_option( 'ti_sdk_notifications', array() );
-				foreach ( $callbacks as $instance ) {
-					$instances[ $product_object->get_key() . get_class( $instance ) ]   = $instance;
+
+			// Load the notifications only if we have it installed after the required interval.
+			if ( ( time() - $product_object->get_install_time() ) > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) {
+				if ( $product_object instanceof ThemeIsle_SDK_Product && $callbacks && is_array( $callbacks ) ) {
+					foreach ( $callbacks as $instance ) {
+						$this->notifications[ $product_object->get_key() . get_class( $instance ) ] = $instance;
+					}
 				}
-				update_option( 'ti_sdk_notifications', $instances );
 			}
 
 			$this->setup_hooks();
@@ -49,43 +57,45 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-			$last       = get_option( 'ti_sdk_notification_last', array() );
-			$instances      = get_option( 'ti_sdk_notifications' );
 
-			if ( ! $last || ( is_array( $last ) && time() - $last['time'] > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) ) {
-				$last_key       = $last ? $last['key'] : null;
-				if ( $instances ) {
-					$keys       = array_keys( $instances );
-					$values     = array_values( $instances );
-					$index      = $last ? array_search( $last_key, $keys ) : -1;
-					$now_class  = $index >= count( $values ) - 1 ? $values[0] : $values[ $index + 1 ];
-					$now_key    = $index >= count( $keys ) - 1 ? $keys[0] : $keys[ $index + 1 ];
-					if ( $last_key ) {
-						$last_class = $instances[ $last_key ];
-						$last_class->hide_notification();
-						unset( $instances[ $last_key ] );
-					}
-					$already_showing    = get_transient( 'ti_sdk_notification_showing' );
-					if ( $now_key !== $already_showing && $now_class->show_notification() ) {
-						set_transient( 'ti_sdk_notification_showing', $now_key, 10 );
-						update_option( 'ti_sdk_notification_last', array(
-							'time' => time(),
-							'key' => $now_key,
-						) );
-					}
+			$hidden    = get_option( 'themeisle_sdk_notification_hidden', array() );
+			$instances = $this->notifications;
+			if ( empty( $instances ) ) {
+				return;
+			}
+
+			// Get timestamp of last notification.
+			$old = 0;
+			if ( ! empty( $hidden ) ) {
+				$old = $hidden[ count( $hidden ) - 1 ]['time'];
+			}
+			// Check if the current one is expired.
+			if ( ( time() - $old ) > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) {
+				// Get hidden notifications key.
+				$hidden_ones = wp_list_pluck( $hidden, 'key' );
+				// Get the non-hidden notifications.
+				$available_notifications = array_diff( array_keys( $instances ), $hidden_ones );
+				if ( empty( $available_notifications ) ) {
+					return;
 				}
-			} elseif ( $last && $instances ) {
-				$now_key    = $last['key'];
-				$now_class  = $instances[ $now_key ];
-				$already_showing    = get_transient( 'ti_sdk_notification_showing' );
-				if ( $now_key !== $already_showing && $now_class->show_notification() ) {
-					set_transient( 'ti_sdk_notification_showing', $now_key, 10 );
-					update_option( 'ti_sdk_notification_last', array(
-						'time' => time(),
-						'key' => $now_key,
-					) );
+				// Get the first notification available.
+				$new_one = reset( $available_notifications );
+
+				$instance = $instances[ $new_one ];
+				$hidden[] = array(
+					'time' => time(),
+					'key'  => $new_one,
+				);
+				update_option( 'themeisle_sdk_notification_hidden', $hidden );
+			} else {
+				$key = $hidden[ count( $hidden ) - 1 ]['key'];
+				if ( ! isset( $this->notifications[ $key ] ) ) {
+					return;
+				} else {
+					$instance = $this->notifications[ $key ];
 				}
 			}
+			$instance->show_notification();
 		}
 	}
 endif;
