@@ -72,7 +72,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 					'site'    => get_site_url(),
 					'slug'    => $this->product->get_slug(),
 					'version' => $this->product->get_version(),
-					'data'    => serialize( apply_filters( $this->product->get_key() . '_logger_data', array() ) ),
+					'data'    => apply_filters( $this->product->get_key() . '_logger_data', array() ),
 				),
 			) );
 		}
