@@ -22,7 +22,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		/**
 		 * @var string $logging_url Url where to send the logs
 		 */
-		private $logging_url = 'http://mirror.themeisle.com';
+		private $logging_url = 'http://log.themeisle.com/wordpress/wp-json/__pirate_logs_/v1/logs/';
 
 		/**
 		 * @var ThemeIsle_SDK_Product $product Themeisle Product.
@@ -70,8 +70,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 				),
 				'body'        => array(
 					'site'    => get_site_url(),
-					'product' => $this->product->get_slug(),
+					'slug'    => $this->product->get_slug(),
 					'version' => $this->product->get_version(),
+					'data'    => serialize( apply_filters( $this->product->get_key() . '_logger_data', array() ) ),
 				),
 			) );
 		}
