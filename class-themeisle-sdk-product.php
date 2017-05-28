@@ -67,6 +67,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		private $feedback_types = array( 'deactivate', 'review' );
 
 		/**
+		 * @var string $widget_types All the widget types the product supports
+		 */
+		private $widget_types = array( 'dashboard_blog' );
+
+		/**
 		 * ThemeIsle_SDK_Product constructor.
 		 *
 		 * @param string $basefile Product basefile.
@@ -259,6 +264,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		}
 
 		/**
+		 * Returns widget types
+		 *
+		 * @return array The widget types.
+		 */
+		public function get_widget_types() {
+			return apply_filters( $this->get_key() . '_widget_types', $this->widget_types );
+		}
+
+		/**
 		 * We log the user website and product version.
 		 *
 		 * @return bool Either we log the data or not.
@@ -272,6 +286,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				// and we can change it in each product.
 				return apply_filters( $this->get_key() . '_logger_flag', false );
 			}
+		}
+
+		/**
+		 * We require feedback on uninstall.
+		 *
+		 * @return bool Either we should require feedback on uninstall or not.
+		 */
+		public function require_uninstall_feedback() {
+			return $this->get_type() === 'plugin';
 		}
 
 	}
