@@ -92,8 +92,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 					$this->setup_from_fileheaders();
 				}
 			}
-			$install = get_option( $this->get_key() . '_install', time() );
+			$install = get_option( $this->get_key() . '_install', 0 );
 			if ( $install === 0 ) {
+				$install = time();
 				update_option( $this->get_key() . '_install', time() );
 			}
 			$this->install = $install;
