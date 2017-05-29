@@ -271,7 +271,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 							});
 							location.href = $(this).attr('data-ti-action');
 						});
-						$('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src;?>').addClass('thickbox');
+						$('tr[data-plugin^="<?php echo $this->product->get_slug();?>/"] span.deactivate a').attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src;?>').addClass('thickbox');
 						var thicbox_timer;
 						$('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').on('click', function () {
 							tiBindThickbox();
