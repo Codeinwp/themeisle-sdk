@@ -100,7 +100,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
 			$flag = intval( $_POST['enable'] ) === 1;
-			update_option( $this->product->get_key() . '_logger_flag', ( $flag ? 'yes' : 'no' ) );
+			update_option( $this->product->logger_option, ( $flag ? 'yes' : 'no' ) );
 
 			if ( true === $flag ) {
 				$this->enable();
@@ -111,9 +111,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-			$show = $this->product->is_logger_active();
-
-			if ( ! $show ) {
+			$show    = $this->product->is_logger_active();
+			$checked = get_option( $this->product->logger_option, '' );
+			if ( ! $show && $checked == '' ) {
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
 				return true;
@@ -152,10 +152,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			       . '<p>' . $heading . '</p>'
 			       . '<div class="actions">'
 			       . get_submit_button( __( $button_submit ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
-					   'data-ti-log-enable' => true,
+					   'data-ti-log-enable' => 1,
 				   ) )
 			       . get_submit_button( __( $button_cancel ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
-					   'data-ti-log-enable' => false,
+					   'data-ti-log-enable' => 0,
 				   ) )
 			       . '</div></div>';
 		}

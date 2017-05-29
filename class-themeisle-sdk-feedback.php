@@ -53,7 +53,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 		 */
 		protected function call_api( $attributes ) {
 			$slug               = $this->product->get_slug();
+			$version               = $this->product->get_version();
 			$attributes['slug'] = $slug;
+			$attributes['version'] = $version;
 
 			$response           = wp_remote_post( $this->feedback_url, array(
 				'body' => $attributes,

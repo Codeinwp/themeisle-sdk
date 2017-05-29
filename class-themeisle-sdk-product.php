@@ -66,6 +66,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		private $version;
 		/**
+		 * @var string $logger_option Logger option key.
+		 */
+		public $logger_option;
+		/**
 		 * @var string $feedback_types All the feedback types the product supports
 		 */
 		private $feedback_types = array();
@@ -88,11 +92,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 					$this->setup_from_fileheaders();
 				}
 			}
-			$install = get_option( $this->get_key() . '_install', 0 );
+			$install = get_option( $this->get_key() . '_install', time() );
 			if ( $install === 0 ) {
 				update_option( $this->get_key() . '_install', time() );
 			}
 			$this->install = $install;
+
+			$this->logger_option = $this->get_key() . '_logger_flag';
 		}
 
 		/**
