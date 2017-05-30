@@ -127,7 +127,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 					display: block;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-containe #TB_window.thickbox-loading:before {
+				body.plugins-php .<?php echo $key; ?>-container #TB_window.thickbox-loading:before {
 					background: none !important;
 				}
 
@@ -230,6 +230,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($) {
 					$(document).ready(function () {
+
 						var href = $('tr[data-plugin^="<?php echo $this->product->get_slug();?>/"] span.deactivate a').attr('href');
 						$('#<?php echo $key;?>ti-deactivate-no').on('click', function (e) {
 							e.preventDefault();
@@ -283,6 +284,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 									$("body").trigger('thickbox:iframe:loaded');
 									$("#TB_window").addClass("<?php echo $key; ?>-container");
 									clearTimeout(thicbox_timer);
+									$('body').unbind('thickbox:removed');
 								} else {
 									tiBindThickbox();
 								}
