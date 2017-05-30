@@ -230,7 +230,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($) {
 					$(document).ready(function () {
-						var href = $('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').attr('href');
+						var href = $('tr[data-plugin^="<?php echo $this->product->get_slug();?>/"] span.deactivate a').attr('href');
 						$('#<?php echo $key;?>ti-deactivate-no').on('click', function (e) {
 							e.preventDefault();
 							e.stopPropagation();
@@ -273,7 +273,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 						});
 						$('tr[data-plugin^="<?php echo $this->product->get_slug();?>/"] span.deactivate a').attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src;?>').addClass('thickbox');
 						var thicbox_timer;
-						$('tr[data-slug="<?php echo $this->product->get_slug();?>"] span.deactivate a').on('click', function () {
+						$('tr[data-plugin^="<?php echo $this->product->get_slug();?>/"] span.deactivate a').on('click', function () {
 							tiBindThickbox();
 						});
 
