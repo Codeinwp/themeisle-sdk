@@ -20,7 +20,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		/**
 		 * Time between notifications.
 		 */
-		const NOTIFICATION_INTERVAL_HOURS = 14;
+		const NOTIFICATION_INTERVAL_HOURS = 100;
 		/**
 		 * @var array Notifications for the current product.
 		 */
@@ -46,6 +46,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 			$this->setup_hooks();
 		}
 
+		/**
+		 * Setup the notifications.
+		 */
 		function setup_notifications() {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return;

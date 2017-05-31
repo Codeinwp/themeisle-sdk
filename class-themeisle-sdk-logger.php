@@ -142,7 +142,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			$heading       = apply_filters( $this->product->get_key() . '_logger_heading', $this->heading );
 			$heading       = str_replace( array( '{product}' ), array(
 				trim( str_replace( 'Lite', '', $this->product->get_name() ) )
-			),
+				),
 				$heading
 			);
 			$button_submit = apply_filters( $this->product->get_key() . '_logger_button_submit', $this->button_submit );
@@ -152,11 +152,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			       . '<p>' . $heading . '</p>'
 			       . '<div class="actions">'
 			       . get_submit_button( __( $button_submit ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
-					'data-ti-log-enable' => 1,
-				) )
+					   'data-ti-log-enable' => 1,
+				   ) )
 			       . get_submit_button( __( $button_cancel ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
-					'data-ti-log-enable' => 0,
-				) )
+					   'data-ti-log-enable' => 0,
+				   ) )
 			       . '</div></div>';
 		}
 
