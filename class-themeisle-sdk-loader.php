@@ -59,7 +59,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 				$notifications[] = $logger;
 			}
 
-			$feedback  = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
+			$feedback = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
 
 			$instances = $feedback->get_instances();
 			if ( array_key_exists( 'review', $instances ) ) {
@@ -70,6 +70,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
 
 			return self::$instance;
+		}
+
+		/**
+		 * Get all products using the SDK.
+		 *
+		 * @return array Products available.
+		 */
+		public static function get_products() {
+			return self::$products;
 		}
 
 		/**
@@ -91,6 +100,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			}
 			if ( ! in_array( 'WordPress Available', $headers ) ) {
 				$headers[] = 'WordPress Available';
+			}
+			if ( ! in_array( 'Pro Slug', $headers ) ) {
+				$headers[] = 'Pro Slug';
 			}
 
 			return $headers;

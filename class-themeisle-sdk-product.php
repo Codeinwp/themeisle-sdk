@@ -70,6 +70,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public $logger_option;
 		/**
+		 * @var string $pro_slug Pro slug, if available.
+		 */
+		public $pro_slug;
+		/**
 		 * @var string $feedback_types All the feedback types the product supports
 		 */
 		private $feedback_types = array();
@@ -119,6 +123,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			$this->store_url           = $file_headers['AuthorURI'];
 			$this->requires_license    = ( $file_headers['Requires License'] == 'yes' ) ? true : false;
 			$this->wordpress_available = ( $file_headers['WordPress Available'] == 'yes' ) ? true : false;
+			$this->pro_slug            = ! empty( $file_headers['Pro Slug'] ) ? $file_headers['Pro Slug'] : '';
 			$this->version             = $file_headers['Version'];
 			if ( $this->require_uninstall_feedback() ) {
 				$this->feedback_types[] = 'deactivate';
@@ -303,10 +308,26 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			if ( ! $this->is_wordpress_available() ) {
 				return true;
 			} else {
-				// If we have the product on wprog, by default this will be false
-				// and we can change it in each product.
+				if ( ! empty( $this->get_pro_slug() ) ) {
+
+					$all_products = ThemeIsle_SDK_Loader::get_products();
+					if ( isset( $all_products[ $this->get_pro_slug() ] ) ) {
+						return true;
+					}
+				}
+
 				return ( get_option( $this->get_key() . '_logger_flag', 'no' ) === 'yes' );
+
 			}
+		}
+
+		/**
+		 * Returns the pro slug, if available.
+		 *
+		 * @return string The pro slug.
+		 */
+		public function get_pro_slug() {
+			return $this->pro_slug;
 		}
 
 		/**
