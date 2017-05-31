@@ -20,11 +20,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		/**
 		 * Time between notifications.
 		 */
-		const NOTIFICATION_INTERVAL_HOURS = 100;
+		const NOTIFICATION_INTERVAL_HOURS = 14;
 		/**
 		 * @var array Notifications for the current product.
 		 */
 		private $notifications = array();
+		/**
+		 * @var ThemeIsle_SDK_Product Current product.
+		 */
+		private $product;
+		/**
+		 * @var array ThemeIsle_SDK_Feedback Feedbacks available.
+		 */
+		private $callbacks = array();
 
 		/**
 		 * ThemeIsle_SDK_Notification_Manager constructor.
@@ -33,17 +41,23 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		 * @param array                 $callbacks the objects that will be called when a notification is due.
 		 */
 		public function __construct( $product_object, $callbacks ) {
+			$this->product   = $product_object;
+			$this->callbacks = $callbacks;
+			$this->setup_hooks();
+		}
 
+		function setup_notifications() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
 			// Load the notifications only if we have it installed after the required interval.
-			if ( ( time() - $product_object->get_install_time() ) > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) {
-				if ( $product_object instanceof ThemeIsle_SDK_Product && $callbacks && is_array( $callbacks ) ) {
-					foreach ( $callbacks as $instance ) {
-						$this->notifications[ $product_object->get_key() . get_class( $instance ) ] = $instance;
+			if ( ( time() - $this->product->get_install_time() ) > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) {
+				if ( $this->product instanceof ThemeIsle_SDK_Product && $this->callbacks && is_array( $this->callbacks ) ) {
+					foreach ( $this->callbacks as $instance ) {
+						$this->notifications[ $this->product->get_key() . get_class( $instance ) ] = $instance;
 					}
 				}
 			}
-
-			$this->setup_hooks();
 		}
 
 		/**
@@ -51,6 +65,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		 */
 		private function setup_hooks() {
 			add_action( 'admin_head', array( $this, 'show_notification' ) );
+			add_action( 'admin_init', array( $this, 'setup_notifications' ) );
 		}
 
 		/**

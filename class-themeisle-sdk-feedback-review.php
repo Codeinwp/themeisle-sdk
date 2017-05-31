@@ -86,11 +86,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		function add_css( $key ) {
 			?>
 			<style type="text/css" id="<?php echo $key; ?>ti-review-css">
-				#<?php echo $key; ?>-review-notification{
-					padding-bottom:5px;
+				#<?php echo $key; ?>-review-notification {
+					padding-bottom: 5px;
 				}
-				#<?php echo $key; ?>-review-notification .review-dismiss{
-					margin-left:5px;
+
+				#<?php echo $key; ?>-review-notification .review-dismiss {
+					margin-left: 5px;
 				}
 			</style>
 			<?php
@@ -135,7 +136,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			$link          = 'https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#wporg-footer';
 			$heading       = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
 			$heading       = str_replace( array( '{product}' ),
-			str_replace( 'Lite', '', $this->product->get_name() ), $heading );
+				trim( str_replace( 'Lite', '', $this->product->get_name() ) ), $heading );
 			$button_cancel = apply_filters( $this->product->get_key() . '_feedback_review_button_cancel', $this->button_cancel );
 			$button_do     = apply_filters( $this->product->get_key() . '_feedback_review_button_do', $this->button_do );
 
