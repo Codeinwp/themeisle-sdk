@@ -308,10 +308,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			if ( ! $this->is_wordpress_available() ) {
 				return true;
 			} else {
-				if ( ! empty( $this->get_pro_slug() ) ) {
+				$pro_slug = $this->get_pro_slug();
+				if ( ! empty( $pro_slug ) ) {
 
 					$all_products = ThemeIsle_SDK_Loader::get_products();
-					if ( isset( $all_products[ $this->get_pro_slug() ] ) ) {
+					if ( isset( $all_products[ $pro_slug ] ) ) {
 						return true;
 					}
 				}
