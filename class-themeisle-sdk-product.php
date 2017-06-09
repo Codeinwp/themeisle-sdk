@@ -42,6 +42,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		private $key;
 		/**
+		 * @var string $author_url The url of the author.
+		 */
+		private $author_url;
+		/**
 		 * @var string $store_url The store url.
 		 */
 		private $store_url;
@@ -53,6 +57,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @var string $store_name The store name.
 		 */
 		private $store_name;
+		/**
+		 * @var array $allowed_authors The allowed authors.
+		 */
+		private $allowed_authors = array( 'proteusthemes.com' );
 		/**
 		 * @var bool $requires_license Either user needs to activate it with license.
 		 */
@@ -104,23 +112,39 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			$this->install = $install;
 
 			$this->logger_option = $this->get_key() . '_logger_flag';
+
 		}
 
 		/**
 		 * Setup props from fileheaders.
 		 */
 		public function setup_from_fileheaders() {
-			$file_headers = array();
+			$file_headers = array(
+				'Requires License'    => 'Requires License',
+				'WordPress Available' => 'WordPress Available',
+				'Pro Slug'            => 'Pro Slug',
+				'Version'             => 'Version'
+			);
 			if ( $this->type == 'plugin' ) {
-				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-				$file_headers = get_plugin_data( $this->basefile );
+				$file_headers['Name']       = 'Plugin Name';
+				$file_headers['AuthorName'] = 'Author';
+				$file_headers['AuthorURI']  = 'Author URI';
 			}
 			if ( $this->type == 'theme' ) {
-				$file_headers = wp_get_theme( $this->basefile );
+				$file_headers['Name']       = 'Theme Name';
+				$file_headers['AuthorName'] = 'Author';
+				$file_headers['AuthorURI']  = 'Author URI';
 			}
-			$this->name                = $file_headers['Name'];
-			$this->store_name          = $file_headers['AuthorName'];
-			$this->store_url           = $file_headers['AuthorURI'];
+			$file_headers = get_file_data( $this->basefile, $file_headers );
+
+			$this->name       = $file_headers['Name'];
+			$this->store_name = $file_headers['AuthorName'];
+			$this->author_url = $file_headers['AuthorURI'];
+			$this->store_url  = $file_headers['AuthorURI'];
+			if ( $this->is_external_author() ) {
+				$this->store_url  = 'https://themeisle.com';
+				$this->store_name = 'ThemeIsle';
+			}
 			$this->requires_license    = ( $file_headers['Requires License'] == 'yes' ) ? true : false;
 			$this->wordpress_available = ( $file_headers['WordPress Available'] == 'yes' ) ? true : false;
 			$this->pro_slug            = ! empty( $file_headers['Pro Slug'] ) ? $file_headers['Pro Slug'] : '';
@@ -131,6 +155,20 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			if ( $this->is_wordpress_available() && $this->get_type() === 'plugin' ) {
 				$this->feedback_types[] = 'review';
 			}
+		}
+
+		/**
+		 * Check if the product is by external author or not.
+		 * @return bool Either is external author or no.
+		 */
+		public function is_external_author() {
+			foreach ( $this->allowed_authors as $author ) {
+				if ( strpos( $this->author_url, $author ) !== false ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/**
