@@ -23,7 +23,7 @@ $files_to_load = array(
 	'class-themeisle-sdk-widget-dashboard-blog.php',
 	'class-themeisle-sdk-widgets-factory.php',
 );
-die();
+
 foreach ( $files_to_load as $file ) {
 	$file_path = $path . '/' . $file;
 	if ( is_readable( $file_path ) ) {
