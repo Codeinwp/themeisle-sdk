@@ -123,7 +123,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				'Requires License'    => 'Requires License',
 				'WordPress Available' => 'WordPress Available',
 				'Pro Slug'            => 'Pro Slug',
-				'Version'             => 'Version'
+				'Version'             => 'Version',
 			);
 			if ( $this->type == 'plugin' ) {
 				$file_headers['Name']       = 'Plugin Name';
@@ -159,6 +159,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 
 		/**
 		 * Check if the product is by external author or not.
+		 *
 		 * @return bool Either is external author or no.
 		 */
 		public function is_external_author() {
