@@ -76,6 +76,28 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 		}
 
 		/**
+		 * @param string $r Update payload.
+		 * @param string $url The api url.
+		 *
+		 * @return mixed List of themes to check for update.
+		 */
+		function disable_wporg_update( $r, $url ) {
+
+			if ( 0 !== strpos( $url, 'https://api.wordpress.org/themes/update-check/' ) ) {
+				return $r;
+			}
+
+			// Decode the JSON response
+			$themes = json_decode( $r['body']['themes'] );
+
+			unset( $themes->themes->{ $this->product->get_slug() } );
+
+			// Encode the updated JSON response
+			$r['body']['themes'] = json_encode( $themes );
+
+			return $r;
+		}
+		/**
 		 * Register the setting for the license of the product
 		 *
 		 * @return bool
@@ -427,6 +449,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				add_action( 'load-update-core.php', array( &$this, 'delete_theme_update_transient' ) );
 				add_action( 'load-themes.php', array( &$this, 'delete_theme_update_transient' ) );
 				add_action( 'load-themes.php', array( &$this, 'load_themes_screen' ) );
+				add_filter( 'http_request_args', array( $this, 'disable_wporg_update' ), 5, 2 );
 
 			}
 
