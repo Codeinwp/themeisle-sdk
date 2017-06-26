@@ -15,7 +15,7 @@
   ],
   "autoload": {
     "files": [
-      "vendor/codeinwp/themeisle-sdk/load.php"
+      "load.php"
     ]
   },
   "support": {
