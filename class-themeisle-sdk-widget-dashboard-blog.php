@@ -94,7 +94,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 						'link'  => $item->get_permalink(),
 					);
 				}
-				set_transient( 'themeisle_sdk_feed_items', $items_normalized, 24 * HOUR_IN_SECONDS );
+				set_transient( 'themeisle_sdk_feed_items', $items_normalized, 48 * HOUR_IN_SECONDS );
 			}
 			$this->items = $items_normalized;
 		}
