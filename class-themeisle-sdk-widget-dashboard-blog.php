@@ -22,6 +22,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		 * @var array instance The instances.
 		 */
 		protected $product;
+		/**
+		 * @var array Feed items.
+		 */
+		private $items = array();
 
 		/**
 		 * ThemeIsle_SDK_Widget_Dashboard_Blog constructor.
@@ -63,21 +67,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 			if ( isset( $wp_meta_boxes['dashboard']['normal']['core']['themeisle'] ) ) {
 				return;
 			}
-			// Load SimplePie Instance
-			$feed = fetch_feed( $this->feeds );
-			// TODO report error when is an error loading the feed
-			if ( is_wp_error( $feed ) ) {
-				return '';
-			}
-
-			$items = $feed->get_items( 0, 5 );
-			foreach ( (array) $items as $item ) {
-				$this->items[] = array(
-					'title' => $item->get_title(),
-					'date'  => $item->get_date( 'U' ),
-					'link'  => $item->get_permalink(),
-				);
-			}
 			wp_add_dashboard_widget( 'themeisle', $this->dashboard_name, array(
 				&$this,
 				'render_dashboard_widget',
@@ -85,9 +74,36 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		}
 
 		/**
+		 * Setup feed items.
+		 */
+		private function setup_feeds() {
+			$items_normalized = array();
+			if ( false === ( $items_normalized = get_transient( 'themeisle_sdk_feed_items' ) ) ) {
+				// Load SimplePie Instance
+				$feed = fetch_feed( $this->feeds );
+				// TODO report error when is an error loading the feed
+				if ( is_wp_error( $feed ) ) {
+					return;
+				}
+
+				$items = $feed->get_items( 0, 5 );
+				foreach ( (array) $items as $item ) {
+					$items_normalized[] = array(
+						'title' => $item->get_title(),
+						'date'  => $item->get_date( 'U' ),
+						'link'  => $item->get_permalink(),
+					);
+				}
+				set_transient( 'themeisle_sdk_feed_items', $items_normalized, 24 * HOUR_IN_SECONDS );
+			}
+			$this->items = $items_normalized;
+		}
+
+		/**
 		 * Render widget content
 		 */
 		function render_dashboard_widget() {
+			$this->setup_feeds();
 			?>
 			<style type="text/css">
 				#themeisle ul {
@@ -146,7 +162,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					text-align: center;
 				}
 
-
 				.ti-dw-recommend-item span {
 					color: #72777c;
 				}
@@ -194,7 +209,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 									'Lite',
 								), '', $recommend['name'] ) ); ?>
 							(<a class="thickbox open-plugin-details-modal"
-								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
+							    href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
 						</li>
 
 						<?php
