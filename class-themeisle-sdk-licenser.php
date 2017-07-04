@@ -258,7 +258,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				<?php if ( $this->check_hide( 'valid' ) ) : ?>
 					<div class="error">
 						<p>
-							<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->product->get_type(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() ); ?> </strong>|
+							<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->product->get_store_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() ); ?> </strong>|
 							<a
 									href="<?php echo add_query_arg( $this->product->get_key() . '_hide_valid', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
 						</p>
