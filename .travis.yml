@@ -10,6 +10,7 @@
       - "5.3"
       - "5.2"
   sudo: false
+  dist: precise
   install:
     - export WPCS=/tmp/wpcs/
     - export PLUGIN_DIR=/tmp/plugin/
