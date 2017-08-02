@@ -289,7 +289,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 										target="_blank">' . $this->product->get_store_name() . '</a>'
 								);
 ?>
- </strong> |
+								</strong> |
 								<a
 										href="<?php echo add_query_arg( $this->product->get_key() . '_hide_expiration', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
 							</p>
