@@ -52,9 +52,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 		 */
 		function setup_vars() {
 			$this->dashboard_name = apply_filters( 'themeisle_sdk_dashboard_widget_name', 'WordPress Guides/Tutorials' );
-			$this->feeds          = apply_filters( 'themeisle_sdk_dashboard_widget_feeds', array(
-				'https://themeisle.com/blog/feed'
-			) );
+			$this->feeds          = apply_filters(
+				'themeisle_sdk_dashboard_widget_feeds', array(
+					'https://themeisle.com/blog/feed',
+				)
+			);
 		}
 
 		/**
@@ -67,10 +69,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 			if ( isset( $wp_meta_boxes['dashboard']['normal']['core']['themeisle'] ) ) {
 				return;
 			}
-			wp_add_dashboard_widget( 'themeisle', $this->dashboard_name, array(
-				&$this,
-				'render_dashboard_widget',
-			) );
+			wp_add_dashboard_widget(
+				'themeisle', $this->dashboard_name, array(
+					&$this,
+					'render_dashboard_widget',
+				)
+			);
 		}
 
 		/**
@@ -174,11 +178,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					<li class="ti-dw-feed-item"><span class="ti-dw-date-container"><span
 									class="ti-dw-day-container"><?php echo date( 'd', $item['date'] ); ?></span> <span
 									class="ti-dw-month-container"><?php echo substr( date( 'M', $item['date'] ), 0, 3 ); ?></span></span><a
-								href="<?php echo add_query_arg(
+								href="
+								<?php
+								echo add_query_arg(
 									array(
 										'utm_campaign' => 'feed',
 										'utm_medium'   => 'dashboard_widget',
-								), $item['link'] ); ?>" target="_blank"><?php echo $item['title']; ?></a>
+									), $item['link']
+								);
+								?>
+								" target="_blank"><?php echo $item['title']; ?></a>
 						<div class="clear"></div>
 					</li>
 					<?php
@@ -190,26 +199,37 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					$type = $recommend['type'];
 					if ( ( $type == 'theme' && current_user_can( 'install_themes' ) ) || ( $type == 'plugin' && current_user_can( 'install_plugins' ) ) ) {
 						add_thickbox();
-						$url = add_query_arg( array(
-							'theme' => $recommend['slug'],
-						), network_admin_url( 'theme-install.php' ) );
+						$url = add_query_arg(
+							array(
+								'theme' => $recommend['slug'],
+							), network_admin_url( 'theme-install.php' )
+						);
 
 						if ( 'plugin' === $type ) {
 
-							$url = add_query_arg( array(
-								'tab'    => 'plugin-information',
-								'plugin' => $recommend['slug'],
-							), network_admin_url( 'plugin-install.php' ) );
+							$url = add_query_arg(
+								array(
+									'tab'    => 'plugin-information',
+									'plugin' => $recommend['slug'],
+								), network_admin_url( 'plugin-install.php' )
+							);
 						}
 						?>
 						<li class="ti-dw-recommend-item ">
 							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>
-								: </span><?php echo trim( str_replace( array(
-									'lite',
-									'Lite',
-								), '', $recommend['name'] ) ); ?>
+								: </span>
+								<?php
+								echo trim(
+									str_replace(
+										array(
+											'lite',
+											'Lite',
+										), '', $recommend['name']
+									)
+								);
+								?>
 							(<a class="thickbox open-plugin-details-modal"
-							    href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
+								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
 						</li>
 
 						<?php

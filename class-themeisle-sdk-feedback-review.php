@@ -21,12 +21,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading = 'Hey, it’s great to see you have {product} active for a few days now. How is everything going? If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation). Cheers! <br/> <br/>~ Marius, developer of {product}';
+		private $heading = 'Hey, it’s great to see you have {product} active for a few days now. How is everything going? If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation). Cheers! <br/> <br/>~ {developer}, developer of {product}';
 
 		/**
 		 * @var string $button_cancel The text of the cancel button
 		 */
 		private $button_cancel = 'No, thanks.';
+		/**
+		 * @var array Developers who work for each type of product for review purpose.
+		 */
+		private $developers = array(
+			'plugin' => array( 'Marius', 'Bogdan' ),
+			'theme'  => array( 'Rodica', 'Andrei', 'Bogdan', 'Cristi' ),
+		);
 		/**
 		 * @var string $button_already The text of the already did it button
 		 */
@@ -107,17 +114,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			<script type="text/javascript" id="<?php echo $key; ?>ti-review-js">
 				(function ($) {
 					$(document).ready(function () {
-						$('#<?php echo $key?>_review').on('click', '.notice-dismiss, .review-dismiss', function (e) {
+						$('#<?php echo $key; ?>_review').on('click', '.notice-dismiss, .review-dismiss', function (e) {
 
 							$.ajax({
 								url: ajaxurl,
 								method: "post",
 								data: {
-									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
-									'action': '<?php echo $this->product->get_key() . __CLASS__;?>'
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'action': '<?php echo $this->product->get_key() . __CLASS__; ?>'
 								},
 								success: function () {
-									$('#<?php echo $key;?>_review').hide();
+									$('#<?php echo $key; ?>_review').hide();
 								}
 							});
 						});
@@ -133,19 +140,23 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		 * @param string $key The product key.
 		 */
 		function get_html( $key ) {
-			$link          = 'https://wordpress.org/support/plugin/' . $this->product->get_slug() . '/reviews/#wporg-footer';
-			$heading       = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
-			$heading       = str_replace( array( '{product}' ),
-			trim( str_replace( 'Lite', '', $this->product->get_name() ) ), $heading );
+			$link    = 'https://wordpress.org/support/' . $this->product->get_type() . '/' . $this->product->get_slug() . '/reviews/#wporg-footer';
+			$heading = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
+			$heading = str_replace(
+				array( '{product}' ),
+				trim( str_replace( 'Lite', '', $this->product->get_name() ) ), $heading
+			);
+			$heading = str_replace( '{developer}', $this->developers[ $this->product->get_type() ][ rand( 0, ( count( $this->developers[ $this->product->get_type() ] ) - 1 ) ) ], $heading );
+
 			$button_cancel = apply_filters( $this->product->get_key() . '_feedback_review_button_cancel', $this->button_cancel );
 			$button_do     = apply_filters( $this->product->get_key() . '_feedback_review_button_do', $this->button_do );
 
 			return '<div id="' . $this->product->get_key() . '-review-notification" class="themeisle-sdk-review-box">'
-			       . '<p>' . $heading . '</p>'
-			       . '<div class="actions">'
-			       . '<a href="' . $link . '" target="_blank" class="button button-primary review-dismiss"> ' . $button_do . '</a>'
-			       . get_submit_button( $button_cancel, 'review-dismiss ' . $this->product->get_key() . '-ti-review', $this->product->get_key() . 'ti-review-no', false )
-			       . '</div></div>';
+				   . '<p>' . $heading . '</p>'
+				   . '<div class="actions">'
+				   . '<a href="' . $link . '" target="_blank" class="button button-primary review-dismiss"> ' . $button_do . '</a>'
+				   . get_submit_button( $button_cancel, 'review-dismiss ' . $this->product->get_key() . '-ti-review', $this->product->get_key() . 'ti-review-no', false )
+				   . '</div></div>';
 		}
 
 		/**

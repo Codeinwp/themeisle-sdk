@@ -37,7 +37,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading = 'Do you enjoy {product}? Become a contributor by opting in to our anonymous plugin data tracking. We guarantee no sensitive data is collected.';
+		private $heading = 'Do you enjoy {product}? Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected.';
 
 		/**
 		 * @var string $button_submit The text of the submit button
@@ -77,20 +77,22 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * Send the statistics to the api endpoint
 		 */
 		public function send_log() {
-			wp_remote_post( $this->logging_url, array(
-				'method'      => 'POST',
-				'timeout'     => 3,
-				'redirection' => 5,
-				'headers'     => array(
-					'X-ThemeIsle-Event' => 'log_site',
-				),
-				'body'        => array(
-					'site'    => get_site_url(),
-					'slug'    => $this->product->get_slug(),
-					'version' => $this->product->get_version(),
-					'data'    => apply_filters( $this->product->get_key() . '_logger_data', array() ),
-				),
-			) );
+			wp_remote_post(
+				$this->logging_url, array(
+					'method'      => 'POST',
+					'timeout'     => 3,
+					'redirection' => 5,
+					'headers'     => array(
+						'X-ThemeIsle-Event' => 'log_site',
+					),
+					'body'        => array(
+						'site'    => get_site_url(),
+						'slug'    => $this->product->get_slug(),
+						'version' => $this->product->get_version(),
+						'data'    => apply_filters( $this->product->get_key() . '_logger_data', array() ),
+					),
+				)
+			);
 		}
 
 		/**
@@ -140,8 +142,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 */
 		function get_html( $key ) {
 			$heading       = apply_filters( $this->product->get_key() . '_logger_heading', $this->heading );
-			$heading       = str_replace( array( '{product}' ), array(
-				trim( str_replace( 'Lite', '', $this->product->get_name() ) )
+			$heading       = str_replace(
+				array( '{product}' ), array(
+					trim( str_replace( 'Lite', '', $this->product->get_name() ) ),
 				),
 				$heading
 			);
@@ -149,15 +152,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			$button_cancel = apply_filters( $this->product->get_key() . '_logger_button_cancel', $this->button_cancel );
 
 			return '<div >'
-			       . '<p>' . $heading . '</p>'
-			       . '<div class="actions">'
-			       . get_submit_button( __( $button_submit ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
-					   'data-ti-log-enable' => 1,
-				   ) )
-			       . get_submit_button( __( $button_cancel ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
-					   'data-ti-log-enable' => 0,
-				   ) )
-			       . '</div></div>';
+				   . '<p>' . $heading . '</p>'
+				   . '<div class="actions">'
+				   . get_submit_button(
+					   __( $button_submit ), 'primary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-yes', false, array(
+						   'data-ti-log-enable' => 1,
+					   )
+				   )
+				   . get_submit_button(
+					   __( $button_cancel ), 'secondary ' . $this->product->get_key() . '-ti-logger', $this->product->get_key() . 'ti-logger-no', false, array(
+						   'data-ti-log-enable' => 0,
+					   )
+				   )
+				   . '</div></div>';
 		}
 
 		/**
@@ -179,18 +186,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 			<script type="text/javascript" id="<?php echo $key; ?>ti-logger-js">
 				(function ($) {
 					$(document).ready(function () {
-						$('.<?php echo $key?>-ti-logger').on('click', function (e) {
+						$('.<?php echo $key; ?>-ti-logger').on('click', function (e) {
 
 							$.ajax({
 								url: ajaxurl,
 								method: "post",
 								data: {
-									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ );?>',
-									'action': '<?php echo $this->product->get_key() . __CLASS__;?>',
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'action': '<?php echo $this->product->get_key() . __CLASS__; ?>',
 									'enable': $(this).attr('data-ti-log-enable')
 								},
 								success: function () {
-									$('#<?php echo $key;?>-logger-notification').hide();
+									$('#<?php echo $key; ?>-logger-notification').hide();
 								}
 							});
 						});
