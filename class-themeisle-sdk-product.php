@@ -60,7 +60,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		/**
 		 * @var array $allowed_authors The allowed authors.
 		 */
-		private $allowed_authors = array( 'proteusthemes.com' );
+		private $allowed_authors = array( 'proteusthemes.com', 'anarieldesign.com' );
 		/**
 		 * @var bool $requires_license Either user needs to activate it with license.
 		 */
@@ -385,7 +385,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return bool Either we should require feedback on uninstall or not.
 		 */
 		public function require_uninstall_feedback() {
-			if ( $this->get_type() == 'theme' && ! $this->is_wordpress_available() ) {
+			if ( $this->get_type() == 'theme' && ! $this->is_wordpress_available() && ! $this->is_external_author() ) {
 				return true;
 			}
 
