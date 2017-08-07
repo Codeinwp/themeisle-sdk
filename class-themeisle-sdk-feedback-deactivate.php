@@ -19,9 +19,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 	class ThemeIsle_SDK_Feedback_Deactivate extends ThemeIsle_SDK_Feedback {
 
 		/**
-		 * @var array $options The main options list
+		 * @var array $options_plugin The main options list for plugins.
 		 */
-		private $options = array(
+		private $options_plugin = array(
 			'I only needed the plugin for a short period'                   => array(
 				'id' => 1,
 			),
@@ -47,6 +47,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		);
 
 		/**
+		 * @var array $options_theme The main options list for themes.
+		 */
+		private $options_theme = array(
+			'I don\'t know how to make it look like demo' => array( 'id' => 1),
+			'It lacks options' => array( 'id' => 2),
+			'Is not working with a plugins that I need' => array( 'id' => 3, 'type' => 'text', 'placeholder' => 'What is the name of the plugin'),
+			'I want to try a new design, I don\'t like Hestia style' => array( 'id' => 4),
+		);
+
+		/**
 		 * @var array $other The other option
 		 */
 		private $other = array(
@@ -58,9 +68,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		);
 
 		/**
-		 * @var string $heading The heading of the modal
+		 * @var string $heading_plugin The heading of the modal
 		 */
-		private $heading = 'If you have a moment, please let us know why you are deactivating:';
+		private $heading_plugin = 'If you have a moment, please let us know why you are deactivating:';
+
+		/**
+		 * @var string $heading_theme The heading of the modal
+		 */
+		private $heading_theme = 'Looking to change #theme#, what doesn\'t work for you?';
 
 		/**
 		 * @var string $button_submit_before The text of the deactivate button before an option is chosen
@@ -114,7 +129,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			$this->add_css( $this->product->get_type(), $this->product->get_key() );
 			$this->add_js( $this->product->get_type(), $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
 
-			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html( $this->product->get_key() ) . '</div>';
+			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html( $this->product->get_type(), $this->product->get_key() ) . '</div>';
 		}
 
 		/**
@@ -233,7 +248,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @param string $src The url that will hijack the deactivate button url.
 		 */
 		function add_js( $type, $key, $src ) {
-			$heading	= apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $this->heading );
+			$heading	= 'plugin' === $type ? $this->heading_plugin : str_replace( '#theme#', $this->product->get_name(), $this->heading_theme );
+			$heading	= apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $heading );
 			?>
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($) {
@@ -332,12 +348,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * Generates the HTML
 		 *
+		 * @param string $type The type of product.
 		 * @param string $key The product key.
 		 */
-		function get_html( $key ) {
-			$options              = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $this->options ) );
-			$button_submit_before = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit_before', $this->button_submit_before );
-			$button_submit        = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $this->button_submit );
+		function get_html( $type, $key ) {
+			$options			  = 'plugin' === $type ? $this->options_plugin : $this->options_theme;
+			$button_submit_before = 'plugin' === $type ? $this->button_submit_before : 'Submit';
+			$button_submit		  = 'plugin' === $type ? $this->button_submit : 'Submit';
+			$options              = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $options ) );
+			$button_submit_before = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit_before', $button_submit_before );
+			$button_submit        = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $button_submit );
 			$button_cancel        = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_cancel', $this->button_cancel );
 
 			$options += $this->other;
