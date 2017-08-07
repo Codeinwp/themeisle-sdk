@@ -50,18 +50,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @var array $options_theme The main options list for themes.
 		 */
 		private $options_theme = array(
-			'I don\'t know how to make it look like demo' => array(
+			'I don\'t know how to make it look like demo'             => array(
 				'id' => 1,
 			),
-			'It lacks options' => array(
+			'It lacks options'                                        => array(
 				'id' => 2,
 			),
-			'Is not working with a plugins that I need' => array(
-				'id' => 3,
-				'type' => 'text',
+			'Is not working with a plugin that I need'                => array(
+				'id'          => 3,
+				'type'        => 'text',
 				'placeholder' => 'What is the name of the plugin',
 			),
-			'I want to try a new design, I don\'t like Hestia style' => array(
+			'I want to try a new design, I don\'t like {theme} style' => array(
 				'id' => 4,
 			),
 		);
@@ -85,7 +85,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * @var string $heading_theme The heading of the modal
 		 */
-		private $heading_theme = 'Looking to change #theme#, what doesn\'t work for you?';
+		private $heading_theme = 'Looking to change {theme}, what doesn\'t work for you?';
 
 		/**
 		 * @var string $button_submit_before The text of the deactivate button before an option is chosen
@@ -105,7 +105,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * @var int how many seconds before the deactivation window is triggered for themes
 		 */
-		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS    = 3;
+		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 5;
 
 		/**
 		 * ThemeIsle_SDK_Feedback_Deactivate constructor.
@@ -122,7 +122,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		public function setup_hooks_child() {
 			global $pagenow;
 
-			if ( in_array( $pagenow, array( 'plugins.php', 'theme-install.php' ) ) ) {
+			if ( ( $this->product->get_type() === 'plugin' && $pagenow === 'plugins.php' ) || ( $this->product->get_type() === 'theme' && $pagenow === 'theme-install.php' ) ) {
 				add_action( 'admin_head', array( $this, 'load_resources' ) );
 			}
 			add_action( 'wp_ajax_' . $this->product->get_key() . __CLASS__, array( $this, 'post_deactivate' ) );
@@ -149,7 +149,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @param string $key The product key.
 		 */
 		function add_css( $type, $key ) {
-			$suffix     = 'theme' === $type ? 'theme-install-php' : 'plugins-php';
+			$suffix = 'theme' === $type ? 'theme-install-php' : 'plugins-php';
 			?>
 			<style type="text/css" id="<?php echo $key; ?>ti-deactivate-css">
 				input[name="ti-deactivate-option"] ~ div {
@@ -237,6 +237,21 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 					text-align: center;
 				}
 
+				.theme-install-php .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon:before {
+					font-size: 32px;
+				}
+
+				.<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon {
+
+					color: #eee;
+				}
+
+				.<?php echo $key; ?>-container #TB_closeWindowButton {
+					left: auto;
+					right: -30px;
+					color: #eee;
+				}
+
 				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container {
 
 					margin: auto !important;
@@ -258,33 +273,33 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @param string $src The url that will hijack the deactivate button url.
 		 */
 		function add_js( $type, $key, $src ) {
-			$heading    = 'plugin' === $type ? $this->heading_plugin : str_replace( '#theme#', $this->product->get_name(), $this->heading_theme );
-			$heading    = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $heading );
+			$heading = 'plugin' === $type ? $this->heading_plugin : str_replace( '{theme}', $this->product->get_name(), $this->heading_theme );
+			$heading = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $heading );
 			?>
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($) {
 					$(document).ready(function () {
-						var auto_trigger	= false;
-						var target_element	= 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
+						var auto_trigger = false;
+						var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
 						<?php
 						if ( 'theme' === $type ) {
 						?>
-						auto_trigger    = true;
+						auto_trigger = true;
 						if ($('a.ti-auto-anchor').length == 0) {
-						$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
+							$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
 						}
-						target_element  = 'a.ti-auto-anchor';
+						target_element = 'a.ti-auto-anchor';
 						<?php
 						}
 						?>
 
-						if(auto_trigger) {
-							setTimeout(function(){
+						if (auto_trigger) {
+							setTimeout(function () {
 								$('a.ti-auto-anchor').trigger('click');
 							}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
 						}
 
-						var href	= $(target_element).attr('href');
+						var href = $(target_element).attr('href');
 						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
 							e.preventDefault();
 							e.stopPropagation();
@@ -323,8 +338,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 									'msg': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val()
 								},
 							});
-							var redirect	= $(this).attr('data-ti-action');
-							if ( redirect != '' ) {
+							var redirect = $(this).attr('data-ti-action');
+							if (redirect != '') {
 								location.href = redirect;
 							} else {
 								tb_remove();
@@ -375,7 +390,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			$list = '';
 			foreach ( $options as $title => $attributes ) {
 				$id   = $attributes['id'];
-				$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . __( $title ) . '</label>';
+				$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 				if ( array_key_exists( 'type', $attributes ) ) {
 					$list        .= '<div>';
 					$placeholder = array_key_exists( 'placeholder', $attributes ) ? __( $attributes['placeholder'] ) : '';
