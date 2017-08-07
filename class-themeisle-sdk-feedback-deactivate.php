@@ -78,6 +78,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		private $button_cancel = 'Cancel';
 
 		/**
+		 * @var int how many seconds before the deactivation window is triggered for themes
+		 */
+		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS	= 3;
+
+		/**
 		 * ThemeIsle_SDK_Feedback_Deactivate constructor.
 		 *
 		 * @param ThemeIsle_SDK_Product $product_object The product object.
@@ -91,7 +96,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 */
 		public function setup_hooks_child() {
 			global $pagenow;
-error_log("pagenow $pagenow");
 
 			if ( in_array( $pagenow, array( 'plugins.php', 'theme-install.php' ) ) ) {
 				add_action( 'admin_head', array( $this, 'load_resources' ) );
@@ -107,8 +111,8 @@ error_log("pagenow $pagenow");
 
 			$id = $this->product->get_key() . '_deactivate';
 
-			$this->add_css( $this->product->get_key() );
-			$this->add_js( $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
+			$this->add_css( $this->product->get_type(), $this->product->get_key() );
+			$this->add_js( $this->product->get_type(), $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
 
 			echo '<div id="' . $id . '" style="display:none;" class="themeisle-deactivate-box">' . $this->get_html( $this->product->get_key() ) . '</div>';
 		}
@@ -116,9 +120,11 @@ error_log("pagenow $pagenow");
 		/**
 		 * Loads the css
 		 *
+		 * @param string $type The type of product.
 		 * @param string $key The product key.
 		 */
-		function add_css( $key ) {
+		function add_css( $type, $key ) {
+			$suffix		= 'theme' === $type ? 'theme-install-php' : 'plugins-php';
 			?>
 			<style type="text/css" id="<?php echo $key; ?>ti-deactivate-css">
 				input[name="ti-deactivate-option"] ~ div {
@@ -129,59 +135,59 @@ error_log("pagenow $pagenow");
 					display: block;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container #TB_window.thickbox-loading:before {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_window.thickbox-loading:before {
 					background: none !important;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container #TB_title {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_title {
 					font-size: 21px;
 					padding: 20px 0;
 					background-color: #f3f3f3;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container div.actions {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.actions {
 					padding: 20px 0;
 					background-color: #f3f3f3;
 					border-top: 1px solid #dddddd;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container input.button.button-primary {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button.button-primary {
 					margin-right: 20px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container input.button {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button {
 					margin-right: 20px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container #TB_ajaxWindowTitle {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_ajaxWindowTitle {
 					text-align: left;
 					margin-left: 15px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container div.revive_network-container {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.revive_network-container {
 					background-color: #ffffff;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container ul.ti-list li {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li {
 					font-size: 14px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container ul.ti-list li label {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li label {
 					margin-left: 10px;
 					line-height: 32px;
 					font-size: 16px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container #TB_ajaxContent {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_ajaxContent {
 					padding: 10px 20px;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container li div textarea {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container li div textarea {
 					padding: 10px 15px;
 					width: 100%;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container ul.ti-list li div {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li div {
 					margin: 10px 30px;
 				}
 
@@ -189,7 +195,7 @@ error_log("pagenow $pagenow");
 					display: block;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container .actions {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container .actions {
 
 					width: 100%;
 					display: block;
@@ -199,14 +205,14 @@ error_log("pagenow $pagenow");
 					text-align: right;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container #TB_title {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_title {
 
 					height: 33px;
 					width: 100%;
 					text-align: center;
 				}
 
-				body.plugins-php .<?php echo $key; ?>-container {
+				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container {
 
 					margin: auto !important;
 					height: 550px !important;
@@ -222,18 +228,37 @@ error_log("pagenow $pagenow");
 		/**
 		 * Loads the js
 		 *
+		 * @param string $type The type of product.
 		 * @param string $key The product key.
 		 * @param string $src The url that will hijack the deactivate button url.
 		 */
-		function add_js( $key, $src ) {
-
-			$heading = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $this->heading );
+		function add_js( $type, $key, $src ) {
+			$heading	= apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $this->heading );
 			?>
 			<script type="text/javascript" id="ti-deactivate-js">
 				(function ($) {
 					$(document).ready(function () {
+						var auto_trigger	= false;
+						var target_element	= 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
+						<?php 
+							if ( 'theme' === $type ) {
+						?>
+							auto_trigger	= true;
+							if ($('a.ti-auto-anchor').length == 0) {
+								$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
+							}
+							target_element	= 'a.ti-auto-anchor';
+						<?php
+							}
+						?>
 
-						var href = $('tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a').attr('href');
+						if(auto_trigger) {
+							setTimeout(function(){
+								$('a.ti-auto-anchor').trigger('click');
+							}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000;?> );
+						}
+
+						var href	= $(target_element).attr('href');
 						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
 							e.preventDefault();
 							e.stopPropagation();
@@ -272,11 +297,17 @@ error_log("pagenow $pagenow");
 									'msg': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val()
 								},
 							});
-							location.href = $(this).attr('data-ti-action');
+							var redirect	= $(this).attr('data-ti-action');
+							if ( redirect != '' ) {
+								location.href = redirect;
+							} else {
+								tb_remove();
+							}
 						});
-						$('tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a').attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src; ?>').addClass('thickbox');
+
+						$(target_element).attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src; ?>').addClass('thickbox');
 						var thicbox_timer;
-						$('tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a').on('click', function () {
+						$(target_element).on('click', function () {
 							tiBindThickbox();
 						});
 
