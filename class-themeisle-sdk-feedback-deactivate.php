@@ -91,7 +91,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 */
 		public function setup_hooks_child() {
 			global $pagenow;
-			if ( 'plugins.php' === $pagenow ) {
+error_log("pagenow $pagenow");
+
+			if ( in_array( $pagenow, array( 'plugins.php', 'theme-install.php' ) ) ) {
 				add_action( 'admin_head', array( $this, 'load_resources' ) );
 			}
 			add_action( 'wp_ajax_' . $this->product->get_key() . __CLASS__, array( $this, 'post_deactivate' ) );

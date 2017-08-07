@@ -385,7 +385,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return bool Either we should require feedback on uninstall or not.
 		 */
 		public function require_uninstall_feedback() {
-			return $this->get_type() === 'plugin';
+			return true;
 		}
 
 	}
