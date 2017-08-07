@@ -90,13 +90,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			// Decode the JSON response
 			$themes = json_decode( $r['body']['themes'] );
 
-			unset( $themes->themes->{ $this->product->get_slug() } );
+			unset( $themes->themes->{$this->product->get_slug()} );
 
 			// Encode the updated JSON response
 			$r['body']['themes'] = json_encode( $themes );
 
 			return $r;
 		}
+
 		/**
 		 * Register the setting for the license of the product
 		 *
@@ -250,13 +251,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 						?>
 						<div class="error">
 							<p><strong>
-							<?php
+									<?php
 									echo sprintf(
 										$no_activations_string, $this->product->get_name(), $this->product->get_name(), '<a href="' . $this->product->get_store_url() . '"
 																	target="_blank">' . $this->product->get_store_name() . '</a>'
 									);
 									?>
-									</strong> | <a
+								</strong> | <a
 										href="<?php echo add_query_arg( $this->product->get_key() . '_activation', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
 							</p>
 						</div>
@@ -282,13 +283,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 						<div class="update-nag">
 							<p>
 								<strong>
-								<?php
-								echo sprintf(
-									$expiration_string, $this->product->get_name() . ' ' . $this->product->get_type(), '<a
+									<?php
+									echo sprintf(
+										$expiration_string, $this->product->get_name() . ' ' . $this->product->get_type(), '<a
 										href="' . $this->renew_url() . '"
 										target="_blank">' . $this->product->get_store_name() . '</a>'
-								);
-?>
+									);
+									?>
 								</strong> |
 								<a
 										href="<?php echo add_query_arg( $this->product->get_key() . '_hide_expiration', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
@@ -493,7 +494,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				return;
 			}
 			$update_url     = wp_nonce_url( 'update.php?action=upgrade-theme&amp;theme=' . urlencode( $this->product->get_slug() ), 'upgrade-theme_' . $this->product->get_slug() );
-			$update_onclick = ' onclick="if ( confirm(\'' . esc_js( __( 'Updating this theme will lose any customizations you have made. Cancel to stop, OK to update.' ) ) . '\') ) {return true;}return false;"';
+			$update_message = apply_filters( 'themeisle_sdk_license_update_message', 'Updating this theme will lose any customizations you have made. Cancel to stop, OK to update.' );
+			$update_onclick = ' onclick="if ( confirm(\'' . esc_js( $update_message ) . '\') ) {return true;}return false;"';
 			if ( version_compare( $this->product->get_version(), $api_response->new_version, '<' ) ) {
 				echo '<div id="update-nag">';
 				printf(
@@ -629,7 +631,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 		 * @uses         is_wp_error()
 		 *
 		 * @param string $_action The requested action.
-		 * @param array  $_data   Parameters for the API action.
+		 * @param array  $_data Parameters for the API action.
 		 *
 		 * @return false||object
 		 */
@@ -669,9 +671,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 		 *
 		 * @uses api_request()
 		 *
-		 * @param mixed  $_data   Plugin data.
+		 * @param mixed  $_data Plugin data.
 		 * @param string $_action Action to send.
-		 * @param object $_args   Arguments to use.
+		 * @param object $_args Arguments to use.
 		 *
 		 * @return object $_data
 		 */
@@ -691,7 +693,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 		 * Disable SSL verification in order to prevent download update failures
 		 *
 		 * @param array  $args Http args.
-		 * @param string $url  Url to check.
+		 * @param string $url Url to check.
 		 *
 		 * @return object $array
 		 */

@@ -218,18 +218,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 						<li class="ti-dw-recommend-item ">
 							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>
 								: </span>
-								<?php
-								echo trim(
-									str_replace(
-										array(
-											'lite',
-											'Lite',
-										), '', $recommend['name']
-									)
-								);
-								?>
+							<?php
+							echo trim(
+								str_replace(
+									array(
+										'lite',
+										'Lite',
+									), '', $recommend['name']
+								)
+							);
+							?>
 							(<a class="thickbox open-plugin-details-modal"
-								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php _e( 'Install' ); ?></a>)
+								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php echo apply_filters( 'themeisle_sdk_dashboard_install_label', 'Install' ); ?></a>)
 						</li>
 
 						<?php
