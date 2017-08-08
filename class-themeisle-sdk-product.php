@@ -385,7 +385,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return bool Either we should require feedback on uninstall or not.
 		 */
 		public function require_uninstall_feedback() {
-			if ( $this->get_type() == 'theme' && ! $this->is_wordpress_available() && ! $this->is_external_author() ) {
+			if ( $this->get_type() == 'theme' && ! $this->is_external_author() ) {
 				return ! get_transient( 'ti_sdk_pause_' . $this->get_key(), false );
 			}
 
