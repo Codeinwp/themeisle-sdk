@@ -444,7 +444,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
 			if ( ! empty( $_POST['id'] ) ) {
-				return;
 				$this->call_api(
 					array(
 						'type'    => 'deactivate',
