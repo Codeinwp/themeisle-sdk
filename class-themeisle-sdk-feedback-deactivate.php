@@ -428,15 +428,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			}
 
 			return '<div id="' . $this->product->get_key() . '">'
-			       . '<ul class="ti-list">' . $list . '</ul>'
-			       . '<div class="actions">'
-			       . get_submit_button(
-				       __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
-					       'data-after-text' => $button_submit,
-				       )
-			       )
-			       . get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
-			       . '</div></div>';
+				   . '<ul class="ti-list">' . $list . '</ul>'
+				   . '<div class="actions">'
+				   . get_submit_button(
+					   __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+						   'data-after-text' => $button_submit,
+					   )
+				   )
+				   . get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
+				   . '</div></div>';
 		}
 
 		/**
