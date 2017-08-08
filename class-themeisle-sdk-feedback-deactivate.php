@@ -105,7 +105,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * @var int how many seconds before the deactivation window is triggered for themes
 		 */
-		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 7;
+		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 3;
 
 		/**
 		 * @var int how many days before the deactivation window pops up again for the theme
