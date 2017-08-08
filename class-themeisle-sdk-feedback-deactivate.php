@@ -108,6 +108,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 5;
 
 		/**
+		 * @var int how many days before the deactivation window pops up again for the theme
+		 */
+		const PAUSE_DEACTIVATE_WINDOW_DAYS = 15;
+
+		/**
 		 * ThemeIsle_SDK_Feedback_Deactivate constructor.
 		 *
 		 * @param ThemeIsle_SDK_Product $product_object The product object.
@@ -303,6 +308,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
 							e.preventDefault();
 							e.stopPropagation();
+							$.ajax({
+								url: ajaxurl,
+								method: 'post',
+								data: {
+									'action'	: '<?php echo $key . __CLASS__; ?>',
+									'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'type'		: '<?php echo $type; ?>',
+									'key'		: '<?php echo $key; ?>'
+								},
+							});
 							$('body').unbind('thickbox:removed');
 							tb_remove();
 						});
@@ -332,16 +347,19 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 								url: ajaxurl,
 								method: 'post',
 								data: {
-									'action': '<?php echo $key . __CLASS__; ?>',
-									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
-									'id': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
-									'msg': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val()
+									'action'	: '<?php echo $key . __CLASS__; ?>',
+									'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'id'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
+									'msg'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val(),
+									'type'		: '<?php echo $type; ?>',
+									'key'		: '<?php echo $key; ?>'
 								},
 							});
 							var redirect = $(this).attr('data-ti-action');
 							if (redirect != '') {
 								location.href = redirect;
 							} else {
+								$('body').unbind('thickbox:removed');
 								tb_remove();
 							}
 						});
@@ -426,6 +444,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			check_ajax_referer( (string) __CLASS__, 'nonce' );
 
 			if ( ! empty( $_POST['id'] ) ) {
+				return;
 				$this->call_api(
 					array(
 						'type'    => 'deactivate',
@@ -433,6 +452,17 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 						'comment' => isset( $_POST['msg'] ) ? $_POST['msg'] : '',
 					)
 				);
+			}
+
+			$this->post_deactivate_or_cancel();
+		}
+
+		/**
+		 * Called when the deactivate/cancel button is clicked
+		 */
+		private function post_deactivate_or_cancel() {
+			if ( isset( $_POST['type'] ) && isset( $_POST['key'] ) && 'theme' === $_POST['type'] ) {
+				set_transient( 'ti_sdk_pause_' . $_POST['key'], true, PAUSE_DEACTIVATE_WINDOW_DAYS * DAY_IN_SECONDS );
 			}
 		}
 	}
