@@ -51,18 +51,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 */
 		private $options_theme = array(
 			'I don\'t know how to make it look like demo'             => array(
-				'id' => 1,
+				'id' => 7,
 			),
 			'It lacks options'                                        => array(
-				'id' => 2,
+				'id' => 8,
 			),
 			'Is not working with a plugin that I need'                => array(
-				'id'          => 3,
+				'id'          => 9,
 				'type'        => 'text',
 				'placeholder' => 'What is the name of the plugin',
 			),
 			'I want to try a new design, I don\'t like {theme} style' => array(
-				'id' => 4,
+				'id' => 10,
 			),
 		);
 
@@ -105,12 +105,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * @var int how many seconds before the deactivation window is triggered for themes
 		 */
-		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 5;
+		const AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS = 7;
 
 		/**
 		 * @var int how many days before the deactivation window pops up again for the theme
 		 */
-		const PAUSE_DEACTIVATE_WINDOW_DAYS = 15;
+		const PAUSE_DEACTIVATE_WINDOW_DAYS = 100;
 
 		/**
 		 * ThemeIsle_SDK_Feedback_Deactivate constructor.
@@ -303,11 +303,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 								$('a.ti-auto-anchor').trigger('click');
 							}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
 						}
-
-						var href = $(target_element).attr('href');
-						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
-							e.preventDefault();
-							e.stopPropagation();
+						$( document ).on( 'thickbox:removed', function() {
 							$.ajax({
 								url: ajaxurl,
 								method: 'post',
@@ -318,6 +314,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 									'key'		: '<?php echo $key; ?>'
 								},
 							});
+						});
+						var href = $(target_element).attr('href');
+						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
+							e.preventDefault();
+							e.stopPropagation();
+
 							$('body').unbind('thickbox:removed');
 							tb_remove();
 						});
@@ -426,15 +428,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			}
 
 			return '<div id="' . $this->product->get_key() . '">'
-				   . '<ul class="ti-list">' . $list . '</ul>'
-				   . '<div class="actions">'
-				   . get_submit_button(
-					   __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
-						   'data-after-text' => $button_submit,
-					   )
-				   )
-				   . get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
-				   . '</div></div>';
+			       . '<ul class="ti-list">' . $list . '</ul>'
+			       . '<div class="actions">'
+			       . get_submit_button(
+				       __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+					       'data-after-text' => $button_submit,
+				       )
+			       )
+			       . get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
+			       . '</div></div>';
 		}
 
 		/**
