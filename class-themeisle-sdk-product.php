@@ -386,7 +386,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public function require_uninstall_feedback() {
 			if ( $this->get_type() == 'theme' && ! $this->is_wordpress_available() && ! $this->is_external_author() ) {
-				return true;
+				return ! get_transient( 'ti_sdk_pause_' . $this->get_key(), false );
 			}
 
 			if ( $this->get_type() == 'plugin' ) {
