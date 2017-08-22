@@ -11,7 +11,7 @@
  */
 
 // Current SDK version and path.
-$themeisle_sdk_version = '1.5.5';
+$themeisle_sdk_version = '1.5.6';
 $themeisle_sdk_path    = dirname( __FILE__ );
 
 global $themeisle_sdk_max_version;

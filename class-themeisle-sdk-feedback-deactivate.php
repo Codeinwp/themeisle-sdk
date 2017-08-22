@@ -413,7 +413,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 				if ( array_key_exists( 'type', $attributes ) ) {
 					$list        .= '<div>';
-					$placeholder = array_key_exists( 'placeholder', $attributes ) ? __( $attributes['placeholder'] ) : '';
+					$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 					switch ( $attributes['type'] ) {
 						case 'text':
 							$list .= '<textarea style="width: 100%" rows="1" name="comments" placeholder="' . $placeholder . '"></textarea>';
@@ -431,11 +431,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				   . '<ul class="ti-list">' . $list . '</ul>'
 				   . '<div class="actions">'
 				   . get_submit_button(
-					   __( $button_submit_before ), 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+					   $button_submit_before , 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
 						   'data-after-text' => $button_submit,
 					   )
 				   )
-				   . get_submit_button( __( $button_cancel ), 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
+				   . get_submit_button( $button_cancel, 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
 				   . '</div></div>';
 		}
 
