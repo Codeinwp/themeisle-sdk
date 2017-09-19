@@ -92,7 +92,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 			if ( false === $transient ) {
 				set_transient( $this->product->get_key() . '_warning_rollback', 'in progress', 30 );
 				require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-				$title = sprintf( apply_filters( $this->product->get_key() . '_rollback_message', 'Rolling back %s to %s' ), $this->product->get_name(), $version );
+				$title = sprintf( apply_filters( $this->product->get_key() . '_rollback_message', 'Rolling back %s to v%s' ), $this->product->get_name(), $version );
 				$plugin = $plugin_folder . '/' . $plugin_file;
 				$nonce = 'upgrade-plugin_' . $plugin;
 				$url = 'update.php?action=upgrade-plugin&plugin=' . urlencode( $plugin );
