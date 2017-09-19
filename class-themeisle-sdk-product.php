@@ -253,12 +253,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return array The rollback version.
 		 */
 		public function get_rollback() {
-			$rollback	= array();
-			$versions	= apply_filters( $this->get_key() . '_rollbacks', array() );
+			$rollback   = array();
+			$versions   = apply_filters( $this->get_key() . '_rollbacks', array() );
 			if ( $versions ) {
-				foreach( $versions as $version ) {
+				foreach ( $versions as $version ) {
 					if ( isset( $version['version'] ) && isset( $version['url'] ) && version_compare( $this->version, $version['version'], '>' ) ) {
-						$rollback	= $version;
+						$rollback   = $version;
 						break;
 					}
 				}
