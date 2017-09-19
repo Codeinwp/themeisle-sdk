@@ -14,6 +14,7 @@ $files_to_load = array(
 	'class-themeisle-sdk-product.php',
 	'class-themeisle-sdk-logger.php',
 	'class-themeisle-sdk-licenser.php',
+	'class-themeisle-sdk-rollback.php',
 	'class-themeisle-sdk-feedback-factory.php',
 	'class-themeisle-sdk-feedback.php',
 	'class-themeisle-sdk-feedback-deactivate.php',

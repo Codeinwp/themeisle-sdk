@@ -33,22 +33,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 			if ( $product_object instanceof ThemeIsle_SDK_Product ) {
 				$this->product      = $product_object;
 			}
-			$this->setup_link();
-			$this->setup_hooks();
+			if ( 'plugin' === $this->product->get_type() && $this->product->can_rollback() ) {
+				$this->show_link();
+				$this->add_hooks();
+			}
 		}
 
 		/**
-		 * Sets up the link.
+		 * Set the rollback hook. Strangely, this does not work if placed in the ThemeIsle_SDK_Rollback class, so it is being called from there instead.
+		 *
 		 */
-		public function setup_link() {
-			$this->show_rollback_link();
-		}
-
-		/**
-		 * Registers the hooks.
-		 */
-		public function setup_hooks() {
-			add_action( "admin_post_{$this->product->get_key()}_rollback", array( $this, 'start_rollback' ) );
+		public function add_hooks(){
+			add_action( 'admin_post_' . $this->product->get_key() . '_rollback', array( $this, 'start_rollback' ) );
 		}
 
 		/**
@@ -56,10 +52,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 		 *
 		 * @return string The link to rollback.
 		 */
-		public function show_rollback_link() {
-			if ( 'plugin' === $this->product->get_type() && $this->product->can_rollback() ) {
-				add_filter( 'plugin_action_links_' . plugin_basename( $this->product->get_basefile() ), array( $this, 'add_rollback_link' ) );
-			}
+		private function show_link() {
+			add_filter( 'plugin_action_links_' . plugin_basename( $this->product->get_basefile() ), array( $this, 'add_rollback_link' ) );
 		}
 
 		/**
@@ -109,8 +103,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				$upgrader_skin = new Plugin_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'plugin' ) );
 				$upgrader = new Plugin_Upgrader( $upgrader_skin );
 				$upgrader->upgrade( $plugin );
+				delete_transient( $this->product->get_key() . '_warning_rollback' );
 				wp_die( '', $title, array( 'response' => 200 ) );
 			}
 		}
 	}
- }
+endif;
