@@ -248,6 +248,34 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		}
 
 		/**
+		 * Get the last rollback for this product.
+		 *
+		 * @return array The rollback version.
+		 */
+		public function get_rollback() {
+			$rollback	= array();
+			$versions	= apply_filters( $this->get_key() . '_rollbacks', array() );
+			if ( $versions ) {
+				foreach( $versions as $version ) {
+					if ( isset( $version['version'] ) && isset( $version['url'] ) && version_compare( $this->version, $version['version'], '>' ) ) {
+						$rollback	= $version;
+						break;
+					}
+				}
+			}
+			return $rollback;
+		}
+
+		/**
+		 * If product can be rolled back.
+		 *
+		 * @return bool Can the product be rolled back or not.
+		 */
+		public function can_rollback() {
+			return ! empty( $rollback = $this->get_rollback() );
+		}
+
+		/**
 		 * Return the product key.
 		 *
 		 * @return string The product key.
