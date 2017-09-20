@@ -256,6 +256,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			$rollback   = array();
 			$versions   = apply_filters( $this->get_key() . '_rollbacks', array() );
 			if ( $versions ) {
+				usort( $versions, array( $this, 'sort_rollback_array' ) );
 				foreach ( $versions as $version ) {
 					if ( isset( $version['version'] ) && isset( $version['url'] ) && version_compare( $this->version, $version['version'], '>' ) ) {
 						$rollback   = $version;
@@ -264,6 +265,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				}
 			}
 			return $rollback;
+		}
+
+		/**
+		 * Sort the rollbacks array in descending order.
+		 */
+		public function sort_rollback_array( $a, $b ) {
+			return version_compare( $a['version'], $b['version'], '<' ) > 0;
 		}
 
 		/**
