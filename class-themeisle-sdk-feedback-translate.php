@@ -74,8 +74,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Translate' ) ) :
 
 			$this->add_css( $this->product->get_key() );
 			$this->add_js( $this->product->get_key() );
+			$html   = $this->get_html( $this->product->get_key() );
 
-			echo '<div class="notice notice-success is-dismissible" id="' . $id . '" ><div class="themeisle-translate-box">' . $this->get_html( $this->product->get_key() ) . '</div></div>';
+			if ( $html ) {
+				echo '<div class="notice notice-success is-dismissible" id="' . $id . '" ><div class="themeisle-translate-box">' . $html . '</div></div>';
+			}
 		}
 
 		/**
@@ -126,23 +129,26 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Translate' ) ) :
 		 * @param string $key The product key.
 		 */
 		function get_html( $key ) {
-			$lang	 = defined( 'WP_LANG' ) ? WP_LANG : get_option('WPLANG', 'en_US');
+			$lang    = defined( 'WP_LANG' ) ? WP_LANG : get_option( 'WPLANG', 'en_US' );
 			if ( 'en_US' === $lang ) {
 				return;
 			}
 
-			$link    = 'https://translate.wordpress.org/projects/wp-' . $this->product->get_type() . 's/' . $this->product->get_slug() . '/dev/default/';
+			$array  = explode( '_', $lang );
+
+			$link    = sprintf( 'https://translate.wordpress.org/projects/wp-' . $this->product->get_type() . 's/' . $this->product->get_slug() . '/dev/%s/default/', $array[0] );
 			$heading = apply_filters( $this->product->get_key() . '_feedback_translate_heading', $this->heading );
 			$heading = str_replace(
 				array( '{product}' ),
 				trim( str_replace( 'Lite', '', apply_filters( $this->product->get_key() . '_friendly_name', $this->product->get_name() ) ) ), $heading
 			);
 
-			$message	= apply_filters( $this->product->get_key() . '_feedback_translation_no', 'Transations not available' );
-			$file		= dirname( $this->product->get_basefile() ) . '/languages' . $this->product->get_slug() . '-' . $lang . '.mo';
+			$message    = apply_filters( $this->product->get_key() . '_feedback_translation_no', 'Transations not available' );
+			$file       = dirname( $this->product->get_basefile() ) . '/languages/' . $this->product->get_slug() . '-' . $lang . '.mo';
+
 			if ( file_exists( $file ) ) {
 				// translations available
-				$message	= apply_filters( $this->product->get_key() . '_feedback_translation_yes', 'Transations incomplete' );
+				$message    = apply_filters( $this->product->get_key() . '_feedback_translation_yes', 'Transations incomplete' );
 			}
 
 			$button_cancel = apply_filters( $this->product->get_key() . '_feedback_translate_button_cancel', $this->button_cancel );
