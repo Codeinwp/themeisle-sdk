@@ -24,6 +24,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		private $heading = 'Hey, it’s great to see you have {product} active for a few days now. How is everything going? If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation). Cheers! <br/> <br/>~ {developer}, developer of {product}';
 
 		/**
+		 * @var string $msg The text of the modal
+		 */
+		private $msg = '';
+
+		/**
 		 * @var string $button_cancel The text of the cancel button
 		 */
 		private $button_cancel = 'No, thanks.';
@@ -68,7 +73,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			if ( 'no' === $show ) {
 				return false;
 			}
-			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+
+			// the filter should return false to short-circuit the process and not show the feedback
+			$finally_show   = apply_filters( $this->product->get_key() . '_feedback_review_trigger', true );
+			if ( false !== $finally_show ) {
+				if ( is_array( $finally_show ) && ! empty( $finally_show ) ) {
+					$this->heading  = $finally_show['heading'];
+					$this->msg      = $finally_show['msg'];
+				}
+				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+			}
 
 			return true;
 		}
@@ -150,9 +164,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 
 			$button_cancel = apply_filters( $this->product->get_key() . '_feedback_review_button_cancel', $this->button_cancel );
 			$button_do     = apply_filters( $this->product->get_key() . '_feedback_review_button_do', $this->button_do );
+			$msg           = apply_filters( $this->product->get_key() . '_feedback_review_message', $this->msg );
 
 			return '<div id="' . $this->product->get_key() . '-review-notification" class="themeisle-sdk-review-box">'
 				   . '<p>' . $heading . '</p>'
+				   . ( $msg ? '<p>' . $msg . '</p>' : '' )
 				   . '<div class="actions">'
 				   . '<a href="' . $link . '" target="_blank" class="button button-primary review-dismiss"> ' . $button_do . '</a>'
 				   . get_submit_button( $button_cancel, 'review-dismiss ' . $this->product->get_key() . '-ti-review', $this->product->get_key() . 'ti-review-no', false )
