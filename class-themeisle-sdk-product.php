@@ -248,22 +248,115 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		}
 
 		/**
+		 * @return array Array of available versions.
+		 */
+		private function get_plugin_versions() {
+
+			$url      = sprintf( 'https://api.wordpress.org/plugins/info/1.0/%s', $this->get_slug() );
+			$response = wp_remote_get( $url );
+			if ( is_wp_error( $response ) ) {
+				return array();
+			}
+			$response = wp_remote_retrieve_body( $response );
+			$response = maybe_unserialize( $response );
+
+			if ( ! is_object( $response ) ) {
+				return array();
+			}
+			if ( ! isset( $response->versions ) ) {
+				return array();
+			}
+			$versions = array();
+			foreach ( $response->versions as $version => $zip ) {
+				$versions[] = array(
+					'version' => $version,
+					'url' => $zip,
+				);
+			}
+
+			return $versions;
+		}
+
+		/**
+		 * Return theme versions.
+		 *
+		 * @return array Theme versions array.
+		 */
+		public function get_theme_versions() {
+			$url      = sprintf( 'https://api.wordpress.org/themes/info/1.1/?action=theme_information&request[slug]=%s&request[fields][versions]=true', $this->get_slug() );
+			$response = wp_remote_get( $url );
+			if ( is_wp_error( $response ) ) {
+				return array();
+			}
+			$response = wp_remote_retrieve_body( $response );
+			$response = json_decode( $response );
+
+			if ( ! is_object( $response ) ) {
+				return array();
+			}
+			if ( ! isset( $response->versions ) ) {
+				return array();
+			}
+			$versions = array();
+			foreach ( $response->versions as $version => $zip ) {
+				$versions[] = array(
+					'version' => $version,
+					'url' => $zip,
+				);
+			}
+
+			return $versions;
+		}
+
+		/**
+		 * Get versions array from wp.org
+		 *
+		 * @return array Array of versions.
+		 */
+		private function get_api_versions() {
+			if ( ! $this->is_wordpress_available() ) {
+				return array();
+			}
+
+			$cache_key      = $this->get_key() . '_' . preg_replace( '/[^0-9a-zA-Z ]/m', '', $this->version ) . 'versions';
+			$cache_versions = get_transient( $this->get_key() . '_' . preg_replace( '/[^0-9a-zA-Z ]/m', '', $this->version ) . 'versions' );
+			if ( false == $cache_versions ) {
+				$versions = array();
+				if ( $this->get_type() === 'plugin' ) {
+					$versions = $this->get_plugin_versions();
+				}
+
+				if ( $this->get_type() === 'theme' ) {
+					$versions = $this->get_theme_versions();
+				}
+				set_transient( $cache_key, $versions, MONTH_IN_SECONDS );
+			} else {
+				$versions = is_array( $cache_versions ) ? $cache_versions : array();
+			}
+
+			return $versions;
+		}
+
+		/**
 		 * Get the last rollback for this product.
 		 *
 		 * @return array The rollback version.
 		 */
 		public function get_rollback() {
-			$rollback   = array();
-			$versions   = apply_filters( $this->get_key() . '_rollbacks', array() );
+			$rollback = array();
+			$versions = $this->get_api_versions();
+			$versions = apply_filters( $this->get_key() . '_rollbacks', $versions );
+
 			if ( $versions ) {
 				usort( $versions, array( $this, 'sort_rollback_array' ) );
 				foreach ( $versions as $version ) {
 					if ( isset( $version['version'] ) && isset( $version['url'] ) && version_compare( $this->version, $version['version'], '>' ) ) {
-						$rollback   = $version;
+						$rollback = $version;
 						break;
 					}
 				}
 			}
+
 			return $rollback;
 		}
 
