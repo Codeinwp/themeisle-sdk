@@ -37,7 +37,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading = 'Do you enjoy {product}? Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected.';
+		private $heading = 'Do you enjoy <b>{product}</b>? Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected.';
 
 		/**
 		 * @var string $button_submit The text of the submit button

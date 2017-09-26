@@ -21,7 +21,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		/**
 		 * @var string $heading The heading of the modal
 		 */
-		private $heading = 'Hey, it’s great to see you have {product} active for a few days now. How is everything going? If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation). Cheers! <br/> <br/>~ {developer}, developer of {product}';
+		private $heading = 'Hey, it’s great to see you have <b>{product}</b> active for a few days now. How is everything going? If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation). Cheers! <br/> <br/>~ {developer}, developer of {product}';
 
 		/**
 		 * @var string $button_cancel The text of the cancel button
