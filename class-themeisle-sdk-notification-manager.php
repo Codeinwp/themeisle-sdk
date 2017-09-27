@@ -75,45 +75,30 @@ if ( ! class_exists( 'ThemeIsle_SDK_Notification_Manager' ) ) :
 		 * Shows the notification
 		 */
 		function show_notification() {
-
-			$hidden    = get_option( 'themeisle_sdk_notification_hidden', array() );
 			$instances = $this->notifications;
 			if ( empty( $instances ) ) {
 				return;
 			}
 
-			// Get timestamp of last notification.
-			$old = 0;
+			$available = array_keys( $instances );
+			// backward compatibility for people who already have "expired" notifications, let's not show them again.
+			$hidden    = get_option( 'themeisle_sdk_notification_hidden', array() );
 			if ( ! empty( $hidden ) ) {
-				$old = $hidden[ count( $hidden ) - 1 ]['time'];
-			}
-			// Check if the current one is expired.
-			if ( ( time() - $old ) > self::NOTIFICATION_INTERVAL_HOURS * HOUR_IN_SECONDS ) {
-				// Get hidden notifications key.
-				$hidden_ones = wp_list_pluck( $hidden, 'key' );
-				// Get the non-hidden notifications.
-				$available_notifications = array_diff( array_keys( $instances ), $hidden_ones );
-				if ( empty( $available_notifications ) ) {
+				// get keys of the hidden notifications.
+				$hidden_keys    = wp_list_pluck( $hidden, 'key' );
+				$available      = array_diff( $available, $hidden_keys );
+				if ( empty( $available ) ) {
 					return;
 				}
-				// Get the first notification available.
-				$new_one = reset( $available_notifications );
+			}
 
-				$instance = $instances[ $new_one ];
-				$hidden[] = array(
-					'time' => time(),
-					'key'  => $new_one,
-				);
-				update_option( 'themeisle_sdk_notification_hidden', $hidden );
-			} else {
-				$key = $hidden[ count( $hidden ) - 1 ]['key'];
-				if ( ! isset( $this->notifications[ $key ] ) ) {
-					return;
-				} else {
-					$instance = $this->notifications[ $key ];
+			foreach ( $available as $key ) {
+				$instance   = $instances[ $key ];
+				if ( true === $instance->show_notification() ) {
+					// if this notification is going to show, bail.
+					break;
 				}
 			}
-			$instance->show_notification();
 		}
 	}
 endif;
