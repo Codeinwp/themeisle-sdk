@@ -140,7 +140,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				'package'     => $rollback['url'],
 			);
 
-			$temp_object        = (object) $temp_array;
 			$transient->response[ $folder . '/style.css' ] = $temp_array;
 			set_site_transient( 'update_themes', $transient );
 
