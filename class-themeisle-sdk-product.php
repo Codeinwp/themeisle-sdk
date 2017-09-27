@@ -154,6 +154,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			}
 			if ( $this->is_wordpress_available() ) {
 				$this->feedback_types[] = 'review';
+				$this->feedback_types[] = 'translate';
 			}
 		}
 

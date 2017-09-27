@@ -19,6 +19,7 @@ $files_to_load = array(
 	'class-themeisle-sdk-feedback.php',
 	'class-themeisle-sdk-feedback-deactivate.php',
 	'class-themeisle-sdk-feedback-review.php',
+	'class-themeisle-sdk-feedback-translate.php',
 	'class-themeisle-sdk-notification-manager.php',
 	'class-themeisle-sdk-widget.php',
 	'class-themeisle-sdk-widget-dashboard-blog.php',

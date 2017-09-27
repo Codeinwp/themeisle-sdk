@@ -66,6 +66,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			if ( array_key_exists( 'review', $instances ) ) {
 				$notifications[] = $instances['review'];
 			}
+			if ( array_key_exists( 'translate', $instances ) ) {
+				$notifications[] = $instances['translate'];
+			}
 			new ThemeIsle_SDK_Notification_Manager( $product_object, $notifications );
 			if ( ! $product_object->is_external_author() ) {
 				new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
