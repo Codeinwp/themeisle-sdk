@@ -28,4 +28,5 @@
     - cd $PLUGIN_DIR/$plugin_slug
 
   script:
+    - find . -type f -name '*.php' -exec php -l {} ; |grep -v "No syntax errors detected";
     - phpcs -p -s -v -n . --standard=phpcs.xml --extensions=php;
