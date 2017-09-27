@@ -373,6 +373,16 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return bool Can the product be rolled back or not.
 		 */
 		public function can_rollback() {
+			if ( $this->get_type() === 'theme' ) {
+				if ( ! current_user_can( 'switch_themes' ) ) {
+					return false;
+				}
+			}
+			if ( $this->get_type() === 'plugin' ) {
+				if ( ! current_user_can( 'install_plugins' ) ) {
+					return false;
+				}
+			}
 			return ! empty( $rollback = $this->get_rollback() );
 		}
 
