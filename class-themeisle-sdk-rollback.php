@@ -67,7 +67,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 						if (jQuery('#' + theme).length > 0) {
 							if (jQuery('.theme-overlay.active').is(':visible')) {
 								if (jQuery('#' + theme + '-rollback').length === 0) {
-									jQuery('.theme-actions .active-theme').prepend('<a class="button" style="float:left" id="' + theme + '-rollback" href="<?php esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=' . $this->product->get_key() . '_rollback' ), $this->product->get_key() . '_rollback' ) ); ?>">Rollback to v<?php echo esc_attr( $version['version'] ); ?></a>')
+									jQuery('.theme-actions .active-theme').prepend('<a class="button" style="float:left" id="' + theme + '-rollback" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=' . $this->product->get_key() . '_rollback' ), $this->product->get_key() . '_rollback' ) ); ?>">Rollback to v<?php echo esc_attr( $version['version'] ); ?></a>')
 								}
 							}
 
@@ -120,6 +120,55 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				wp_nonce_ays( '' );
 			}
 
+			if ( $this->product->get_type() === 'plugin' ) {
+				$this->start_rollback_plugin();
+			} elseif ( $this->product->get_type() === 'theme' ) {
+				$this->start_rollback_theme();
+			}
+		}
+
+		/**
+		 * Start the rollback operation for the theme.
+		 */
+		private function start_rollback_theme() {
+			$rollback         = $this->product->get_rollback();
+			$transient        = get_site_transient( 'update_themes' );
+			$folder           = $this->product->get_slug();
+			$version          = $rollback['version'];
+			$temp_array       = array(
+				'new_version' => $version,
+				'package'     => $rollback['url'],
+			);
+
+			$temp_object        = (object) $temp_array;
+			$transient->response[ $folder . '/style.css' ] = $temp_array;
+			set_site_transient( 'update_themes', $transient );
+
+			$transient = get_transient( $this->product->get_key() . '_warning_rollback' );
+
+			if ( false === $transient ) {
+				set_transient( $this->product->get_key() . '_warning_rollback', 'in progress', 30 );
+				require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+				$title         = sprintf( apply_filters( $this->product->get_key() . '_rollback_message', 'Rolling back %s to v%s' ), $this->product->get_name(), $version );
+				$theme         = $folder . '/style.css';
+				$nonce         = 'upgrade-theme_' . $theme;
+				$url           = 'update.php?action=upgrade-theme&theme=' . urlencode( $theme );
+
+				$upgrader      = new Theme_Upgrader( new Theme_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'theme' ) ) );
+				$upgrader->upgrade( $theme );
+				delete_transient( $this->product->get_key() . '_warning_rollback' );
+				wp_die(
+					'', $title, array(
+						'response' => 200,
+					)
+				);
+			}
+		}
+
+		/**
+		 * Start the rollback operation for the plugin.
+		 */
+		private function start_rollback_plugin() {
 			$rollback         = $this->product->get_rollback();
 			$plugin_transient = get_site_transient( 'update_plugins' );
 			$plugin_folder    = $this->product->get_slug();
