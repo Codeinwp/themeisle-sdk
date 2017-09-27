@@ -796,6 +796,23 @@ The process is easy, and you can join by following the link below!';
 			if ( 'no' === $show ) {
 				return false;
 			}
+			$lang = get_user_locale();
+			if ( 'en_US' === $lang ) {
+				return false;
+			}
+			$languages = $this->get_translations();
+			if ( ! isset( $languages['translations'] ) ) {
+				return false;
+			}
+
+			$languages = $languages['translations'];
+			$available = wp_list_pluck( $languages, 'language' );
+			if ( in_array( $lang, $available ) ) {
+				return false;
+			}
+			if ( ! isset( $this->locales[ $lang ] ) ) {
+				return false;
+			}
 
 			return true;
 		}
@@ -898,22 +915,6 @@ The process is easy, and you can join by following the link below!';
 		 */
 		function get_html( $key ) {
 			$lang = get_user_locale();
-			if ( 'en_US' === $lang ) {
-				return;
-			}
-			$languages = $this->get_translations();
-			if ( ! isset( $languages['translations'] ) ) {
-				return;
-			}
-
-			$languages = $languages['translations'];
-			$available = wp_list_pluck( $languages, 'language' );
-			if ( in_array( $lang, $available ) ) {
-				return;
-			}
-			if ( ! isset( $this->locales[ $lang ] ) ) {
-				return;
-			}
 			$link    = $this->get_locale_paths( $lang );
 			$heading = apply_filters( $this->product->get_key() . '_feedback_translate_heading', $this->heading );
 			$product = $this->product->get_friendly_name();
