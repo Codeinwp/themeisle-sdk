@@ -384,7 +384,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 					return false;
 				}
 			}
-			return ! empty( $rollback = $this->get_rollback() );
+			$rollback = $this->get_rollback();
+			return ! empty( $rollback );
 		}
 
 		/**
