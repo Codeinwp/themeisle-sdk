@@ -128,14 +128,30 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 		}
 
 		/**
+		 * Alter links and remove duplicate customize message.
+		 *
+		 * @param array $links Array of old links.
+		 *
+		 * @return mixed Array of links.
+		 */
+		public function alter_links_theme_upgrade( $links ) {
+			if ( isset( $links['preview'] ) ) {
+				$links['preview'] = str_replace( '<span aria-hidden="true">Customize</span>', '', $links['preview'] );
+			}
+
+			return $links;
+		}
+
+		/**
 		 * Start the rollback operation for the theme.
 		 */
 		private function start_rollback_theme() {
-			$rollback         = $this->product->get_rollback();
-			$transient        = get_site_transient( 'update_themes' );
-			$folder           = $this->product->get_slug();
-			$version          = $rollback['version'];
-			$temp_array       = array(
+			add_filter( 'update_theme_complete_actions', array( $this, 'alter_links_theme_upgrade' ) );
+			$rollback   = $this->product->get_rollback();
+			$transient  = get_site_transient( 'update_themes' );
+			$folder     = $this->product->get_slug();
+			$version    = $rollback['version'];
+			$temp_array = array(
 				'new_version' => $version,
 				'package'     => $rollback['url'],
 			);
@@ -148,12 +164,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 			if ( false === $transient ) {
 				set_transient( $this->product->get_key() . '_warning_rollback', 'in progress', 30 );
 				require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-				$title         = sprintf( apply_filters( $this->product->get_key() . '_rollback_message', 'Rolling back %s to v%s' ), $this->product->get_name(), $version );
-				$theme         = $folder . '/style.css';
-				$nonce         = 'upgrade-theme_' . $theme;
-				$url           = 'update.php?action=upgrade-theme&theme=' . urlencode( $theme );
+				$title = sprintf( apply_filters( $this->product->get_key() . '_rollback_message', 'Rolling back %s to v%s' ), $this->product->get_name(), $version );
+				$theme = $folder . '/style.css';
+				$nonce = 'upgrade-theme_' . $theme;
+				$url   = 'update.php?action=upgrade-theme&theme=' . urlencode( $theme );
 
-				$upgrader      = new Theme_Upgrader( new Theme_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'theme' ) ) );
+				$upgrader = new Theme_Upgrader( new Theme_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'theme' ) ) );
 				$upgrader->upgrade( $theme );
 				delete_transient( $this->product->get_key() . '_warning_rollback' );
 				wp_die(
