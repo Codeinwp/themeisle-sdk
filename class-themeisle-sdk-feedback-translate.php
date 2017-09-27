@@ -769,7 +769,7 @@ The process is easy, and you can join by following the link below!';
 			if ( strpos( $slug, '/' ) === false ) {
 				$slug .= '/default';
 			}
-			$url = 'https://translate.wordpress.org/projects/wp-' . $this->product->get_type() . 's/' . $this->product->get_slug() . '/dev/' . $slug . '?filters%5Bstatus%5D=untranslated&sort%5Bby%5D=random';
+			$url = 'https://translate.wordpress.org/projects/wp-' . $this->product->get_type() . 's/' . $this->product->get_slug() . '/' . ( $this->product->get_type() === 'plugin' ? 'dev/' : '' ) . $slug . '?filters%5Bstatus%5D=untranslated&sort%5Bby%5D=random';
 
 			return $url;
 		}
@@ -782,9 +782,11 @@ The process is easy, and you can join by following the link below!';
 		}
 
 		/**
-		 * Shows the notification
+		 * Either we should show the notification or not.
+		 *
+		 * @return bool Valid notification.
 		 */
-		function show_notification() {
+		function can_notify() {
 			if ( ! $this->product->is_wordpress_available() ) {
 				$this->disable();
 
@@ -794,9 +796,15 @@ The process is easy, and you can join by following the link below!';
 			if ( 'no' === $show ) {
 				return false;
 			}
-			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
 			return true;
+		}
+
+		/**
+		 * Shows the notification
+		 */
+		function show_notification() {
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		}
 
 		/**
@@ -908,7 +916,7 @@ The process is easy, and you can join by following the link below!';
 			}
 			$link    = $this->get_locale_paths( $lang );
 			$heading = apply_filters( $this->product->get_key() . '_feedback_translate_heading', $this->heading );
-			$product = trim( str_replace( 'Lite', '', apply_filters( $this->product->get_key() . '_friendly_name', $this->product->get_name() ) ) );
+			$product = $this->product->get_friendly_name();
 			$heading = str_replace(
 				array( '{product}' ),
 				$product, $heading

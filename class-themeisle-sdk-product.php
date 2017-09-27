@@ -271,7 +271,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			foreach ( $response->versions as $version => $zip ) {
 				$versions[] = array(
 					'version' => $version,
-					'url' => $zip,
+					'url'     => $zip,
 				);
 			}
 
@@ -302,7 +302,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 			foreach ( $response->versions as $version => $zip ) {
 				$versions[] = array(
 					'version' => $version,
-					'url' => $zip,
+					'url'     => $zip,
 				);
 			}
 
@@ -385,6 +385,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				}
 			}
 			$rollback = $this->get_rollback();
+
 			return ! empty( $rollback );
 		}
 
@@ -395,6 +396,18 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		public function get_key() {
 			return $this->key;
+		}
+
+		/**
+		 * Return friendly name.
+		 *
+		 * @return string Friendly name.
+		 */
+		public function get_friendly_name() {
+			$name = apply_filters( $this->get_key() . '_friendly_name', trim( str_replace( 'Lite', '', $this->get_name() ) ) );
+			$name = rtrim( $name, '- ' );
+
+			return $name;
 		}
 
 		/**

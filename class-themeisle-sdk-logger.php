@@ -110,18 +110,25 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		}
 
 		/**
-		 * Shows the notification
+		 * Either we should show the notification or not.
+		 *
+		 * @return bool Valida notification.
 		 */
-		function show_notification() {
+		function can_notify() {
 			$show    = $this->product->is_logger_active();
 			$checked = get_option( $this->product->logger_option, '' );
 			if ( ! $show && $checked == '' ) {
-				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-
 				return true;
 			}
 
 			return false;
+		}
+
+		/**
+		 * Shows the notification
+		 */
+		function show_notification() {
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		}
 
 		/**

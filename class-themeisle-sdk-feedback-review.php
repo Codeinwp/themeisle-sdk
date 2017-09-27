@@ -61,9 +61,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 		}
 
 		/**
-		 * Shows the notification
+		 * Either we can notify or not.
+		 *
+		 * @return bool Notification available or not.
 		 */
-		function show_notification() {
+		public function can_notify() {
 			if ( ! $this->product->is_wordpress_available() ) {
 				$this->disable();
 
@@ -73,18 +75,24 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			if ( 'no' === $show ) {
 				return false;
 			}
-
-			// the filter should return false to short-circuit the process and not show the feedback
-			$finally_show   = apply_filters( $this->product->get_key() . '_feedback_review_trigger', true );
+			$finally_show = apply_filters( $this->product->get_key() . '_feedback_review_trigger', true );
 			if ( false !== $finally_show ) {
 				if ( is_array( $finally_show ) && ! empty( $finally_show ) ) {
-					$this->heading  = $finally_show['heading'];
-					$this->msg      = $finally_show['msg'];
+					$this->heading = $finally_show['heading'];
+					$this->msg     = $finally_show['msg'];
 				}
-				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+			} else {
+				return false;
 			}
 
 			return true;
+		}
+
+		/**
+		 * Shows the notification
+		 */
+		function show_notification() {
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		}
 
 		/**
@@ -158,7 +166,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 			$heading = apply_filters( $this->product->get_key() . '_feedback_review_heading', $this->heading );
 			$heading = str_replace(
 				array( '{product}' ),
-				trim( str_replace( 'Lite', '', apply_filters( $this->product->get_key() . '_friendly_name', $this->product->get_name() ) ) ), $heading
+				$this->product->get_friendly_name(), $heading
 			);
 			$heading = str_replace( '{developer}', $this->developers[ $this->product->get_type() ][ rand( 0, ( count( $this->developers[ $this->product->get_type() ] ) - 1 ) ) ], $heading );
 

@@ -170,6 +170,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 					color: #72777c;
 				}
 
+				.ti-dw-powered-by {
+					font-style: italic;
+					text-align: right;
+					margin-top:3px;
+				}
+
 			</style>
 			<ul>
 				<?php
@@ -230,6 +236,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget_Dashboard_Blog' ) ) :
 							?>
 							(<a class="thickbox open-plugin-details-modal"
 								href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php echo apply_filters( 'themeisle_sdk_dashboard_install_label', 'Install' ); ?></a>)
+						</li>
+						<li class="ti-dw-powered-by">
+							Powered by <?php echo esc_attr( $this->product->get_friendly_name() ); ?>
 						</li>
 
 						<?php
