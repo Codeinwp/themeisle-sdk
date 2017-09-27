@@ -70,7 +70,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 			if ( ! $product_object->is_external_author() ) {
 				new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
 			}
-
+			if ( ! $product_object->is_external_author() ) {
+				new ThemeIsle_SDK_Rollback( $product_object );
+			}
 			return self::$instance;
 		}
 
