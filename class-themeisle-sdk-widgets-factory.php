@@ -27,8 +27,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widgets_Factory' ) ) :
 		public function __construct( $product_object, $widgets ) {
 			if ( $product_object instanceof ThemeIsle_SDK_Product && $widgets && is_array( $widgets ) ) {
 				foreach ( $widgets as $widget ) {
-					$class      = 'ThemeIsle_SDK_Widget_' . str_replace( ' ', '_', ucwords( str_replace( '_', ' ', $widget ) ) );
-					$instance   = new $class( $product_object );
+					$class    = 'ThemeIsle_SDK_Widget_' . str_replace( ' ', '_', ucwords( str_replace( '_', ' ', $widget ) ) );
+					$instance = new $class( $product_object );
 					$instance->setup_hooks();
 				}
 			}

@@ -21,7 +21,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Factory' ) ) :
 		/**
 		 * @var array $instances collection of the instances that are registered with the factory
 		 */
-		private $_instances     = array();
+		private $_instances = array();
 
 		/**
 		 * ThemeIsle_SDK_Feedback_Factory constructor.
@@ -32,8 +32,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Factory' ) ) :
 		public function __construct( $product_object, $feedback_types ) {
 			if ( $product_object instanceof ThemeIsle_SDK_Product && $feedback_types && is_array( $feedback_types ) ) {
 				foreach ( $feedback_types as $type ) {
-					$class      = 'ThemeIsle_SDK_Feedback_' . ucwords( $type );
-					$instance   = new $class( $product_object );
+					$class                     = 'ThemeIsle_SDK_Feedback_' . ucwords( $type );
+					$instance                  = new $class( $product_object );
 					$this->_instances[ $type ] = $instance;
 					$instance->setup_hooks();
 				}

@@ -195,7 +195,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				'package'     => $rollback['url'],
 			);
 
-			$temp_object                                                       = (object) $temp_array;
+			$temp_object = (object) $temp_array;
 			$plugin_transient->response[ $plugin_folder . '/' . $plugin_file ] = $temp_object;
 			set_site_transient( 'update_plugins', $plugin_transient );
 

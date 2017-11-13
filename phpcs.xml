@@ -23,6 +23,7 @@
         <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
         <exclude name="WordPress.WP.I18n.NonSingularStringLiteralText"/>
         <exclude name="Squiz.PHP.DisallowMultipleAssignments" />
+        <exclude name="WordPress.WhiteSpace.PrecisionAlignment.Found" />
     </rule>
     <rule ref="WordPress-Docs">
 

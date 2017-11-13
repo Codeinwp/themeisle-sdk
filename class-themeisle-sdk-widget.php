@@ -29,7 +29,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Widget' ) ) :
 		 */
 		public function __construct( $product_object ) {
 			if ( $product_object instanceof ThemeIsle_SDK_Product ) {
-				$this->product      = $product_object;
+				$this->product = $product_object;
 			}
 			$this->setup_hooks();
 		}

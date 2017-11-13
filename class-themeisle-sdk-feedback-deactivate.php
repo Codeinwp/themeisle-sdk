@@ -22,21 +22,21 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @var array $options_plugin The main options list for plugins.
 		 */
 		private $options_plugin = array(
-			'I only needed the plugin for a short period'                   => array(
+			'I only needed the plugin for a short period' => array(
 				'id' => 1,
 			),
-			'The plugin broke my site'                                      => array(
+			'The plugin broke my site'                    => array(
 				'id' => 2,
 			),
-			'I found a better plugin'                                       => array(
+			'I found a better plugin'                     => array(
 				'id'          => 3,
 				'type'        => 'text',
 				'placeholder' => 'What\'s the plugin\'s name?',
 			),
-			'The plugin suddenly stopped working'                           => array(
+			'The plugin suddenly stopped working'         => array(
 				'id' => 4,
 			),
-			'I no longer need the plugin'                                   => array(
+			'I no longer need the plugin'                 => array(
 				'id'          => 5,
 				'type'        => 'textarea',
 				'placeholder' => 'If you could improve one thing about our product, what would it be?',
@@ -50,13 +50,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		 * @var array $options_theme The main options list for themes.
 		 */
 		private $options_theme = array(
-			'I don\'t know how to make it look like demo'             => array(
+			'I don\'t know how to make it look like demo' => array(
 				'id' => 7,
 			),
-			'It lacks options'                                        => array(
+			'It lacks options'                            => array(
 				'id' => 8,
 			),
-			'Is not working with a plugin that I need'                => array(
+			'Is not working with a plugin that I need'    => array(
 				'id'          => 9,
 				'type'        => 'text',
 				'placeholder' => 'What is the name of the plugin',
@@ -409,10 +409,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 
 			$list = '';
 			foreach ( $options as $title => $attributes ) {
-				$id   = $attributes['id'];
+				$id    = $attributes['id'];
 				$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 				if ( array_key_exists( 'type', $attributes ) ) {
-					$list        .= '<div>';
+					$list       .= '<div>';
 					$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 					switch ( $attributes['type'] ) {
 						case 'text':
@@ -431,7 +431,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				   . '<ul class="ti-list">' . $list . '</ul>'
 				   . '<div class="actions">'
 				   . get_submit_button(
-					   $button_submit_before , 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+					   $button_submit_before, 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
 						   'data-after-text' => $button_submit,
 					   )
 				   )

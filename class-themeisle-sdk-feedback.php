@@ -34,7 +34,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 		 */
 		public function __construct( $product_object ) {
 			if ( $product_object instanceof ThemeIsle_SDK_Product ) {
-				$this->product      = $product_object;
+				$this->product = $product_object;
 			}
 			$this->setup_hooks();
 		}
@@ -52,12 +52,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 		 * @param string $attributes The attributes of the post body.
 		 */
 		protected function call_api( $attributes ) {
-			$slug               = $this->product->get_slug();
+			$slug                  = $this->product->get_slug();
 			$version               = $this->product->get_version();
-			$attributes['slug'] = $slug;
+			$attributes['slug']    = $slug;
 			$attributes['version'] = $version;
 
-			$response           = wp_remote_post(
+			$response = wp_remote_post(
 				$this->feedback_url, array(
 					'body' => $attributes,
 				)
@@ -70,8 +70,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 		 * @param array $options The options array.
 		 */
 		function randomize_options( $options ) {
-			$new    = array();
-			$keys   = array_keys( $options );
+			$new  = array();
+			$keys = array_keys( $options );
 			shuffle( $keys );
 
 			foreach ( $keys as $key ) {

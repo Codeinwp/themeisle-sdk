@@ -801,6 +801,9 @@ The process is easy, and you can join by following the link below!';
 				return false;
 			}
 			$languages = $this->get_translations();
+			if ( ! is_array( $languages ) ) {
+				return false;
+			}
 			if ( ! isset( $languages['translations'] ) ) {
 				return false;
 			}
@@ -914,7 +917,7 @@ The process is easy, and you can join by following the link below!';
 		 * @return  void|string Html code of the notification.
 		 */
 		function get_html( $key ) {
-			$lang = get_user_locale();
+			$lang    = get_user_locale();
 			$link    = $this->get_locale_paths( $lang );
 			$heading = apply_filters( $this->product->get_key() . '_feedback_translate_heading', $this->heading );
 			$product = $this->product->get_friendly_name();
