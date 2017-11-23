@@ -60,7 +60,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		/**
 		 * @var array $allowed_authors The allowed authors.
 		 */
-		private $allowed_authors = array( 'proteusthemes.com', 'anarieldesign.com', 'prothemedesign.com' );
+		private $allowed_authors = array( 'proteusthemes.com', 'anarieldesign.com', 'prothemedesign.com', 'cssigniter.com' );
 		/**
 		 * @var bool $requires_license Either user needs to activate it with license.
 		 */
