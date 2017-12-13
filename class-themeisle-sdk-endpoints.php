@@ -14,19 +14,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 	/**
-	 * Expose endpoints loader for ThemeIsle SDK.
+	 * Expose endpoints for ThemeIsle SDK.
 	 */
 	final class ThemeIsle_SDK_Endpoints {
 
+		const SDK_ENDPOINT         = 'themeisle-sdk';
+		const SDK_ENDPOINT_VERSION = 1;
 
-		const SDK_ENDPOINT			= 'themeisle-sdk';
-		const SDK_ENDPOINT_VERSION	= 1;
-		const PRODUCT_SPECIFIC		= false;
+		const HASH_FILE = 'themeisle-hash.json';
+
+		// if true, the endpoint will expect a product slug and will return the value only for that.
+		const PRODUCT_SPECIFIC = false;
 
 		/**
-		 * @var ThemeIsle_SDK_Product $product Themeisle Product.
+		 * @var ThemeIsle_SDK_Product $products Array of Themeisle Product.
 		 */
-		protected $product;
+		static protected $products = array();
 
 		/**
 		 * ThemeIsle_SDK_Endpoints constructor.
@@ -35,20 +38,27 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 		 */
 		public function __construct( $product_object ) {
 			if ( $product_object instanceof ThemeIsle_SDK_Product ) {
-				$this->product = $product_object;
+				self::$products[] = $product_object;
 			}
 			$this->setup_endpoints();
 		}
 
+		/**
+		 * Setup endpoints.
+		 */
 		private function setup_endpoints() {
 			global $wp_version;
 			if ( version_compare( $wp_version, '4.4', '<' ) ) {
+				// no REST support.
 				return;
 			}
 
 			$this->setup_rest();
 		}
 
+		/**
+		 * Setup REST endpoints.
+		 */
 		private function setup_rest() {
 			add_action( 'rest_api_init', array( $this, 'rest_register' ) );
 		}
@@ -59,7 +69,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 		function rest_register() {
 			register_rest_route(
 				self::SDK_ENDPOINT . '/v' . self::SDK_ENDPOINT_VERSION,
-				'/checksum/(?P<slug>.*)/',
+				'/checksum/' . ( self::PRODUCT_SPECIFIC ? '(?P<slug>.*)/' : '' ),
 				array(
 					'methods'  => 'GET',
 					'callback' => array( $this, 'checksum' ),
@@ -75,33 +85,176 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 		 * @return WP_REST_Response Response or the error
 		 */
 		function checksum( WP_REST_Request $data ) {
+			$products = self::$products;
 			if ( self::PRODUCT_SPECIFIC ) {
-				$params	= $this->validate_params( $data, array( 'slug' ) );
+				$params = $this->validate_params( $data, array( 'slug' ) );
+				foreach ( self::$products as $product ) {
+					if ( $params['slug'] === $product->get_slug() ) {
+						$products = array( $product );
+						break;
+					}
+				}
+			}
+			$response = array();
+			foreach ( $products as $product ) {
+				$files      = array();
+				$custom_css = null;
+				switch ( $product->get_type() ) {
+					case 'plugin':
+						$files = array();
+						break;
+					case 'theme':
+						$files      = array( 'style.css', 'functions.php' );
+						$custom_css = $this->has_custom_css( $product );
+						break;
+				}
+
+				$error = '';
+
+				// if any element in the $files array contains a '/', this would imply recursion is required.
+				$diff = $this->generate_diff( $product, $files, array_reduce( $files, array( $this, 'is_recursion_required' ), false ) );
+				if ( is_wp_error( $diff ) ) {
+					$error = $diff->get_error_message();
+					$diff  = array();
+				}
+
+				if ( ! empty( $diff ) || ! empty( $error ) || ! is_null( $custom_css ) ) {
+					$attributes = array(
+						'slug'    => $product->get_slug(),
+						'version' => $product->get_version(),
+						'diffs'   => $diff,
+						'error'   => $error,
+					);
+					if ( is_bool( $custom_css ) ) {
+						$attributes = array_merge( $attributes, array( 'custom_css' => $custom_css ) );
+					}
+					$response['products'][] = $attributes;
+				}
 			}
 
-			$files	= array();
-			switch ( $this->product->get_type() ) {
-				case 'plugin':
-					$files	= array( '/' );
-					break;
-				case 'theme':
-					$files	= array( 'style.css', 'functions.php' );
-					break;
-			}
+			return new WP_REST_Response( array( 'checksum' => $response ) );
 		}
 
-		private function generate_diff( $files ) {
+		/**
+		 * Check if custom css has been added to the theme.
+		 *
+		 * @param ThemeIsle_SDK_Product $product Themeisle Product (Theme).
+		 *
+		 * @return bool Whether custom css has been added to the theme.
+		 */
+		private function has_custom_css( $product ) {
+			$query = new WP_Query(
+				array(
+					'post_type'              => 'custom_css',
+					'post_status'            => 'publish',
+					'post_title'             => $product->get_slug(),
+					'numberposts'            => 1,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+				)
+			);
+
+			if ( $query->have_posts() ) {
+				$query->the_post();
+				$content = get_the_content();
+				// if the content contains a colon, a CSS rule has been added.
+				return strpos( $content, ':' ) === false ? false : true;
+			}
+			return false;
+		}
+
+		/**
+		 * Check if recursion needs to be enabled on the WP_Filesystem by reducing the array of files to a boolean.
+		 *
+		 * @param string $carry Value of the previous iteration.
+		 * @param string $item Value of the current iteration.
+		 *
+		 * @return bool Whether to recurse or not.
+		 */
+		function is_recursion_required( $carry, $item ) {
+			if ( ! $carry ) {
+				return ( strpos( $item, '/' ) !== false );
+			}
+			return $carry;
+		}
+
+		/**
+		 * Generate the diff of the files.
+		 *
+		 * @param ThemeIsle_SDK_Product $product Themeisle Product.
+		 * @param array                 $files Array of files.
+		 * @param bool                  $recurse Whether to recurse or not.
+		 *
+		 * @return string
+		 */
+		private function generate_diff( $product, $files, $recurse = false ) {
 			require_once( ABSPATH . 'wp-admin/includes/file.php' );
 			WP_Filesystem();
 			global $wp_filesystem;
 
-			$path			= str_replace( ABSPATH, $wp_filesystem->abspath(), plugin_dir_path( dirname( $this->basefile ) ) );
-			$addons_path    = trailingslashit( $plugin_path ) . '/includes/addons/';
-			$files  = $wp_filesystem->dirlist( $addons_path, false, true );
-			if ( ! $files ) {
-				return;
+			$diff = array();
+			$path = str_replace( ABSPATH, $wp_filesystem->abspath(), plugin_dir_path( $product->get_basefile() ) );
+			$list = $wp_filesystem->dirlist( $path, false, $recurse );
+			// nothing found.
+			if ( ! $list ) {
+				return $diff;
+			}
+			$list = array_keys( self::flatten_dirlist( $list ) );
+
+			// now let's get the valid files that actually exist.
+			if ( empty( $files ) ) {
+				$files = $list;
+			} else {
+				$files = array_intersect( $files, $list );
 			}
 
+			// fetch the calculated hashes.
+			if ( ! $wp_filesystem->is_readable( $path . '/' . self::HASH_FILE ) ) {
+				return new WP_Error( 'themeisle_sdk_hash_not_found', sprintf( __( '%s not found', 'themeisle-sdk' ), self::HASH_FILE ) );
+			}
+
+			$hashes = json_decode( $wp_filesystem->get_contents( $path . '/' . self::HASH_FILE ), true );
+			ksort( $hashes );
+
+			$diff = array();
+			foreach ( $files as $file ) {
+				// file does not exist in the hashes.
+				if ( ! array_key_exists( $file, $hashes ) ) {
+					continue;
+				}
+				$new = md5( $wp_filesystem->get_contents( $path . $file ) );
+				$old = $hashes[ $file ];
+
+				// same hash, bail.
+				if ( $new === $old ) {
+					continue;
+				}
+				$diff[] = $file;
+			}
+			return $diff;
+		}
+
+		/**
+		 * Flatten the results of WP_Filesystem::dirlist() for iterating over.
+		 *
+		 * @access private
+		 *
+		 * @param  array  $nested_files  Array of files as returned by WP_Filesystem::dirlist().
+		 * @param  string $path          Relative path to prepend to child nodes. Optional.
+		 * @return array $files A flattened array of the $nested_files specified.
+		 */
+		private static function flatten_dirlist( $nested_files, $path = '' ) {
+			$files = array();
+			foreach ( $nested_files as $name => $details ) {
+				$files[ $path . $name ] = $details;
+				// Append children recursively
+				if ( ! empty( $details['files'] ) ) {
+					$children = self::flatten_dirlist( $details['files'], $path . $name . '/' );
+					// Merge keeping possible numeric keys, which array_merge() will reindex from 0..n
+					$files = $files + $children;
+				}
+			}
+			return $files;
 		}
 
 		/**
@@ -131,4 +284,4 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 		}
 
 	}
- }
+ endif;
