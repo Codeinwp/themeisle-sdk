@@ -95,17 +95,22 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 					}
 				}
 			}
-			$response = array();
+			$response	= array();
+			$custom_css = $this->has_custom_css();
+			if ( is_bool( $custom_css ) ) {
+				$response['custom_css'] = $custom_css;
+			}
+
+			$response['child_theme']	= $this->get_theme_properties();
+
 			foreach ( $products as $product ) {
 				$files      = array();
-				$custom_css = null;
 				switch ( $product->get_type() ) {
 					case 'plugin':
 						$files = array();
 						break;
 					case 'theme':
 						$files      = array( 'style.css', 'functions.php' );
-						$custom_css = $this->has_custom_css( $product );
 						break;
 				}
 
@@ -118,36 +123,54 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 					$diff  = array();
 				}
 
-				if ( ! empty( $diff ) || ! empty( $error ) || ! is_null( $custom_css ) ) {
-					$attributes = array(
-						'slug'    => $product->get_slug(),
-						'version' => $product->get_version(),
-						'diffs'   => $diff,
-						'error'   => $error,
-					);
-					if ( is_bool( $custom_css ) ) {
-						$attributes = array_merge( $attributes, array( 'custom_css' => $custom_css ) );
-					}
-					$response['products'][] = $attributes;
-				}
+				$response['products'][] = array(
+					'slug'    => $product->get_slug(),
+					'version' => $product->get_version(),
+					'diffs'   => $diff,
+					'error'   => $error,
+				);
 			}
 
 			return new WP_REST_Response( array( 'checksum' => $response ) );
 		}
 
 		/**
-		 * Check if custom css has been added to the theme.
+		 * Get the current theme properties.
 		 *
-		 * @param ThemeIsle_SDK_Product $product Themeisle Product (Theme).
+		 * @return array Properties of the current theme.
+		 */
+		function get_theme_properties() {
+			if ( ! is_child_theme() ) {
+				return false;
+			}
+
+			$properties			= array();
+			$theme				= wp_get_theme();
+			$properties['name']	= $theme->Name;
+
+			// get the files in the child theme.
+			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+			WP_Filesystem();
+			global $wp_filesystem;
+			$path = str_replace( ABSPATH, $wp_filesystem->abspath(), get_stylesheet_directory() );
+			$list = $wp_filesystem->dirlist( $path, false, false );
+			if ( $list ) {
+				$list					= array_keys( self::flatten_dirlist( $list ) );
+				$properties['files']	= $list;
+			}
+			return $properties;
+		}
+
+		/**
+		 * Check if custom css has been added to the theme.
 		 *
 		 * @return bool Whether custom css has been added to the theme.
 		 */
-		private function has_custom_css( $product ) {
+		private function has_custom_css() {
 			$query = new WP_Query(
 				array(
 					'post_type'              => 'custom_css',
 					'post_status'            => 'publish',
-					'post_title'             => $product->get_slug(),
 					'numberposts'            => 1,
 					'update_post_meta_cache' => false,
 					'update_post_term_cache' => false,
