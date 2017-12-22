@@ -95,13 +95,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 					}
 				}
 			}
-			$response	= array();
+			$response   = array();
 			$custom_css = $this->has_custom_css();
 			if ( is_bool( $custom_css ) ) {
 				$response['custom_css'] = $custom_css;
 			}
 
-			$response['child_theme']	= $this->get_theme_properties();
+			$response['child_theme']    = $this->get_theme_properties();
 
 			foreach ( $products as $product ) {
 				$files      = array();
@@ -144,9 +144,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 				return false;
 			}
 
-			$properties			= array();
-			$theme				= wp_get_theme();
-			$properties['name']	= $theme->Name;
+			$properties         = array();
+			$theme              = wp_get_theme();
+			// @codingStandardsIgnoreStart
+			$properties['name'] = $theme->Name;
+			// @codingStandardsIgnoreEnd
 
 			// get the files in the child theme.
 			require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -155,8 +157,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Endpoints' ) ) :
 			$path = str_replace( ABSPATH, $wp_filesystem->abspath(), get_stylesheet_directory() );
 			$list = $wp_filesystem->dirlist( $path, false, false );
 			if ( $list ) {
-				$list					= array_keys( self::flatten_dirlist( $list ) );
-				$properties['files']	= $list;
+				$list                   = array_keys( self::flatten_dirlist( $list ) );
+				$properties['files']    = $list;
 			}
 			return $properties;
 		}
