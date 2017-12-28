@@ -24,6 +24,7 @@ $files_to_load = array(
 	'class-themeisle-sdk-widget.php',
 	'class-themeisle-sdk-widget-dashboard-blog.php',
 	'class-themeisle-sdk-widgets-factory.php',
+	'class-themeisle-sdk-endpoints.php',
 );
 
 foreach ( $files_to_load as $file ) {
