@@ -77,6 +77,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 		 * Send the statistics to the api endpoint
 		 */
 		public function send_log() {
+			$environment                    = array();
+			$theme                          = wp_get_theme();
+			$environment['theme']           = array();
+			$environment['theme']['name']   = $theme->get( 'Name' );
+			$environment['theme']['author'] = $theme->get( 'Author' );
+			$environment['plugins']         = get_option( 'active_plugins' );
+
 			wp_remote_post(
 				$this->logging_url, array(
 					'method'      => 'POST',
@@ -86,10 +93,12 @@ if ( ! class_exists( 'ThemeIsle_SDK_Logger' ) ) :
 						'X-ThemeIsle-Event' => 'log_site',
 					),
 					'body'        => array(
-						'site'    => get_site_url(),
-						'slug'    => $this->product->get_slug(),
-						'version' => $this->product->get_version(),
-						'data'    => apply_filters( $this->product->get_key() . '_logger_data', array() ),
+						'site'        => get_site_url(),
+						'slug'        => $this->product->get_slug(),
+						'version'     => $this->product->get_version(),
+						'data'        => apply_filters( $this->product->get_key() . '_logger_data', array() ),
+						'environment' => $environment,
+						'license'     => apply_filters( $this->product->get_key() . '_license_status', '' ),
 					),
 				)
 			);

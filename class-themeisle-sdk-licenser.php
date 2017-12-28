@@ -73,6 +73,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 			add_action( 'admin_init', array( $this, 'activate_license' ) );
 			add_action( 'admin_init', array( $this, 'product_valid' ), 99999999 );
 			add_action( 'admin_notices', array( $this, 'show_notice' ) );
+			add_filter( $this->product->get_key() . '_license_status', array( $this, 'get_license_status' ) );
 		}
 
 		/**
