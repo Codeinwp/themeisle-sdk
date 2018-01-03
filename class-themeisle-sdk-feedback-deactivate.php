@@ -80,7 +80,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		/**
 		 * @var string $heading_plugin The heading of the modal
 		 */
-		private $heading_plugin = 'If you have a moment, please let us know why you are deactivating:';
+		private $heading_plugin = 'Quick Feedback';
 
 		/**
 		 * @var string $heading_theme The heading of the modal
@@ -156,117 +156,177 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 		function add_css( $type, $key ) {
 			$suffix = 'theme' === $type ? 'theme-install-php' : 'plugins-php';
 			?>
-			<style type="text/css" id="<?php echo $key; ?>ti-deactivate-css">
-				input[name="ti-deactivate-option"] ~ div {
-					display: none;
-				}
+            <style type="text/css" id="<?php echo $key; ?>ti-deactivate-css">
+                input[name="ti-deactivate-option"] ~ div {
+                    display: none;
+                }
 
-				input[name="ti-deactivate-option"]:checked ~ div {
-					display: block;
-				}
+                input[name="ti-deactivate-option"]:checked ~ div {
+                    display: block;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_window.thickbox-loading:before {
-					background: none !important;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_window.thickbox-loading:before {
+                    background: none !important;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_title {
-					font-size: 21px;
-					padding: 20px 0;
-					background-color: #f3f3f3;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_title {
+                    background: #fff;
+                    border: none;
+                    box-sizing: border-box;
+                    color: #373e40;
+                    font-size: 24px;
+                    font-weight: 700;
+                    height: auto;
+                    padding: 30px 40px 0;
+                    text-transform: uppercase;
+                    width: 100%;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.actions {
-					padding: 20px 0;
-					background-color: #f3f3f3;
-					border-top: 1px solid #dddddd;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.actions {
+                    box-sizing: border-box;
+                    padding: 30px 40px;
+                    background-color: #eaeaea;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button.button-primary {
-					margin-right: 20px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button {
+                    background: #ec5d60;
+                    border: none;
+                    box-shadow: none;
+                    color: #ffffff;
+                    font-size: 15px;
+                    font-weight: 700;
+                    height: auto;
+                    line-height: 20px;
+                    padding: 10px 15px;
+                    text-transform: uppercase;
+                    -webkit-transition: 0.3s ease;
+                    -moz-transition: 0.3s ease;
+                    -ms-transition: 0.3s ease;
+                    -o-transition: 0.3s ease;
+                    transition: 0.3s ease;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button {
-					margin-right: 20px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button.button-primary {
+                    background: transparent;
+                    box-shadow: none;
+                    color: #8d9192;
+                    font-weight: 400;
+                    float: right;
+                    line-height: 40px;
+                    padding: 0;
+                    text-decoration: underline;
+                    text-shadow: none;
+                    text-transform: none;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_ajaxWindowTitle {
-					text-align: left;
-					margin-left: 15px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button:hover {
+                    background: #c8484b;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.revive_network-container {
-					background-color: #ffffff;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button.button-primary:hover {
+                    background: transparent;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li {
-					font-size: 14px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button:focus {
+                    box-shadow: none;
+                    outline: none;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li label {
-					margin-left: 10px;
-					line-height: 32px;
-					font-size: 16px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button:active {
+                    box-shadow: none;
+                    transform: translateY(0);
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_ajaxContent {
-					padding: 10px 20px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container input.button.button-primary:hover {
+                    text-decoration: none;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container li div textarea {
-					padding: 10px 15px;
-					width: 100%;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container div.revive_network-container {
+                    background-color: #ffffff;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li div {
-					margin: 10px 30px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li {
+                    font-size: 14px;
+                }
 
-				.<?php echo $key; ?>-container #TB_title #TB_ajaxWindowTitle {
-					display: block;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li label {
+                    margin-left: 10px;
+                    line-height: 32px;
+                    font-size: 16px;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container .actions {
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_ajaxContent {
+                    padding: 30px 40px;
+                }
 
-					width: 100%;
-					display: block;
-					position: absolute;
-					left: 0px;
-					bottom: 0px;
-					text-align: right;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container li div textarea {
+                    padding: 10px 15px;
+                    width: 100%;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #TB_title {
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container ul.ti-list li div {
+                    margin: 10px 30px;
+                }
 
-					height: 33px;
-					width: 100%;
-					text-align: center;
-				}
+                .<?php echo $key; ?>-container #TB_title #TB_ajaxWindowTitle {
+                    box-sizing: border-box;
+                    display: block;
+                    float: none;
+                    font-weight: 700;
+                    line-height: 1;
+                    padding: 0;
+                    text-align: left;
+                    width: 100%;
+                }
 
-				.theme-install-php .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon:before {
-					font-size: 32px;
-				}
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container .actions {
+                    width: 100%;
+                    display: block;
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                }
 
-				.<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon {
+                .theme-install-php .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon:before {
+                    font-size: 32px;
+                }
 
-					color: #eee;
-				}
+                .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon {
+                    color: #eee;
+                }
 
-				.<?php echo $key; ?>-container #TB_closeWindowButton {
-					left: auto;
-					right: -30px;
-					color: #eee;
-				}
+                .<?php echo $key; ?>-container #TB_closeWindowButton {
+                    left: auto;
+                    right: -5px;
+                    top: -35px;
+                    color: #eee;
+                }
 
-				body.<?php echo $suffix; ?> .<?php echo $key; ?>-container {
+                .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon {
+                    text-align: right;
+                    line-height: 25px;
+                    width: 25px;
+                    height: 25px;
+                }
 
-					margin: auto !important;
-					height: 550px !important;
-					top: 0 !important;
-					left: 0 !important;
-					bottom: 0 !important;
-					right: 0 !important;
-				}
-			</style>
+                .<?php echo $key; ?>-container #TB_closeWindowButton:focus .tb-close-icon {
+                    box-shadow: none;
+                    outline: none;
+                }
+
+                .<?php echo $key; ?>-container #TB_closeWindowButton .tb-close-icon:before {
+                    font: normal 25px dashicons;
+                }
+
+                body.<?php echo $suffix; ?> .<?php echo $key; ?>-container {
+                    margin: auto !important;
+                    height: 550px !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    bottom: 0 !important;
+                    right: 0 !important;
+                }
+            </style>
 			<?php
 		}
 
@@ -281,112 +341,112 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			$heading = 'plugin' === $type ? $this->heading_plugin : str_replace( '{theme}', $this->product->get_name(), $this->heading_theme );
 			$heading = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $heading );
 			?>
-			<script type="text/javascript" id="ti-deactivate-js">
-				(function ($) {
-					$(document).ready(function () {
-						var auto_trigger = false;
-						var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
+            <script type="text/javascript" id="ti-deactivate-js">
+                (function ($) {
+                    $(document).ready(function () {
+                        var auto_trigger = false;
+                        var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
 						<?php
 						if ( 'theme' === $type ) {
 						?>
-						auto_trigger = true;
-						if ($('a.ti-auto-anchor').length == 0) {
-							$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
-						}
-						target_element = 'a.ti-auto-anchor';
+                        auto_trigger = true;
+                        if ($('a.ti-auto-anchor').length == 0) {
+                            $('body').append($('<a class="ti-auto-anchor" href=""></a>'));
+                        }
+                        target_element = 'a.ti-auto-anchor';
 						<?php
 						}
 						?>
 
-						if (auto_trigger) {
-							setTimeout(function () {
-								$('a.ti-auto-anchor').trigger('click');
-							}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
-						}
-						$( document ).on( 'thickbox:removed', function() {
-							$.ajax({
-								url: ajaxurl,
-								method: 'post',
-								data: {
-									'action'	: '<?php echo $key . __CLASS__; ?>',
-									'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
-									'type'		: '<?php echo $type; ?>',
-									'key'		: '<?php echo $key; ?>'
-								},
-							});
-						});
-						var href = $(target_element).attr('href');
-						$('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
-							e.preventDefault();
-							e.stopPropagation();
+                        if (auto_trigger) {
+                            setTimeout(function () {
+                                $('a.ti-auto-anchor').trigger('click');
+                            }, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
+                        }
+                        $( document ).on( 'thickbox:removed', function() {
+                            $.ajax({
+                                url: ajaxurl,
+                                method: 'post',
+                                data: {
+                                    'action'	: '<?php echo $key . __CLASS__; ?>',
+                                    'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+                                    'type'		: '<?php echo $type; ?>',
+                                    'key'		: '<?php echo $key; ?>'
+                                },
+                            });
+                        });
+                        var href = $(target_element).attr('href');
+                        $('#<?php echo $key; ?>ti-deactivate-no').on('click', function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
 
-							$('body').unbind('thickbox:removed');
-							tb_remove();
-						});
+                            $('body').unbind('thickbox:removed');
+                            tb_remove();
+                        });
 
-						$('#<?php echo $key; ?> ul.ti-list label, #<?php echo $key; ?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function (e) {
-							$('#<?php echo $key; ?>ti-deactivate-yes').val($('#<?php echo $key; ?>ti-deactivate-yes').attr('data-after-text'));
+                        $('#<?php echo $key; ?> ul.ti-list label, #<?php echo $key; ?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function (e) {
+                            $('#<?php echo $key; ?>ti-deactivate-yes').val($('#<?php echo $key; ?>ti-deactivate-yes').attr('data-after-text'));
 
-							var radio = $(this).prop('tagName') === 'LABEL' ? $(this).parent() : $(this);
-							if (radio.parent().find('textarea').length > 0 && radio.parent().find('textarea').val().length === 0) {
-								$('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
-								radio.parent().find('textarea').on('keyup', function (ee) {
-									if ($(this).val().length === 0) {
-										$('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
-									} else {
-										$('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
-									}
-								});
-							} else {
-								$('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
-							}
-						});
+                            var radio = $(this).prop('tagName') === 'LABEL' ? $(this).parent() : $(this);
+                            if (radio.parent().find('textarea').length > 0 && radio.parent().find('textarea').val().length === 0) {
+                                $('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
+                                radio.parent().find('textarea').on('keyup', function (ee) {
+                                    if ($(this).val().length === 0) {
+                                        $('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
+                                    } else {
+                                        $('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
+                                    }
+                                });
+                            } else {
+                                $('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
+                            }
+                        });
 
-						$('#<?php echo $key; ?>ti-deactivate-yes').attr('data-ti-action', href).on('click', function (e) {
-							e.preventDefault();
-							e.stopPropagation();
-							$.ajax({
-								url: ajaxurl,
-								method: 'post',
-								data: {
-									'action'	: '<?php echo $key . __CLASS__; ?>',
-									'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
-									'id'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
-									'msg'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val(),
-									'type'		: '<?php echo $type; ?>',
-									'key'		: '<?php echo $key; ?>'
-								},
-							});
-							var redirect = $(this).attr('data-ti-action');
-							if (redirect != '') {
-								location.href = redirect;
-							} else {
-								$('body').unbind('thickbox:removed');
-								tb_remove();
-							}
-						});
+                        $('#<?php echo $key; ?>ti-deactivate-yes').attr('data-ti-action', href).on('click', function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            $.ajax({
+                                url: ajaxurl,
+                                method: 'post',
+                                data: {
+                                    'action'	: '<?php echo $key . __CLASS__; ?>',
+                                    'nonce'		: '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+                                    'id'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
+                                    'msg'		: $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val(),
+                                    'type'		: '<?php echo $type; ?>',
+                                    'key'		: '<?php echo $key; ?>'
+                                },
+                            });
+                            var redirect = $(this).attr('data-ti-action');
+                            if (redirect != '') {
+                                location.href = redirect;
+                            } else {
+                                $('body').unbind('thickbox:removed');
+                                tb_remove();
+                            }
+                        });
 
-						$(target_element).attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src; ?>').addClass('thickbox');
-						var thicbox_timer;
-						$(target_element).on('click', function () {
-							tiBindThickbox();
-						});
+                        $(target_element).attr('name', '<?php echo esc_html( $heading ); ?>').attr('href', '<?php echo $src; ?>').addClass('thickbox');
+                        var thicbox_timer;
+                        $(target_element).on('click', function () {
+                            tiBindThickbox();
+                        });
 
-						function tiBindThickbox() {
-							var thicbox_timer = setTimeout(function () {
-								if ($("#<?php echo esc_html( $key ); ?>").is(":visible")) {
-									$("body").trigger('thickbox:iframe:loaded');
-									$("#TB_window").addClass("<?php echo $key; ?>-container");
-									clearTimeout(thicbox_timer);
-									$('body').unbind('thickbox:removed');
-								} else {
-									tiBindThickbox();
-								}
-							}, 100);
-						}
-					});
-				})(jQuery);
-			</script>
+                        function tiBindThickbox() {
+                            var thicbox_timer = setTimeout(function () {
+                                if ($("#<?php echo esc_html( $key ); ?>").is(":visible")) {
+                                    $("body").trigger('thickbox:iframe:loaded');
+                                    $("#TB_window").addClass("<?php echo $key; ?>-container");
+                                    clearTimeout(thicbox_timer);
+                                    $('body').unbind('thickbox:removed');
+                                } else {
+                                    tiBindThickbox();
+                                }
+                            }, 100);
+                        }
+                    });
+                })(jQuery);
+            </script>
 			<?php
 		}
 
@@ -428,15 +488,15 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 			}
 
 			return '<div id="' . $this->product->get_key() . '">'
-				   . '<ul class="ti-list">' . $list . '</ul>'
-				   . '<div class="actions">'
-				   . get_submit_button(
-					   $button_submit_before, 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
-						   'data-after-text' => $button_submit,
-					   )
-				   )
-				   . get_submit_button( $button_cancel, 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
-				   . '</div></div>';
+			       . '<ul class="ti-list">' . $list . '</ul>'
+			       . '<div class="actions">'
+			       . get_submit_button(
+				       $button_submit_before, 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+					       'data-after-text' => $button_submit,
+				       )
+			       )
+			       . get_submit_button( $button_cancel, 'primary', $this->product->get_key() . 'ti-deactivate-no', false )
+			       . '</div></div>';
 		}
 
 		/**
