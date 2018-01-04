@@ -888,7 +888,7 @@ The process is easy, and you can join by following the link below!';
 									'action': '<?php echo $this->product->get_key() . __CLASS__; ?>'
 								},
 								success: function () {
-									$('#<?php echo $key; ?>_translate').hide();
+									$('#<?php echo $key; ?>_translate').html('<p><b>Thanks for your answer.</b></p>');
 								}
 							});
 						});

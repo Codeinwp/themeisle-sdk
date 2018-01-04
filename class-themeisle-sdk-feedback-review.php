@@ -146,7 +146,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Review' ) ) :
 									'action': '<?php echo $this->product->get_key() . __CLASS__; ?>'
 								},
 								success: function () {
-									$('#<?php echo $key; ?>_review').hide();
+									$('#<?php echo $key; ?>_review').html('<p><b>Thanks for your answer.</b></p>');
 								}
 							});
 						});

@@ -204,19 +204,6 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 		 * @return bool Either hide them or not.
 		 */
 		function check_hide( $hide ) {
-			if ( isset( $_GET[ $this->product->get_key() . '_hide_' . $hide ] ) ) {
-				if ( $_GET[ $this->product->get_key() . '_hide_' . $hide ] === 'yes' ) {
-					update_option( $this->product->get_key() . '_hide_' . $hide, 'yes' );
-
-					return false;
-				}
-			} else {
-				$license = get_option( $this->product->get_key() . '_hide_' . $hide, '' );
-				if ( $license === 'yes' ) {
-					return false;
-				}
-			}
-
 			return true;
 		}
 
@@ -237,15 +224,14 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 									Staff for more details.'
 			);
 			$no_valid_string       = apply_filters(
-				$this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s , please add
+				$this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s, please add
 								your license code from your  <a href="%s" target="_blank">purchase history</a> and validate it <a
-									href="%s">here</a> '
+									href="%s">here</a>. '
 			);
 			$expiration_string     = apply_filters(
 				$this->product->get_key() . '_lc_expiration_string', 'Your license is about to expire
 									for %s. You can go to %s and renew it   '
 			);
-			$hide_notice_string    = apply_filters( $this->product->get_key() . '_lc_hide_notice_string', 'Hide Notice' );
 			if ( $status != 'valid' ) {
 				if ( $this->check_activation() ) {
 					if ( $this->check_hide( 'activation' ) ) {
@@ -258,8 +244,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 																	target="_blank">' . $this->product->get_store_name() . '</a>'
 									);
 									?>
-								</strong> | <a
-										href="<?php echo add_query_arg( $this->product->get_key() . '_activation', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
+								</strong>
 							</p>
 						</div>
 						<?php
@@ -270,9 +255,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 				<?php if ( $this->check_hide( 'valid' ) ) : ?>
 					<div class="error">
 						<p>
-							<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->product->get_store_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() ); ?> </strong>|
-							<a
-									href="<?php echo add_query_arg( $this->product->get_key() . '_hide_valid', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
+							<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->product->get_store_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() ); ?> </strong>
 						</p>
 					</div>
 				<?php endif; ?>
@@ -291,9 +274,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Licenser' ) ) :
 										target="_blank">' . $this->product->get_store_name() . '</a>'
 									);
 									?>
-								</strong> |
-								<a
-										href="<?php echo add_query_arg( $this->product->get_key() . '_hide_expiration', 'yes' ); ?> "><?php echo $hide_notice_string; ?></a>
+								</strong>
 							</p>
 						</div>
 						<?php
