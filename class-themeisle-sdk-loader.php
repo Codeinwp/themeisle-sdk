@@ -48,7 +48,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Loader' ) ) :
 
 			$notifications = array();
 			// Based on the WordPress Available file header we enable the logger or not.
-			if ( ! $product_object->is_wordpress_available() ) {
+			if ( ! $product_object->is_wordpress_available() && apply_filters( $product_object->get_key() . '_enable_licenser', true ) === true ) {
 				$licenser = new ThemeIsle_SDK_Licenser( $product_object );
 				$licenser->enable();
 			}
