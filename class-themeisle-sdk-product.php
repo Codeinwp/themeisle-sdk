@@ -62,6 +62,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 */
 		private $allowed_authors = array( 'proteusthemes.com', 'anarieldesign.com', 'prothemedesign.com', 'cssigniter.com' );
 		/**
+		 * @var array $allowed_external_products The allowed external_products.
+		 */
+		private $allowed_products = array( 'zermatt', 'neto', 'olsen', 'benson', 'romero', 'carmack', 'puzzle', 'broadsheet', 'girlywp', 'veggie','zeko','maishawp','didi','liber','medicpress-pt','adrenaline-pt','consultpress-pt','legalpress-pt','gympress-pt' ,'readable-pt' ,'bolts-pt' );
+		/**
 		 * @var bool $requires_license Either user needs to activate it with license.
 		 */
 		private $requires_license;
@@ -166,6 +170,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		public function is_external_author() {
 			foreach ( $this->allowed_authors as $author ) {
 				if ( strpos( $this->author_url, $author ) !== false ) {
+					return true;
+				}
+				if ( in_array( $this->get_slug(),$this->allowed_products ) ) {
 					return true;
 				}
 			}
