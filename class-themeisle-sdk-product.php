@@ -64,7 +64,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		/**
 		 * @var array $allowed_external_products The allowed external_products.
 		 */
-		private $allowed_products = array( 'zermatt', 'neto', 'olsen', 'benson', 'romero', 'carmack', 'puzzle', 'broadsheet', 'girlywp', 'veggie','zeko','maishawp','didi','liber','medicpress-pt','adrenaline-pt','consultpress-pt','legalpress-pt','gympress-pt' ,'readable-pt' ,'bolts-pt' );
+		private $allowed_products = array( 'zermatt', 'neto', 'olsen', 'benson', 'romero', 'carmack', 'puzzle', 'broadsheet', 'girlywp', 'veggie', 'zeko', 'maishawp', 'didi', 'liber', 'medicpress-pt', 'adrenaline-pt', 'consultpress-pt', 'legalpress-pt', 'gympress-pt', 'readable-pt', 'bolts-pt' );
 		/**
 		 * @var bool $requires_license Either user needs to activate it with license.
 		 */
@@ -172,7 +172,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 				if ( strpos( $this->author_url, $author ) !== false ) {
 					return true;
 				}
-				if ( in_array( $this->get_slug(),$this->allowed_products ) ) {
+				if ( in_array( $this->get_slug(), $this->allowed_products ) ) {
 					return true;
 				}
 			}
