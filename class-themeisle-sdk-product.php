@@ -397,8 +397,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		private function get_api_versions() {
 
 			$cache_key      = $this->get_key() . '_' . preg_replace( '/[^0-9a-zA-Z ]/m', '', $this->version ) . 'versions';
-			$cache_versions = get_transient( $this->get_key() . '_' . preg_replace( '/[^0-9a-zA-Z ]/m', '', $this->version ) . 'versions' );
-			if ( false == $cache_versions ) {
+			$cache_versions = get_transient( $cache_key );
+			if ( false === $cache_versions ) {
 				$versions = array();
 				if ( ! $this->is_wordpress_available() ) {
 					$versions = $this->get_pro_versions();
@@ -410,7 +410,7 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 						$versions = $this->get_theme_versions();
 					}
 				}
-				set_transient( $cache_key, $versions, MONTH_IN_SECONDS );
+				set_transient( $cache_key, $versions, 5 * DAY_IN_SECONDS );
 			} else {
 				$versions = is_array( $cache_versions ) ? $cache_versions : array();
 			}
