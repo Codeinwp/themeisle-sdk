@@ -16,30 +16,24 @@ jobs:
       script:
         - composer install
         - composer run-script lint
-    - php: 5.2
-      script:
-        - ./bin/run-wp-unit-tests.sh
-    - php: 5.3
-      script:
-        - ./bin/run-wp-unit-tests.sh
     - php: 5.4
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
     - php: 5.5
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
     - php: 5.6
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
     - php: 7.0
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
     - php: 7.1
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
     - php: 7.2
       script:
-        - ./bin/run-wp-unit-tests.sh
+        - ./bin/run-unit-tests.sh
 
     - stage: deploy
       if: branch = master and type != "pull_request"
