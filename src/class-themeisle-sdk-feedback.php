@@ -58,7 +58,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback' ) ) :
 			$attributes['version'] = $version;
 
 			$response = wp_remote_post(
-				$this->feedback_url, array(
+				$this->feedback_url,
+				array(
 					'body' => $attributes,
 				)
 			);

@@ -93,7 +93,8 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 		 */
 		private function show_link() {
 			add_filter(
-				'plugin_action_links_' . plugin_basename( $this->product->get_basefile() ), array(
+				'plugin_action_links_' . plugin_basename( $this->product->get_basefile() ),
+				array(
 					$this,
 					'add_rollback_link',
 				)
@@ -173,7 +174,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				$upgrader->upgrade( $theme );
 				delete_transient( $this->product->get_key() . '_warning_rollback' );
 				wp_die(
-					'', $title, array(
+					'',
+					$title,
+					array(
 						'response' => 200,
 					)
 				);
@@ -213,7 +216,9 @@ if ( ! class_exists( 'ThemeIsle_SDK_Rollback' ) ) :
 				$upgrader->upgrade( $plugin );
 				delete_transient( $this->product->get_key() . '_warning_rollback' );
 				wp_die(
-					'', $title, array(
+					'',
+					$title,
+					array(
 						'response' => 200,
 					)
 				);

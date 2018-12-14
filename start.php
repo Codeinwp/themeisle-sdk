@@ -7,6 +7,10 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $products      = apply_filters( 'themeisle_sdk_products', array() );
 $path          = dirname( __FILE__ );
 $files_to_load = array(
@@ -34,5 +38,5 @@ foreach ( $files_to_load as $file ) {
 	}
 }
 foreach ( $products as $product ) {
-	ThemeIsle_SDK_Loader::init_product( $product );
+	// ThemeIsle_SDK_Loader::init_product( $product );.
 }

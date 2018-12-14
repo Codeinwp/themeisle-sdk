@@ -937,7 +937,8 @@ The process is easy, and you can join by following the link below!';
 			$product = $this->product->get_friendly_name();
 			$heading = str_replace(
 				array( '{product}' ),
-				$product, $heading
+				$product,
+				$heading
 			);
 
 			$message       = apply_filters( $this->product->get_key() . '_feedback_translation', $this->msg );

@@ -369,13 +369,13 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 						var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
 						<?php
 						if ( 'theme' === $type ) {
-						?>
+							?>
 						auto_trigger = true;
 						if ($('a.ti-auto-anchor').length == 0) {
 							$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
 						}
 						target_element = 'a.ti-auto-anchor';
-						<?php
+							<?php
 						}
 						?>
 
@@ -494,10 +494,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 
 			$list = '';
 			foreach ( $options as $title => $attributes ) {
-				$id   = $attributes['id'];
+				$id    = $attributes['id'];
 				$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 				if ( array_key_exists( 'type', $attributes ) ) {
-					$list        .= '<div>';
+					$list       .= '<div>';
 					$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 					switch ( $attributes['type'] ) {
 						case 'text':
@@ -516,7 +516,11 @@ if ( ! class_exists( 'ThemeIsle_SDK_Feedback_Deactivate' ) ) :
 				   . '<ul class="ti-list">' . $list . '</ul>'
 				   . '<div class="actions">'
 				. get_submit_button(
-					$button_submit, 'secondary', $this->product->get_key() . 'ti-deactivate-yes', false, array(
+					$button_submit,
+					'secondary',
+					$this->product->get_key() . 'ti-deactivate-yes',
+					false,
+					array(
 						'data-after-text' => $button_submit,
 						'disabled'        => true,
 					)

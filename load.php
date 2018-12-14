@@ -10,8 +10,11 @@
  * @since       1.1.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 // Current SDK version and path.
-$themeisle_sdk_version = '2.2.8';
+$themeisle_sdk_version = '2.2.21';
 $themeisle_sdk_path    = dirname( __FILE__ );
 
 global $themeisle_sdk_max_version;
@@ -22,7 +25,7 @@ if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) >= 0 
 	$themeisle_sdk_max_path    = $themeisle_sdk_path;
 }
 
-// load the latest sdk version from the active Themeisle products
+// load the latest sdk version from the active Themeisle products.
 if ( ! function_exists( 'themeisle_sdk_load_latest' ) ) :
 	/**
 	 * Always load the latest sdk version.

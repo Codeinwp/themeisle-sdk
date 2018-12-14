@@ -332,10 +332,10 @@ if ( ! class_exists( 'ThemeIsle_SDK_Product' ) ) :
 		 * @return array Array of available versions.
 		 */
 		private function get_pro_versions() {
-			$license = $this->get_license();
+			$license   = $this->get_license();
 			$store_url = trailingslashit( $this->store_url );
-			$url      = sprintf( '%s?edd_action=get_versions&name=%s&url=%s&license=%s', $store_url, urlencode( $this->get_name() ), urlencode( get_site_url() ), $license );
-			$response = wp_remote_get( $url );
+			$url       = sprintf( '%s?edd_action=get_versions&name=%s&url=%s&license=%s', $store_url, urlencode( $this->get_name() ), urlencode( get_site_url() ), $license );
+			$response  = wp_remote_get( $url );
 			if ( is_wp_error( $response ) ) {
 				return array();
 			}
