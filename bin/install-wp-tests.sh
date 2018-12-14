@@ -15,6 +15,16 @@ SKIP_DB_CREATE=${6-false}
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
 
+command_exists() {
+	type -t "$1" >/dev/null 2>&1
+}
+download() {
+    if command_exists "curl"; then
+        curl -s -o "${2:--}" "$1"
+    elif command_exists "wget"; then
+		wget -nv -O "${2:--}" "$1"
+    fi
+}
 if [[ $WP_VERSION =~ [0-9]+\.[0-9]+(\.[0-9]+)? ]]; then
 	WP_TESTS_TAG="tags/$WP_VERSION"
 elif [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
@@ -33,16 +43,7 @@ fi
 
 set -ex
 
-download() {
-    if command_exists "curl"; then
-        curl -s -o "${2:--}" "$1"
-    elif command_exists "wget"; then
-		wget -nv -O "${2:--}" "$1"
-    fi
-}
-command_exists() {
-	type -t "$1" >/dev/null 2>&1
-}
+
 install_wp() {
 
 	if [ -d $WP_CORE_DIR ]; then
