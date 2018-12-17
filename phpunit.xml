@@ -6,9 +6,15 @@
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
 >
-    <testsuites>
+    <testsuites name="General Unit tests ( Requires PHP 5.4) ">
         <testsuite>
-            <directory suffix="-test.php">./tests/</directory>
+            <directory phpVersion="5.4.0" phpVersionOperator=">=" suffix="-test.php">./tests/</directory>
+            <exclude>./tests/old/</exclude>
+        </testsuite>
+    </testsuites>
+    <testsuites name="Bail lower php versions( For PHP lower than 5.4) ">
+        <testsuite>
+            <directory phpVersion="5.4.0" phpVersionOperator="lt" suffix="-test.php">./tests/old/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

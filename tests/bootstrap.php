@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Gutenberg
+ * @package ThemeIsleSDK
  */
 
 // Determine the tests directory (from a WP dev checkout).

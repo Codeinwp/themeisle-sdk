@@ -31,6 +31,12 @@ if ( ! function_exists( 'themeisle_sdk_load_latest' ) ) :
 	 * Always load the latest sdk version.
 	 */
 	function themeisle_sdk_load_latest() {
+		/**
+		 * Don't load the library if we are on < 5.4.
+		 */
+		if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
+			return;
+		}
 		global $themeisle_sdk_max_path;
 		require_once $themeisle_sdk_max_path . '/start.php';
 	}

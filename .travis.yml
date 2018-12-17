@@ -16,6 +16,14 @@ jobs:
       script:
         - composer install
         - composer run-script lint
+    - php: 5.2
+      dist: precise
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 5.3
+      dist: precise
+      script:
+        - ./bin/run-unit-tests.sh
     - php: 5.4
       script:
         - ./bin/run-unit-tests.sh
@@ -29,9 +37,6 @@ jobs:
       script:
         - ./bin/run-unit-tests.sh
     - php: 7.1
-      script:
-        - ./bin/run-unit-tests.sh
-    - php: 7.2
       script:
         - ./bin/run-unit-tests.sh
 

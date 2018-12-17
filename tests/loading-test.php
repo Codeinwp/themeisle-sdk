@@ -18,4 +18,11 @@ class Sdk_Loading_Test extends WP_UnitTestCase {
 		$this->assertTrue( version_compare( '0.0.0', $themeisle_sdk_max_version, '<' ) );
 	}
 
+	/**
+	 * Test that classes are properly loaded.
+	 */
+	public function test_class_loading() {
+		$this->assertTrue( class_exists( 'ThemeisleSDK\\Loader' ) );
+	}
+
 }
