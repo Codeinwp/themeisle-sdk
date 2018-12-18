@@ -1,7 +1,4 @@
 <?php
-// phpcs:ignoreFile
-// Nothing here.
-
 /**
  * Plugin Name:       Sample plugin.
  * Description:       Sample description
@@ -14,4 +11,3 @@
  * WordPress Available:  no
  * Requires License:    no
  */
-include "load.php";

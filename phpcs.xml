@@ -8,7 +8,9 @@
     <arg name="extensions" value="php"/>
 
     <exclude-pattern>./vendor</exclude-pattern>
+    <exclude-pattern>./old</exclude-pattern>
     <exclude-pattern>./src</exclude-pattern>
+    <exclude-pattern>./tests/sample_products</exclude-pattern>
 
 
     <rule ref="WordPress-Core"/>

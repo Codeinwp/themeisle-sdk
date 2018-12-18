@@ -20,7 +20,11 @@ $themeisle_sdk_path    = dirname( __FILE__ );
 global $themeisle_sdk_max_version;
 global $themeisle_sdk_max_path;
 
-if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) >= 0 ) {
+if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 && apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
+	$themeisle_sdk_max_path = $themeisle_sdk_path;
+}
+
+if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) > 0 ) {
 	$themeisle_sdk_max_version = $themeisle_sdk_version;
 	$themeisle_sdk_max_path    = $themeisle_sdk_path;
 }

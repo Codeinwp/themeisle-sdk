@@ -15,17 +15,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 $products      = apply_filters( 'themeisle_sdk_products', array() );
 $path          = dirname( __FILE__ );
-$files_to_load = array(
-	'Loader.php',
-);
+$files_to_load = [
+	$path . '/src/' . 'Loader.php',
+	$path . '/src/' . 'Product.php',
+
+	$path . '/src/' . 'Common/Abstract_module.php',
+	$path . '/src/' . 'Common/Module_factory.php',
+
+	$path . '/src/' . 'Modules/Dashboard_widget.php',
+	$path . '/src/' . 'Modules/Rollback.php',
+];
+
+$files_to_load = array_merge( $files_to_load, apply_filters( 'themeisle_sdk_required_files', [] ) );
 
 foreach ( $files_to_load as $file ) {
-	$file_path = $path . '/src/' . $file;
-
-	if ( is_readable( $file_path ) ) {
-		require_once $file_path;
+	if ( is_readable( $file ) ) {
+		require_once $file;
 	}
 }
+
+Loader::init();
 
 foreach ( $products as $product ) {
 	Loader::add_product( $product );
