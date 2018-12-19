@@ -61,7 +61,9 @@ abstract class Abstract_module {
 			}
 		}
 
-		if ( isset( Module_Factory::SLUGS[ $product->get_slug() ] ) ) {
+		$slug = $product->get_slug();
+
+		if ( isset( Module_Factory::SLUGS[ $slug ] ) ) {
 			return true;
 		}
 
