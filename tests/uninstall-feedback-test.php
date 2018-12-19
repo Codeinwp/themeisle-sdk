@@ -4,13 +4,12 @@
  *
  * @package ThemeIsleSDK
  */
-require_once dirname( __FILE__ ) . '/helpers/custom-asserts-trait.php';
 
 /**
  * Test Uninstall feedback feature.
  */
 class Uninstall_Feedback_Test extends WP_UnitTestCase {
-	use CustomAssertTrait;
+
 
 	/**
 	 * Test product from partner loading.
@@ -41,9 +40,10 @@ class Uninstall_Feedback_Test extends WP_UnitTestCase {
 		$modules = \ThemeisleSDK\Common\Module_Factory::get_modules_map();
 
 		$this->assertArrayHasKey( 'sample_theme', $modules );
-
-		$this->assertArrayHasObjectOfType( 'ThemeisleSDK\\Modules\\Uninstall_Feedback', $modules['sample_theme'] );
-
+		$modules['sample_theme'] = array_filter( $modules['sample_theme'], function ( $value ) {
+			return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Uninstall_Feedback' );
+		} );
+		$this->assertCount( 1, $modules['sample_theme'] );
 	}
 
 	/**
