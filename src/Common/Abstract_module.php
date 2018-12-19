@@ -55,12 +55,12 @@ abstract class Abstract_Module {
 	 */
 	public function is_from_partner( $product ) {
 
-		foreach ( Module_Factory::DOMAINS as $partner_domain ) {
+		foreach ( Module_Factory::$domains as $partner_domain ) {
 			if ( strpos( $product->get_store_url(), $partner_domain ) !== false ) {
 				return true;
 			}
 		}
 
-		return array_key_exists( $product->get_slug(), Module_Factory::SLUGS );
+		return array_key_exists( $product->get_slug(), Module_Factory::$slugs );
 	}
 }

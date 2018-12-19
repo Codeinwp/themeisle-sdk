@@ -25,8 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Module_Factory {
 	/**
 	 * Partners slugs.
+	 *
+	 * @var array $SLUGS Partners product slugs.
 	 */
-	const SLUGS = [
+	public static $slugs = [
 		'zermatt'         => true,
 		'neto'            => true,
 		'olsen'           => true,
@@ -51,8 +53,10 @@ class Module_Factory {
 	];
 	/**
 	 * Partners domains.
+	 *
+	 * @var array $DOMAINS Partners domains.
 	 */
-	const DOMAINS = [
+	public static  $domains = [
 		'proteusthemes.com',
 		'anarieldesign.com',
 		'prothemedesign.com',
