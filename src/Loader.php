@@ -61,7 +61,7 @@ final class Loader {
 			self::$instance = new Loader();
 			$modules        = array_merge( self::$available_modules, apply_filters( 'themeisle_sdk_modules', [] ) );
 			foreach ( $modules as $key => $module ) {
-				if ( ! class_exists( 'ThemeisleSDK\\Modules\\' . ucwords( $module ) ) ) {
+				if ( ! class_exists( 'ThemeisleSDK\\Modules\\' . ucwords( $module, '_' ) ) ) {
 					unset( $modules[ $key ] );
 				}
 			}
@@ -81,7 +81,6 @@ final class Loader {
 		if ( ! is_readable( $base_file ) ) {
 			return self::$instance;
 		}
-
 		$product = new Product( $base_file );
 
 		Module_Factory::attach( $product, self::get_modules() );

@@ -10,6 +10,29 @@
  */
 class Rollback_Test extends WP_UnitTestCase {
 
+	protected static $editor_id;
+	protected static $admin_id;
+
+	public static function wpSetUpBeforeClass( $factory ) {
+		self::$editor_id = $factory->user->create(
+			array(
+				'role' => 'editor',
+			)
+		);
+		self::$admin_id  = $factory->user->create(
+			array(
+				'role' => 'administrator',
+			)
+		);
+
+		wp_set_current_user( self::$editor_id );
+	}
+
+	public static function wpTearDownAfterClass() {
+		self::delete_user( self::$editor_id );
+		self::delete_user( self::$admin_id );
+	}
+
 	/**
 	 * Test product from partner loading.
 	 */
@@ -25,6 +48,7 @@ class Rollback_Test extends WP_UnitTestCase {
 		$this->assertEquals( count( $modules['sample_theme_external'] ), 0 );
 
 	}
+
 	/**
 	 * Test product from partner loading.
 	 */
@@ -49,19 +73,34 @@ class Rollback_Test extends WP_UnitTestCase {
 		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme_external/style.css';
 		$product = new \ThemeisleSDK\Product( $file );
 
-		$this->assertFalse( ( new \ThemeisleSDK\Modules\Dashboard_Widget() )->can_load( $product ) );
+		$this->assertFalse( ( new \ThemeisleSDK\Modules\Rollback() )->can_load( $product ) );
 
 	}
 
 	/**
-	 * Test if rollback is disabled on partners.
+	 * Test if rollback should not load for non admins.
 	 */
-	public function test_rollback_can_load_regular() {
+	public function test_rollback_not_load_non_admins() {
 
+		wp_set_current_user( self::$editor_id );
 		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 		$product = new \ThemeisleSDK\Product( $file );
 
-		$this->assertTrue( ( new \ThemeisleSDK\Modules\Dashboard_Widget() )->can_load( $product ) );
+		$this->assertFalse( ( new \ThemeisleSDK\Modules\Rollback() )->can_load( $product ) );
+
+	}
+
+	/**
+	 * Test if rollback should load for admins.
+	 */
+	public function test_rollback_not_load_admins() {
+
+		wp_set_current_user( self::$admin_id );
+		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+		$product = new \ThemeisleSDK\Product( $file );
+
+		$this->assertTrue( ( new \ThemeisleSDK\Modules\Rollback() )->can_load( $product ) );
+		$this->assertInstanceOf( 'ThemeisleSDK\\Modules\\Rollback', ( new \ThemeisleSDK\Modules\Rollback() )->load( $product ) );
 
 	}
 

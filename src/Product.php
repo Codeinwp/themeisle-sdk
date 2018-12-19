@@ -25,6 +25,14 @@ class Product {
 	// */
 	// public $logger_option;
 	/**
+	 * Define plugin type string.
+	 */
+	const PLUGIN_TYPE = 'plugin';
+	/**
+	 * Define theme type string.
+	 */
+	const THEME_TYPE = 'theme';
+	/**
 	 * If the product has a pro version, contains the pro slug.
 	 *
 	 * @var string $pro_slug Pro slug, if available.
@@ -84,7 +92,6 @@ class Product {
 	 * @var string $store_name The store name.
 	 */
 	private $store_name;
-
 	/**
 	 * Does the product requires license.
 	 *
@@ -187,10 +194,7 @@ class Product {
 		$this->store_name = $file_headers['AuthorName'];
 		$this->author_url = $file_headers['AuthorURI'];
 		$this->store_url  = $file_headers['AuthorURI'];
-		// if ( $this->is_external_author() ) {
-		// $this->store_url  = 'https://themeisle.com';
-		// $this->store_name = 'ThemeIsle';
-		// }.
+
 		$this->requires_license    = ( 'yes' === $file_headers['Requires License'] ) ? true : false;
 		$this->wordpress_available = ( 'yes' === $file_headers['WordPress Available'] ) ? true : false;
 		$this->pro_slug            = ! empty( $file_headers['Pro Slug'] ) ? $file_headers['Pro Slug'] : '';
@@ -223,12 +227,12 @@ class Product {
 	// }
 
 	/**
-	 * Check if the product is either theme or plugin.
+	 * Return the product key.
 	 *
-	 * @return string Product type.
+	 * @return string The product key.
 	 */
-	public function get_type() {
-		return $this->type;
+	public function get_key() {
+		return $this->key;
 	}
 
 	// **
@@ -250,21 +254,39 @@ class Product {
 	// }
 
 	/**
+	 * Check if the product is either theme or plugin.
+	 *
+	 * @return string Product type.
+	 */
+	public function get_type() {
+		return $this->type;
+	}
+
+	/**
+	 * Return if the product is used as a plugin.
+	 *
+	 * @return bool Is plugin?
+	 */
+	public function is_plugin() {
+		return self::PLUGIN_TYPE === $this->type;
+	}
+
+	/**
+	 * Return if the product is used as a theme.
+	 *
+	 * @return bool Is theme ?
+	 */
+	public function is_theme() {
+		return self::THEME_TYPE === $this->type;
+	}
+
+	/**
 	 * Returns the product slug.
 	 *
 	 * @return string The product slug.
 	 */
 	public function get_slug() {
 		return $this->slug;
-	}
-
-	/**
-	 * Return the product key.
-	 *
-	 * @return string The product key.
-	 */
-	public function get_key() {
-		return $this->key;
 	}
 
 	/**

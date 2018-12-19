@@ -56,7 +56,7 @@ class Module_Factory {
 	 *
 	 * @var array $DOMAINS Partners domains.
 	 */
-	public static  $domains = [
+	public static $domains = [
 		'proteusthemes.com',
 		'anarieldesign.com',
 		'prothemedesign.com',
@@ -82,7 +82,7 @@ class Module_Factory {
 		}
 
 		foreach ( $modules as $module ) {
-			$class = 'ThemeisleSDK\\Modules\\' . ucwords( $module );
+			$class = 'ThemeisleSDK\\Modules\\' . ucwords( $module, '_' );
 			/**
 			 * Module object.
 			 *
@@ -93,7 +93,6 @@ class Module_Factory {
 			if ( ! $module_object->can_load( $product ) ) {
 				continue;
 			}
-
 			self::$modules_attached[ $product->get_slug() ][ $module ] = $module_object->load( $product );
 		}
 	}

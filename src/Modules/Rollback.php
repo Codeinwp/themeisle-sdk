@@ -35,11 +35,13 @@ class Rollback extends Abstract_Module {
 		if ( 'themes.php' !== $screen->parent_file ) {
 			return;
 		}
-		if ( 'plugin' !== $this->product->get_type() ) {
+		if ( ! $this->product->is_theme() ) {
 			return;
 		}
-
 		$version = $this->get_rollback();
+		if ( empty( $version ) ) {
+			return;
+		}
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
@@ -112,8 +114,11 @@ class Rollback extends Abstract_Module {
 	 * @return array Array of available versions.
 	 */
 	private function get_remote_versions() {
-
-		$response = wp_remote_get( $this->get_versions_api_url() );
+		$url = $this->get_versions_api_url();
+		if ( empty( $url ) ) {
+			return [];
+		}
+		$response = wp_remote_get( $url );
 		if ( is_wp_error( $response ) ) {
 			return array();
 		}
@@ -149,10 +154,10 @@ class Rollback extends Abstract_Module {
 	 * @return string Url where to check for versions.
 	 */
 	private function get_versions_api_url() {
-		if ( $this->product->is_wordpress_available() && $this->product->get_type() === 'plugin' ) {
+		if ( $this->product->is_wordpress_available() && $this->product->is_plugin() ) {
 			return sprintf( 'https://api.wordpress.org/plugins/info/1.0/%s', $this->product->get_slug() );
 		}
-		if ( $this->product->is_wordpress_available() && $this->product->get_type() === 'theme' ) {
+		if ( $this->product->is_wordpress_available() && $this->product->is_theme() ) {
 			return sprintf( 'https://api.wordpress.org/themes/info/1.1/?action=theme_information&request[slug]=%s&request[fields][versions]=true', $this->product->get_slug() );
 		}
 		$license = $this->product->get_license();
@@ -185,12 +190,12 @@ class Rollback extends Abstract_Module {
 			wp_nonce_ays( '' );
 		}
 
-		if ( $this->product->get_type() === 'plugin' ) {
+		if ( $this->product->is_plugin() ) {
 			$this->start_rollback_plugin();
 
 			return;
 		}
-		if ( $this->product->get_type() === 'theme' ) {
+		if ( $this->product->is_theme() ) {
 			$this->start_rollback_theme();
 
 			return;
@@ -305,11 +310,11 @@ class Rollback extends Abstract_Module {
 		if ( $this->is_from_partner( $product ) ) {
 			return false;
 		}
-		if ( $product->get_type() === 'theme' && ! current_user_can( 'switch_themes' ) ) {
+		if ( $product->is_theme() && ! current_user_can( 'switch_themes' ) ) {
 			return false;
 		}
 
-		if ( $product->get_type() === 'plugin' && ! current_user_can( 'install_plugins' ) ) {
+		if ( $product->is_plugin() && ! current_user_can( 'install_plugins' ) ) {
 			return false;
 		}
 
