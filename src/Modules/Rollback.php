@@ -12,7 +12,8 @@
 namespace ThemeisleSDK\Modules;
 
 // Exit if accessed directly.
-use ThemeisleSDK\Common\Abstract_module;
+use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Rollback for ThemeIsle SDK.
  */
-class Rollback extends Abstract_module {
+class Rollback extends Abstract_Module {
 
 	/**
 	 * Add js scripts for themes rollback.
@@ -31,10 +32,10 @@ class Rollback extends Abstract_module {
 		if ( ! isset( $screen->parent_file ) ) {
 			return;
 		}
-		if ( $screen->parent_file !== 'themes.php' ) {
+		if ( 'themes.php' !== $screen->parent_file ) {
 			return;
 		}
-		if ( $this->product->get_type() === 'plugin' ) {
+		if ( 'plugin' !== $this->product->get_type() ) {
 			return;
 		}
 
@@ -165,7 +166,9 @@ class Rollback extends Abstract_module {
 	/**
 	 * Show the rollback links in the plugin page.
 	 *
-	 * @return array The links.
+	 * @param array $links Plugin links.
+	 *
+	 * @return array $links Altered links.
 	 */
 	public function add_rollback_link( $links ) {
 		$version = $this->get_rollback();
@@ -292,9 +295,11 @@ class Rollback extends Abstract_module {
 	}
 
 	/**
-	 * @param \ThemeisleSDK\Product $product
+	 * Loads product object.
 	 *
-	 * @return bool
+	 * @param Product $product Product object.
+	 *
+	 * @return bool Should we load the module?
 	 */
 	public function can_load( $product ) {
 		if ( $this->is_from_partner( $product ) ) {
@@ -307,20 +312,35 @@ class Rollback extends Abstract_module {
 		if ( $product->get_type() === 'plugin' && ! current_user_can( 'install_plugins' ) ) {
 			return false;
 		}
+
 		return true;
 	}
 
 	/**
 	 * Sort the rollbacks array in descending order.
+	 *
+	 * @param mixed $a First version to compare.
+	 * @param mixed $b Second version to compare.
+	 *
+	 * @return bool Which version is greater?
 	 */
 	public function sort_rollback_array( $a, $b ) {
 		return version_compare( $a['version'], $b['version'], '<' ) > 0;
 	}
 
+	/**
+	 * Load module logic.
+	 *
+	 * @param Product $product Product object.
+	 *
+	 * @return $this Module object.
+	 */
 	public function load( $product ) {
 		$this->product = $product;
 		$this->show_link();
 		$this->add_hooks();
+
+		return $this;
 	}
 
 	/**

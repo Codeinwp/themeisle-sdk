@@ -23,18 +23,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Loader {
 	/**
+	 * Singleton instance.
+	 *
 	 * @var Loader instance The singleton instance
 	 */
 	private static $instance;
 	/**
+	 * Current loader version.
+	 *
 	 * @var string $version The class version.
 	 */
 	private static $version = '2.0.0';
 	/**
+	 * Holds registered products.
+	 *
 	 * @var array The products which use the SDK.
 	 */
 	private static $products = [];
 	/**
+	 * Holds available modules to load.
+	 *
 	 * @var array The modules which SDK will be using.
 	 */
 	private static $available_modules = [
@@ -47,8 +55,6 @@ final class Loader {
 
 	/**
 	 * Initialize the sdk logic.
-	 *
-	 * @param $modules
 	 */
 	public static function init() {
 		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Loader ) ) {

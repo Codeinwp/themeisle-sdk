@@ -49,7 +49,7 @@ class Rollback_Test extends WP_UnitTestCase {
 		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme_external/style.css';
 		$product = new \ThemeisleSDK\Product( $file );
 
-		$this->assertFalse( ( new \ThemeisleSDK\Modules\Dashboard_widget() )->can_load( $product ) );
+		$this->assertFalse( ( new \ThemeisleSDK\Modules\Dashboard_Widget() )->can_load( $product ) );
 
 	}
 
@@ -61,7 +61,7 @@ class Rollback_Test extends WP_UnitTestCase {
 		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 		$product = new \ThemeisleSDK\Product( $file );
 
-		$this->assertTrue( ( new \ThemeisleSDK\Modules\Dashboard_widget() )->can_load( $product ) );
+		$this->assertTrue( ( new \ThemeisleSDK\Modules\Dashboard_Widget() )->can_load( $product ) );
 
 	}
 

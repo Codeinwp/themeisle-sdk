@@ -18,11 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Abstract_module.
+ * Class Abstract_Module.
  *
  * @package ThemeisleSDK\Common
  */
-abstract class Abstract_module {
+abstract class Abstract_Module {
 	/**
 	 * Product which use the module.
 	 *
@@ -61,12 +61,6 @@ abstract class Abstract_module {
 			}
 		}
 
-		$slug = $product->get_slug();
-
-		if ( isset( Module_Factory::SLUGS[ $slug ] ) ) {
-			return true;
-		}
-
-		return false;
+		return array_key_exists( $product->get_slug(), Module_Factory::SLUGS );
 	}
 }

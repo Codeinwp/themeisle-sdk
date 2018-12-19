@@ -11,7 +11,8 @@
 
 namespace ThemeisleSDK\Modules;
 
-use ThemeisleSDK\Common\Abstract_module;
+use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Product;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,9 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Blog dashboard widget module for ThemeIsle SDK.
  */
-class Dashboard_widget extends Abstract_module {
+class Dashboard_Widget extends Abstract_Module {
 
 	/**
+	 * Fetched feeds items.
+	 *
 	 * @var array Feed items.
 	 */
 	private $items = array();
@@ -43,7 +46,9 @@ class Dashboard_widget extends Abstract_module {
 	private $feeds = [];
 
 	/**
-	 * @param \ThemeisleSDK\Product $product
+	 * Should we load this module.
+	 *
+	 * @param Product $product Product object.
 	 *
 	 * @return bool
 	 */
@@ -61,6 +66,10 @@ class Dashboard_widget extends Abstract_module {
 
 	/**
 	 * Registers the hooks.
+	 *
+	 * @param Product $product Product to load.
+	 *
+	 * @return Dashboard_Widget Module instance.
 	 */
 	public function load( $product ) {
 
@@ -236,10 +245,10 @@ class Dashboard_widget extends Abstract_module {
 
 		$type = $recommend['type'];
 
-		if ( ( $type == 'theme' && ! current_user_can( 'install_themes' ) ) ) {
+		if ( ( 'theme' === $type && ! current_user_can( 'install_themes' ) ) ) {
 			return;
 		}
-		if ( ( $type == 'plugin' && ! current_user_can( 'install_plugins' ) ) ) {
+		if ( ( 'plugin' === $type && ! current_user_can( 'install_plugins' ) ) ) {
 			return;
 		}
 
@@ -293,9 +302,9 @@ class Dashboard_widget extends Abstract_module {
 	 */
 	private function setup_feeds() {
 		if ( false === ( $items_normalized = get_transient( 'themeisle_sdk_feed_items' ) ) ) {
-			// Load SimplePie Instance
+			// Load SimplePie Instance.
 			$feed = fetch_feed( $this->feeds );
-			// TODO report error when is an error loading the feed
+			// TODO report error when is an error loading the feed.
 			if ( is_wp_error( $feed ) ) {
 				return;
 			}
@@ -321,7 +330,7 @@ class Dashboard_widget extends Abstract_module {
 	 * @return bool Either we should exclude the plugin or not.
 	 */
 	public function remove_current_products( $val ) {
-		if ( $val['type'] === 'theme' ) {
+		if ( 'theme' === $val['type'] ) {
 			$exist = wp_get_theme( $val['slug'] );
 
 			return ! $exist->exists();
@@ -418,7 +427,7 @@ class Dashboard_widget extends Abstract_module {
 			$products = array();
 		}
 
-		return  (array) $products;
+		return (array) $products;
 	}
 
 	/**

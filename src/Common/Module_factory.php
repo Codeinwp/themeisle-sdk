@@ -80,7 +80,9 @@ class Module_Factory {
 		foreach ( $modules as $module ) {
 			$class = 'ThemeisleSDK\\Modules\\' . ucwords( $module );
 			/**
-			 * @var Abstract_module $module_object Module instance.
+			 * Module object.
+			 *
+			 * @var Abstract_Module $module_object Module instance.
 			 */
 			$module_object = new  $class( $product );
 
