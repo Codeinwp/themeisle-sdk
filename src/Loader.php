@@ -51,6 +51,7 @@ final class Loader {
 		'uninstall_feedback',
 		'dashboard_widget',
 		'rollback',
+		'endpoint',
 	];
 
 	/**

@@ -290,15 +290,6 @@ class Product {
 	}
 
 	/**
-	 * If product is available on wordpress.org or not.
-	 *
-	 * @return bool Either is wp available or not.
-	 */
-	public function is_wordpress_available() {
-		return $this->wordpress_available;
-	}
-
-	/**
 	 * The magic var_dump info method.
 	 *
 	 * @return array Debug info.
@@ -328,23 +319,44 @@ class Product {
 		return $this->version;
 	}
 
-
 	/**
 	 * Returns current product license, if available.
 	 *
 	 * @return string Return license key, if available.
 	 */
 	public function get_license() {
+
+		if ( ! $this->requires_license() && ! $this->is_wordpress_available() ) {
+			return 'free';
+		}
 		$license_data = get_option( $this->get_key() . '_license_data', '' );
 
 		if ( empty( $license_data ) ) {
-			return '';
+			return get_option( $this->get_key() . '_license', '' );
 		}
 		if ( ! isset( $license_data->key ) ) {
-			return '';
+			return get_option( $this->get_key() . '_license', '' );
 		}
 
 		return $license_data->key;
+	}
+
+	/**
+	 * Either the product requires license or not.
+	 *
+	 * @return bool Either requires license or not.
+	 */
+	public function requires_license() {
+		return $this->requires_license;
+	}
+
+	/**
+	 * If product is available on wordpress.org or not.
+	 *
+	 * @return bool Either is wp available or not.
+	 */
+	public function is_wordpress_available() {
+		return $this->wordpress_available;
 	}
 
 	/**
@@ -366,15 +378,6 @@ class Product {
 	 */
 	public function get_name() {
 		return $this->name;
-	}
-
-	/**
-	 * Either the product requires license or not.
-	 *
-	 * @return bool Either requires license or not.
-	 */
-	public function requires_license() {
-		return $this->requires_license;
 	}
 
 	/**

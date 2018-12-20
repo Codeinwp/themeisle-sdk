@@ -111,12 +111,6 @@ class Uninstall_Feedback extends Abstract_Module {
 	 */
 	private $heading_theme = 'Looking to change {theme}? <span> What does not work for you?</span>';
 	/**
-	 * Default skip button before option.
-	 *
-	 * @var string $button_submit_before The text of the deactivate button before an option is chosen
-	 */
-	private $button_submit_before = 'Skip &amp; Deactivate';
-	/**
 	 * Default submit button action text.
 	 *
 	 * @var string $button_submit The text of the deactivate button
@@ -183,8 +177,19 @@ class Uninstall_Feedback extends Abstract_Module {
 				width: 100%;
 			}
 
+			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #<?php echo $key; ?>-info-disclosure-content ul i {
+				padding-left: 5px;
+				margin: 0 1px;
+			}
+
+			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #<?php echo $key; ?>-info-disclosure-content ul strong {
+				width: 125px;
+				display: block;
+				margin: 0;
+				float: left;
+			}
+
 			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #<?php echo $key; ?>-info-disclosure-content ul {
-				list-style: circle;
 				margin-left: 39px;
 				margin-top: 2px;
 				padding-top: 0px;
@@ -525,13 +530,12 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @param string $key The product key.
 	 */
 	function get_html( $type, $key ) {
-		$options              = Product::PLUGIN_TYPE === $type ? $this->options_plugin : $this->options_theme;
-		$button_submit_before = Product::PLUGIN_TYPE === $type ? $this->button_submit_before : 'Submit';
-		$button_submit        = Product::PLUGIN_TYPE === $type ? $this->button_submit : 'Submit';
-		$options              = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $options ) );
-		$button_submit_before = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit_before', $button_submit_before );
-		$button_submit        = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $button_submit );
-		$button_cancel        = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_cancel', $this->button_cancel );
+		$options       = Product::PLUGIN_TYPE === $type ? $this->options_plugin : $this->options_theme;
+		$button_cancel = Product::PLUGIN_TYPE === $type ? $this->button_cancel : 'Skip';
+		$button_submit = Product::PLUGIN_TYPE === $type ? $this->button_submit : 'Submit';
+		$options       = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $options ) );
+		$button_submit = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $button_submit );
+		$button_cancel = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_cancel', $button_cancel );
 
 		$options += $this->other;
 
@@ -560,8 +564,8 @@ class Uninstall_Feedback extends Abstract_Module {
 			[
 				'title' => 'Below is a detailed view of all data that ThemeIsle will receive if you fill in this survey. No domain name, email address or IP addresses are transmited after you submit the survey.',
 				'items' => [
-					sprintf( '%s %s version %s %s %s %s', '<strong>', $this->product->get_name(), '</strong>', '<code>', $this->product->get_version(), '</code>' ),
-					sprintf( '%s Selected uninstall reason from the above survey %s ', '<strong>', '</strong>' ),
+					sprintf( '%s Plugin version %s %s %s %s', '<strong>', '</strong>', '<code>', $this->product->get_version(), '</code>' ),
+					sprintf( '%s Uninstall reason %s %s Selected reson from the above survey %s ', '<strong>', '</strong>', '<i>', '</i>' ),
 				],
 			],
 			$disclosure_new_labels

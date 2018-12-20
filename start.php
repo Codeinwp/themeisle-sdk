@@ -25,6 +25,8 @@ $files_to_load = [
 	$path . '/src/' . 'Modules/Dashboard_widget.php',
 	$path . '/src/' . 'Modules/Rollback.php',
 	$path . '/src/' . 'Modules/Uninstall_feedback.php',
+	$path . '/src/' . 'Modules/Licenser.php',
+	$path . '/src/' . 'Modules/Endpoint.php',
 ];
 
 $files_to_load = array_merge( $files_to_load, apply_filters( 'themeisle_sdk_required_files', [] ) );
