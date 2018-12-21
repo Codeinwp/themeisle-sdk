@@ -26,7 +26,7 @@ class Logger_Test extends WP_UnitTestCase {
 				return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Logger' );
 			}
 		);
-		$this->assertEquals( count( $modules['sample_theme_external'] ), 0 );
+		$this->assertEquals( count( $modules['sample_theme_external'] ), 1 );
 
 	}
 
@@ -48,7 +48,7 @@ class Logger_Test extends WP_UnitTestCase {
 		$file    = dirname( __FILE__ ) . '/sample_products/sample_theme_external/style.css';
 		$product = new \ThemeisleSDK\Product( $file );
 
-		$this->assertFalse( ( new \ThemeisleSDK\Modules\Logger() )->can_load( $product ) );
+		$this->assertTrue( ( new \ThemeisleSDK\Modules\Logger() )->can_load( $product ) );
 
 	}
 
