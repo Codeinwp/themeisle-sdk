@@ -14,7 +14,7 @@ module.exports = function (grunt) {
 				},
 				load_php: {
 					options: {
-						prefix: '\\.*themeisle_sdk_version\.*\\s=\.*\\s\''
+						prefix: '\\.*\\$themeisle_sdk_version\.*\\s=\.*\\s\''
 					},
 					src: [
 					'load.php'
