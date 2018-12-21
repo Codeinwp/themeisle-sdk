@@ -564,7 +564,7 @@ class Uninstall_Feedback extends Abstract_Module {
 			[
 				'title' => 'Below is a detailed view of all data that ThemeIsle will receive if you fill in this survey. No domain name, email address or IP addresses are transmited after you submit the survey.',
 				'items' => [
-					sprintf( '%s Plugin version %s %s %s %s', '<strong>', '</strong>', '<code>', $this->product->get_version(), '</code>' ),
+					sprintf( '%s %s version %s %s %s %s', '<strong>', ucwords( $this->product->get_type() ), '</strong>', '<code>', $this->product->get_version(), '</code>' ),
 					sprintf( '%s Uninstall reason %s %s Selected reson from the above survey %s ', '<strong>', '</strong>', '<i>', '</i>' ),
 				],
 			],
