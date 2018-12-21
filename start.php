@@ -27,6 +27,10 @@ $files_to_load = [
 	$path . '/src/' . 'Modules/Uninstall_feedback.php',
 	$path . '/src/' . 'Modules/Licenser.php',
 	$path . '/src/' . 'Modules/Endpoint.php',
+	$path . '/src/' . 'Modules/Notification.php',
+	$path . '/src/' . 'Modules/Logger.php',
+	$path . '/src/' . 'Modules/Translate.php',
+	$path . '/src/' . 'Modules/Review.php',
 ];
 
 $files_to_load = array_merge( $files_to_load, apply_filters( 'themeisle_sdk_required_files', [] ) );

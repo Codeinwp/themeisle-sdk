@@ -46,12 +46,16 @@ final class Loader {
 	 * @var array The modules which SDK will be using.
 	 */
 	private static $available_modules = [
-		'logger',
-		'licenser',
-		'uninstall_feedback',
 		'dashboard_widget',
 		'rollback',
+		'uninstall_feedback',
+		'licenser',
 		'endpoint',
+		'notification',
+		'logger',
+		'translate',
+		'review',
+
 	];
 
 	/**
@@ -87,39 +91,7 @@ final class Loader {
 		Module_Factory::attach( $product, self::get_modules() );
 
 		self::$products[ $product->get_slug() ] = $product;
-		//
-		// $notifications = array();
-		// Based on the WordPress Available file header we enable the logger or not.
-		// if ( ! $product_object->is_wordpress_available() && apply_filters( $product_object->get_key() . '_enable_licenser', true ) === true ) {
-		// $licenser = new ThemeIsle_SDK_Licenser( $product_object );
-		// $licenser->enable();
-		// }
-		//
-		// $logger = new ThemeIsle_SDK_Logger( $product_object );
-		// if ( $product_object->is_logger_active() ) {
-		// $logger->enable();
-		// } else {
-		// $notifications[] = $logger;
-		// }
-		//
-		// $feedback = new ThemeIsle_SDK_Feedback_Factory( $product_object, $product_object->get_feedback_types() );
-		//
-		// $instances = $feedback->get_instances();
-		// if ( array_key_exists( 'review', $instances ) ) {
-		// $notifications[] = $instances['review'];
-		// }
-		// if ( array_key_exists( 'translate', $instances ) ) {
-		// $notifications[] = $instances['translate'];
-		// }
-		// new ThemeIsle_SDK_Notification_Manager( $product_object, $notifications );
-		// if ( ! $product_object->is_external_author() ) {
-		// new ThemeIsle_SDK_Widgets_Factory( $product_object, $product_object->get_widget_types() );
-		// }
-		// if ( ! $product_object->is_external_author() ) {
-		// new ThemeIsle_SDK_Rollback( $product_object );
-		// }
-		//
-		// new ThemeIsle_SDK_Endpoints( $product_object );
+
 		return self::$instance;
 	}
 

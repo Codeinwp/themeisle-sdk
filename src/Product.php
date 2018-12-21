@@ -20,10 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product model for ThemeIsle SDK.
  */
 class Product {
-	// **
-	// * @var string $logger_option Logger option key.
-	// */
-	// public $logger_option;
 	/**
 	 * Define plugin type string.
 	 */
@@ -110,10 +106,6 @@ class Product {
 	 * @var string $version The product version.
 	 */
 	private $version;
-	// **
-	// * @var string $feedback_types All the feedback types the product supports
-	// */
-	// private $feedback_types = array();
 
 	/**
 	 * ThemeIsle_SDK_Product constructor.
@@ -134,8 +126,6 @@ class Product {
 			update_option( $this->get_key() . '_install', time() );
 		}
 		$this->install = $install;
-
-		$this->logger_option = $this->get_key() . '_logger_flag';
 
 	}
 
@@ -199,32 +189,8 @@ class Product {
 		$this->wordpress_available = ( 'yes' === $file_headers['WordPress Available'] ) ? true : false;
 		$this->pro_slug            = ! empty( $file_headers['Pro Slug'] ) ? $file_headers['Pro Slug'] : '';
 		$this->version             = $file_headers['Version'];
-		// if ( $this->require_uninstall_feedback() ) {
-		// $this->feedback_types[] = 'deactivate';
-		// }
-		// if ( $this->is_wordpress_available() ) {
-		// $this->feedback_types[] = 'review';
-		// $this->feedback_types[] = 'translate';
-		// }.
-	}
 
-	// **
-	// * We require feedback on uninstall.
-	// *
-	// * @return bool Either we should require feedback on uninstall or not.
-	// */
-	// public function require_uninstall_feedback() {
-	// if ( $this->get_type() == 'theme' && ! $this->is_external_author() ) {
-	// return ! get_transient( 'ti_sdk_pause_' . $this->get_key(), false );
-	// }
-	//
-	// if ( $this->get_type() == 'plugin' ) {
-	//
-	// return true;
-	// }
-	//
-	// return false;
-	// }
+	}
 
 	/**
 	 * Return the product key.
@@ -234,25 +200,6 @@ class Product {
 	public function get_key() {
 		return $this->key;
 	}
-
-	// **
-	// * Check if the product is by external author or not.
-	// *
-	// * @return bool Either is external author or no.
-	// */
-	// public function is_external_author() {
-	// foreach ( $this->allowed_authors as $author ) {
-	// if ( strpos( $this->author_url, $author ) !== false ) {
-	// return true;
-	// }
-	// if ( in_array( $this->get_slug(), $this->allowed_products ) ) {
-	// return true;
-	// }
-	// }
-	//
-	// return false;
-	// }
-
 	/**
 	 * Check if the product is either theme or plugin.
 	 *
@@ -415,40 +362,6 @@ class Product {
 	public function get_file() {
 		return $this->file;
 	}
-	//
-	// **
-	// * Returns feedback types.
-	// *
-	// * @return array The feedback types.
-	// */
-	// public function get_feedback_types() {
-	// return apply_filters( $this->get_key() . '_feedback_types', $this->feedback_types );
-	// }
-	//
-	// **
-	// * We log the user website and product version.
-	// *
-	// * @return bool Either we log the data or not.
-	// */
-	// public function is_logger_active() {
-	// If is not available on WordPress log this automatically.
-	// if ( ! $this->is_wordpress_available() ) {
-	// return true;
-	// } else {
-	// $pro_slug = $this->get_pro_slug();
-	// if ( ! empty( $pro_slug ) ) {
-	//
-	// $all_products = ThemeIsle_SDK_Loader::get_products();
-	// if ( isset( $all_products[ $pro_slug ] ) ) {
-	// return true;
-	// }
-	// }
-	//
-	// return ( get_option( $this->get_key() . '_logger_flag', 'no' ) === 'yes' );
-	//
-	// }
-	// }
-
 	/**
 	 * Returns the pro slug, if available.
 	 *
