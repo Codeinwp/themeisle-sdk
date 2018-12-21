@@ -10,24 +10,37 @@
  * @since       1.1.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 // Current SDK version and path.
-$themeisle_sdk_version = '2.2.8';
+$themeisle_sdk_version = '2.2.21';
 $themeisle_sdk_path    = dirname( __FILE__ );
 
 global $themeisle_sdk_max_version;
 global $themeisle_sdk_max_path;
 
-if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) >= 0 ) {
+if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 && apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
+	$themeisle_sdk_max_path = $themeisle_sdk_path;
+}
+
+if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) > 0 ) {
 	$themeisle_sdk_max_version = $themeisle_sdk_version;
 	$themeisle_sdk_max_path    = $themeisle_sdk_path;
 }
 
-// load the latest sdk version from the active Themeisle products
+// load the latest sdk version from the active Themeisle products.
 if ( ! function_exists( 'themeisle_sdk_load_latest' ) ) :
 	/**
 	 * Always load the latest sdk version.
 	 */
 	function themeisle_sdk_load_latest() {
+		/**
+		 * Don't load the library if we are on < 5.4.
+		 */
+		if ( version_compare( PHP_VERSION, '5.4.32', '<' ) ) {
+			return;
+		}
 		global $themeisle_sdk_max_path;
 		require_once $themeisle_sdk_max_path . '/start.php';
 	}

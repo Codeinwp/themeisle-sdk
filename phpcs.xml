@@ -2,38 +2,49 @@
 <ruleset name="Themeisle">
     <description>Themeisle rules for PHP_CodeSnifferr</description>
 
-    <file>.</file>
+    <file>./</file>
 
-    <exclude-pattern>node_modules/*</exclude-pattern>
-    <exclude-pattern>vendor/*</exclude-pattern>
-    <exclude-pattern>lib/*</exclude-pattern>
-    <exclude-pattern>old/*</exclude-pattern>
-    <exclude-pattern>*.min.js</exclude-pattern>
-    <exclude-pattern>*.min.css</exclude-pattern>
+    <arg value="ps"/>
+    <arg name="extensions" value="php"/>
+
+    <exclude-pattern>./vendor</exclude-pattern>
+    <exclude-pattern>./old</exclude-pattern>
+    <exclude-pattern>./tests/sample_products</exclude-pattern>
+
+
     <rule ref="WordPress-Core">
-        <exclude name="Squiz.Commenting.FileComment.SpacingAfterComment"/>
-        <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
-        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
-        <exclude name="Generic.Commenting.DocComment.MissingShort"/>
-        <exclude name="Squiz.Commenting.InlineComment.NotCapital"/>
-        <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
-        <exclude name="Squiz.Commenting.LongConditionClosingComment.Invalid"/>
-        <exclude name="WordPress.NamingConvention.ValidVariableName.StringNotSnakeCase"/>
-        <exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCase"/>
-        <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
-        <exclude name="WordPress.WP.I18n.NonSingularStringLiteralText"/>
-        <exclude name="Squiz.PHP.DisallowMultipleAssignments" />
-        <exclude name="WordPress.WhiteSpace.PrecisionAlignment.Found" />
-        <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning" />
-        <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning" />
-        <exclude name="WordPress.WP.I18n.MissingTranslatorsComment" />
-    </rule>
-    <rule ref="WordPress-Docs">
 
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="Squiz.PHP.DisallowMultipleAssignments.Found"/>
     </rule>
-
-    <rule ref="Squiz.Commenting.FunctionComment.ScalarTypeHintMissing">
-        <severity>0</severity>
+    <rule ref="WordPress-Docs"/>
+    <rule ref="WordPress.WP.I18n"/>
+    <rule ref="Squiz.Commenting.FunctionComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
-
+    <rule ref="Squiz.Commenting.FileComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.ClassComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.ClassComment.SpacingAfter">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Commenting.DocComment.MissingShort">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.VariableComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
 </ruleset>

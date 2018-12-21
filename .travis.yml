@@ -1,32 +1,51 @@
-  language: php
+language: php
+dist: trusty
+env:
+  - WP_VERSION=latest
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.npm
+jobs:
+  include:
+    - stage: test
+      php: 7.0
+      name: "PHP Code sniffer lint."
+      script:
+        - composer install
+        - composer run-script lint
+    - php: 5.2
+      dist: precise
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 5.3
+      dist: precise
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 5.4
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 5.5
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 5.6
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 7.0
+      script:
+        - ./bin/run-unit-tests.sh
+    - php: 7.1
+      script:
+        - ./bin/run-unit-tests.sh
 
-  ##  PHP versions to test  against
-  php:
-      - "7.1"
-      - "7.0"
-      - "5.6"
-      - "5.5"
-      - "5.4"
-      - "5.3"
-  sudo: false
-  dist: precise
-  install:
-    - export WPCS=/tmp/wpcs/
-    - export PLUGIN_DIR=/tmp/plugin/
-    - export PATH="$HOME/.composer/vendor/bin:$PATH"
-    - mkdir -p $PLUGIN_DIR
-    - mkdir -p $WPCS
-    - plugin_slug=$(basename $(pwd))
-    - cd ..
-    - mv $plugin_slug $PLUGIN_DIR
-    - cd $WPCS
-    - composer global require "squizlabs/php_codesniffer=2.9.0"
-    - mkdir wordpress-coding-standards && curl -L https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/master.tar.gz | tar xz --strip-components=1 -C wordpress-coding-standards
-    - phpenv rehash
-    - phpcs --config-set installed_paths $WPCS/wordpress-coding-standards
-    - phpenv rehash
-    - cd $PLUGIN_DIR/$plugin_slug
-
-  script:
-    - find -L . -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
-    - phpcs -p -s -v -n . --standard=phpcs.xml --extensions=php;
+    - stage: deploy
+      if: branch = master and type != "pull_request"
+      before_install:
+        - nvm install && nvm use
+        - npm install npm -g
+      script:
+        - npm install || exit 1
+        - npm run semantic-release || exit 1
+branches:
+  only:
+    - master
