@@ -38,9 +38,7 @@ class Logger extends Abstract_Module {
 	 * @return bool Should we load ?
 	 */
 	public function can_load( $product ) {
-		if ( $this->is_from_partner( $product ) ) {
-			return false;
-		}
+
 
 		return apply_filters( $product->get_slug() . '_sdk_enable_logger', true );
 	}
