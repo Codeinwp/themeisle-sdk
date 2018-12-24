@@ -82,11 +82,11 @@ class Notification extends Abstract_Module {
 			return;
 		}
 		$notification_html = self::get_notification_html( $notification_details );
-		do_action( $current_notification['id'] . '_before_render' );
+		do_action( $notification_details['id'] . '_before_render' );
 
 		echo $notification_html;
 
-		do_action( $current_notification['id'] . '_after_render' );
+		do_action( $notification_details['id'] . '_after_render' );
 		self::render_snippets();
 	}
 
@@ -403,6 +403,26 @@ class Notification extends Abstract_Module {
 	}
 
 	/**
+	 * Setup notifications queue.
+	 */
+	public static function setup_notifications() {
+		$notifications       = apply_filters( 'themeisle_sdk_registered_notifications', [] );
+		$notifications       = array_filter(
+			$notifications,
+			function ( $value ) {
+				if ( ! isset( $value['id'] ) ) {
+					return false;
+				}
+				if ( get_option( $value['id'], '' ) !== '' ) {
+					return false;
+				}
+
+				return apply_filters( $value['id'] . '_should_show', true );
+			}
+		);
+		self::$notifications = $notifications;
+	}
+	/**
 	 * Load the module logic.
 	 *
 	 * @param Product $product Product to load the module for.
@@ -429,6 +449,7 @@ class Notification extends Abstract_Module {
 		self::$notifications = $notifications;
 		add_action( 'admin_notices', array( __CLASS__, 'show_notification' ) );
 		add_action( 'wp_ajax_themeisle_sdk_dismiss_notice', array( __CLASS__, 'dismiss' ) );
+		add_action( 'admin_head', array( __CLASS__, 'setup_notifications' ) );
 
 		return $this;
 	}
