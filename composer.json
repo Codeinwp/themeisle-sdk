@@ -14,7 +14,7 @@
       "homepage": "https://themeisle.com"
     }
   ],
-  "version": "3.0.0",
+  "version": "3.0.1",
   "require": {
     "composer/installers": "~1.0"
   },
