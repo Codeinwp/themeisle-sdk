@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.1...v3.0.2) (2018-12-28)
+
+
+### Bug Fixes
+
+* remove composer/installers from package requirements ([a0ad543](https://github.com/Codeinwp/themeisle-sdk/commit/a0ad543))
+
 ## [3.0.1](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.0...v3.0.1) (2018-12-24)
 
 
