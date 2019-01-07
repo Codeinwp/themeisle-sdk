@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.2...v3.0.3) (2019-01-07)
+
+
+### Bug Fixes
+
+* **build:** fix exit code when is running outside wordpress context ([d298bb5](https://github.com/Codeinwp/themeisle-sdk/commit/d298bb5))
+
 ## [3.0.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.1...v3.0.2) (2018-12-28)
 
 
