@@ -39,13 +39,15 @@ jobs:
         - ./bin/run-unit-tests.sh
 
     - stage: deploy
-      if: branch = master and type != "pull_request"
       before_install:
         - nvm install && nvm use
         - npm install npm -g
       script:
         - npm install || exit 1
         - npm run semantic-release || exit 1
-branches:
-  only:
-    - master
+
+stages:
+  - name: deploy
+    if: branch = master and type != "pull_request" and repo = "Codeinwp/themeisle-sdk"
+  - name: test
+    if: type = "pull_request"
