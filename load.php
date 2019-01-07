@@ -11,7 +11,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	return;
 }
 // Current SDK version and path.
 $themeisle_sdk_version = '3.0.2';
