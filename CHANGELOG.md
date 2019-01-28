@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.3...v3.0.4) (2019-01-28)
+
+
+### Bug Fixes
+
+* uninstall feedback disclosure issues when one of the feedback fields is open ([4631eef](https://github.com/Codeinwp/themeisle-sdk/commit/4631eef))
+
 ## [3.0.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.2...v3.0.3) (2019-01-07)
 
 
