@@ -75,7 +75,9 @@ class Rollback extends Abstract_Module {
 		$rollback = array();
 		$versions = $this->get_api_versions();
 		$versions = apply_filters( $this->product->get_key() . '_rollbacks', $versions );
-
+		if ( empty( $versions ) ) {
+			return $rollback;
+		}
 		if ( $versions ) {
 			usort( $versions, array( $this, 'sort_rollback_array' ) );
 			foreach ( $versions as $version ) {
@@ -177,6 +179,9 @@ class Rollback extends Abstract_Module {
 	 */
 	public function add_rollback_link( $links ) {
 		$version = $this->get_rollback();
+		if ( empty( $version ) ) {
+			return $links;
+		}
 		$links[] = '<a href="' . wp_nonce_url( admin_url( 'admin-post.php?action=' . $this->product->get_key() . '_rollback' ), $this->product->get_key() . '_rollback' ) . '">' . sprintf( apply_filters( $this->product->get_key() . '_rollback_label', 'Rollback to v%s' ), $version['version'] ) . '</a>';
 
 		return $links;
