@@ -411,6 +411,9 @@ class Licenser extends Abstract_Module {
 				$license_data          = new \stdClass();
 				$license_data->license = ( 'valid' != $status ) ? 'valid' : 'invalid';
 			}
+			if ( ! isset( $license_data->license ) ) {
+				$license_data->license = 'invalid';
+			}
 		}
 		if ( ! isset( $license_data->key ) ) {
 			$license_data->key = $license;
