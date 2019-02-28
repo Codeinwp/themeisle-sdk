@@ -1,0 +1,64 @@
+.upsell-product {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.upsell-product .plugin-banner {
+	border-bottom: 1px solid #ccc;
+}
+
+.upsell-product .plugin_box {
+	border: 1px solid #ccc;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	width: 95%;
+}
+
+.upsell-product .title-action-wrapper {
+	padding: 15px 20px 5px 20px;
+}
+
+.upsell-product .plugin-name {
+	font-size: 18px;
+	display: block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	margin-bottom: 10px;
+	overflow: hidden;
+	line-height: normal;
+}
+
+.upsell-product .version-wrapper {
+	text-align: right;
+	font-size: 13px;
+	color: #aaa;
+	margin-left: auto;
+	padding-top: 5px;
+}
+
+.upsell-product .plugin-desc {
+	display: block;
+	margin-bottom: 10px;
+	font-size: 13px;
+	color: #777;
+	line-height: 1.6;
+}
+
+.upsell-product .button-wrap > div {
+	padding: 0;
+	margin:0;
+}
+
+.plugin-box-footer {
+	display: flex;
+	justify-content: space-around;
+	vertical-align: middle;
+	align-items: center;
+	padding: 0px 10px 5px;
+	border-top: 1px solid #ccc;
+	flex: 1;
+	margin-top:  auto;
+}
