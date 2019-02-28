@@ -231,7 +231,7 @@ class Upsell extends Abstract_Module {
 
 		$additional = '';
 
-		if ( $state === 'deactivate' ) {
+		if ( 'deactivate' === $state ) {
 			$additional = ' action_button active';
 		}
 
@@ -296,7 +296,7 @@ class Upsell extends Abstract_Module {
 
 		if ( file_exists( ABSPATH . 'wp-content/plugins/' . $plugin_link_suffix ) ) {
 			$needs = is_plugin_active( $plugin_link_suffix ) ? 'deactivate' : 'activate';
-			if ( $needs === 'deactivate' && ! post_type_exists( 'portfolio' ) && $slug === 'jetpack' ) {
+			if ( 'deactivate' === $needs && ! post_type_exists( 'portfolio' ) && 'jetpack' === $slug ) {
 				return 'enable_cpt';
 			}
 
