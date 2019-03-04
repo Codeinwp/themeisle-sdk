@@ -62,7 +62,7 @@ class Upsell extends Abstract_Module {
 	 *
 	 * @param array $plugins_list - list of useful plugins (in slug => nicename format).
 	 * @param array $themes_list - list of useful themes (in slug => nicename format).
-	 * @param array $string - list of translated strings.
+	 * @param array $strings - list of translated strings.
 	 * @param array $preferences - list of preferences.
 	 */
 	function render_products_box( $plugins_list, $themes_list, $strings, $preferences = array() ) {
