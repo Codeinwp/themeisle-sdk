@@ -81,86 +81,137 @@ class Upsell extends Abstract_Module {
 		add_thickbox();
 
 		if ( ! empty( $plugins_list ) ) {
-			echo '<div class="upsell-product">';
+			$list = $this->get_plugins( $plugins_list, $preferences );
 
-			foreach ( $plugins_list as $plugin => $nicename ) {
-				$current_plugin = $this->call_plugin_api( $plugin );
+			if ( has_action( $this->product->get_key() . '_upsell_products_plugin_template' ) ) {
+				do_action( $this->product->get_key() . '_upsell_products_plugin_template', $list, $strings, $preferences );
+			} else {
+				echo '<div class="upsell-product">';
 
-				$name = empty( $nicename ) ? $current_plugin->name : $nicename;
-
-				$image = $current_plugin->banners['low'];
-				if ( isset( $preferences['image'] ) && 'icon' === $preferences['image'] ) {
-					$image = $current_plugin->icons['1x'];
+				foreach ( $list as $current_plugin ) {
+					echo '<div class="plugin_box">';
+					echo '<img class="plugin-banner" src="' . $current_plugin->custom_image . '">';
+					echo '<div class="title-action-wrapper">';
+					echo '<span class="plugin-name">' . esc_html( $current_plugin->custom_name ) . '</span>';
+					if ( ! isset( $preferences['description'] ) || ( isset( $preferences['description'] ) && $preferences['description'] ) ) {
+						echo '<span class="plugin-desc">' . esc_html( $current_plugin->short_description ) . '</span>';
+					}
+					echo '</div>';
+					echo '<div class="plugin-box-footer">';
+					echo '<a class="button thickbox open-plugin-details-modal" href="' . esc_url( $current_plugin->custom_url ) . '">' . esc_html( $strings['install'] ) . '</a>';
+					echo '</div>';
+					echo '<div class="version-wrapper"><span class="version">v' . esc_html( $current_plugin->version ) . '</span></div>';
+					echo '</div>';
 				}
 
-				$url = add_query_arg(
-					array(
-						'tab'       => 'plugin-information',
-						'plugin'    => $current_plugin->slug,
-						'TB_iframe' => true,
-						'width'     => 600,
-						'height'    => 500,
-					),
-					network_admin_url( 'plugin-install.php' )
-				);
-
-				echo '<div class="plugin_box">';
-				echo '<img class="plugin-banner" src="' . $image . '">';
-				echo '<div class="title-action-wrapper">';
-				echo '<span class="plugin-name">' . esc_html( $name ) . '</span>';
-				if ( ! isset( $preferences['description'] ) || ( isset( $preferences['description'] ) && $preferences['description'] ) ) {
-					echo '<span class="plugin-desc">' . esc_html( $current_plugin->short_description ) . '</span>';
-				}
-				echo '</div>';
-				echo '<div class="plugin-box-footer">';
-				echo '<a class="button thickbox open-plugin-details-modal" href="' . esc_url( $url ) . '">' . esc_html( $strings['install'] ) . '</a>';
-				echo '</div>';
-				echo '<div class="version-wrapper"><span class="version">v' . esc_html( $current_plugin->version ) . '</span></div>';
 				echo '</div>';
 			}
-
-			echo '</div>';
 		}
 
 		if ( ! empty( $themes_list ) ) {
-			echo '<div class="upsell-product">';
+			$list = $this->get_themes( $themes_list, $preferences );
 
-			foreach ( $themes_list as $slug => $nicename ) {
-				$theme = $this->call_theme_api( $slug );
-				if ( ! $theme ) {
-					continue;
+			if ( has_action( $this->product->get_key() . '_upsell_products_theme_template' ) ) {
+				do_action( $this->product->get_key() . '_upsell_products_theme_template', $list, $strings, $preferences );
+			} else {
+				echo '<div class="upsell-product">';
+
+				foreach ( $list as $theme ) {
+					echo '<div class="plugin_box">';
+					echo '<img class="plugin-banner" src="' . $theme->screenshot_url . '">';
+					echo '<div class="title-action-wrapper">';
+					echo '<span class="plugin-name">' . esc_html( $theme->custom_name ) . '</span>';
+					if ( ! isset( $preferences['description'] ) || ( isset( $preferences['description'] ) && $preferences['description'] ) ) {
+						echo '<span class="plugin-desc">' . esc_html( $theme->description ) . '</span>';
+					}
+					echo '</div>';
+					echo '<div class="plugin-box-footer">';
+					echo '<div class="button-wrap">';
+					echo '<a class="button" href="' . esc_url( $theme->custom_url ) . '">' . esc_html( $strings['install'] ) . '</a>';
+					echo '</div>';
+					echo '<div class="version-wrapper"><span class="version">v' . esc_html( $theme->version ) . '</span></div>';
+					echo '</div>';
 				}
 
-				$url = add_query_arg(
-					array(
-						'theme'     => $theme->slug,
-						'TB_iframe' => true,
-						'width'     => 600,
-						'height'    => 500,
-					),
-					network_admin_url( 'theme-install.php' )
-				);
-
-				$name = empty( $nicename ) ? $theme->name : $nicename;
-
-				echo '<div class="plugin_box">';
-				echo '<img class="plugin-banner" src="' . $theme->screenshot_url . '">';
-				echo '<div class="title-action-wrapper">';
-				echo '<span class="plugin-name">' . esc_html( $name ) . '</span>';
-				if ( ! isset( $preferences['description'] ) || ( isset( $preferences['description'] ) && $preferences['description'] ) ) {
-					echo '<span class="plugin-desc">' . esc_html( $theme->description ) . '</span>';
-				}
-				echo '</div>';
-				echo '<div class="plugin-box-footer">';
-				echo '<div class="button-wrap">';
-				echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html( $strings['install'] ) . '</a>';
-				echo '</div>';
-				echo '<div class="version-wrapper"><span class="version">v' . esc_html( $theme->version ) . '</span></div>';
 				echo '</div>';
 			}
-
-			echo '</div>';
 		}
+	}
+
+	/**
+	 * Collect all the information for the plugins list.
+	 *
+	 * @param array $plugins_list - list of useful plugins (in slug => nicename format).
+	 * @param array $preferences - list of preferences.
+	 *
+	 * @return array
+	 */
+	private function get_plugins( $plugins_list, $preferences ) {
+		$list = array();
+		foreach ( $plugins_list as $plugin => $nicename ) {
+			$current_plugin = $this->call_plugin_api( $plugin );
+
+			$name = empty( $nicename ) ? $current_plugin->name : $nicename;
+
+			$image = $current_plugin->banners['low'];
+			if ( isset( $preferences['image'] ) && 'icon' === $preferences['image'] ) {
+				$image = $current_plugin->icons['1x'];
+			}
+
+			$url = add_query_arg(
+				array(
+					'tab'       => 'plugin-information',
+					'plugin'    => $current_plugin->slug,
+					'TB_iframe' => true,
+					'width'     => 600,
+					'height'    => 500,
+				),
+				network_admin_url( 'plugin-install.php' )
+			);
+
+			$current_plugin->custom_url   = $url;
+			$current_plugin->custom_name  = $name;
+			$current_plugin->custom_image = $image;
+
+			$list[] = $current_plugin;
+		}
+		return $list;
+	}
+
+	/**
+	 * Collect all the information for the themes list.
+	 *
+	 * @param array $themes_list - list of useful themes (in slug => nicename format).
+	 * @param array $preferences - list of preferences.
+	 *
+	 * @return array
+	 */
+	private function get_themes( $themes_list, $preferences ) {
+		$list = array();
+		foreach ( $themes_list as $slug => $nicename ) {
+			$theme = $this->call_theme_api( $slug );
+			if ( ! $theme ) {
+				continue;
+			}
+
+			$url = add_query_arg(
+				array(
+					'theme'     => $theme->slug,
+					'TB_iframe' => true,
+					'width'     => 600,
+					'height'    => 500,
+				),
+				network_admin_url( 'theme-install.php' )
+			);
+
+			$name = empty( $nicename ) ? $theme->name : $nicename;
+
+			$theme->custom_url  = $url;
+			$theme->custom_name = $name;
+
+			$list[] = $theme;
+		}
+		return $list;
 	}
 
 	/**
