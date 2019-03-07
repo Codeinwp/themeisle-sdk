@@ -35,6 +35,7 @@ class Sdk_Loading_Test extends WP_UnitTestCase {
 		$this->assertTrue( class_exists( 'ThemeisleSDK\\Modules\\Logger' ) );
 		$this->assertTrue( class_exists( 'ThemeisleSDK\\Modules\\Translate' ) );
 		$this->assertTrue( class_exists( 'ThemeisleSDK\\Modules\\Review' ) );
+		$this->assertTrue( class_exists( 'ThemeisleSDK\\Modules\\Recommendation' ) );
 		$this->assertTrue( class_exists( 'ThemeisleSDK\\Common\\Abstract_Module' ) );
 		$this->assertTrue( class_exists( 'ThemeisleSDK\\Common\\Module_factory' ) );
 	}

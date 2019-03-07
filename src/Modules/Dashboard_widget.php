@@ -103,7 +103,7 @@ class Dashboard_Widget extends Abstract_Module {
 			'themeisle',
 			$this->dashboard_name,
 			[
-				&$this,
+				$this,
 				'render_dashboard_widget',
 			]
 		);
@@ -281,6 +281,8 @@ class Dashboard_Widget extends Abstract_Module {
 								array(
 									'lite',
 									'Lite',
+									'(Lite)',
+									'(lite)',
 								),
 								'',
 								$recommend['name']
@@ -372,16 +374,23 @@ class Dashboard_Widget extends Abstract_Module {
 	 */
 	function get_product_from_api() {
 		if ( false === ( $products = get_transient( 'themeisle_sdk_products' ) ) ) {
-			$products         = array();
-			$themeisle_themes = $this->get_themes_from_wporg( 'themeisle' );
-			$codeinwp_themes  = $this->get_themes_from_wporg( 'codeinwp' );
-
-			$themeisle_plugins = $this->get_plugins_from_wporg( 'themeisle' );
-			$codeinwp_plugins  = $this->get_plugins_from_wporg( 'codeinwp' );
-
-			$all_themes = array_merge( $themeisle_themes, $codeinwp_themes );
+			$products                = array();
+			$all_themes              = $this->get_themes_from_wporg( 'themeisle' );
+			$all_plugins             = $this->get_plugins_from_wporg( 'themeisle' );
+			static $allowed_products = [
+				'hestia'              => true,
+				'neve'                => true,
+				'visualizer'          => true,
+				'feedzy-rss-feeds'    => true,
+				'wp-product-review'   => true,
+				'otter-blocks'        => true,
+				'themeisle-companion' => true,
+			];
 			foreach ( $all_themes as $theme ) {
 				if ( $theme->active_installs < 4999 ) {
+					continue;
+				}
+				if ( ! isset( $allowed_products[ $theme->slug ] ) ) {
 					continue;
 				}
 				$products[] = array(
@@ -391,9 +400,11 @@ class Dashboard_Widget extends Abstract_Module {
 					'installs' => $theme->active_installs,
 				);
 			}
-			$all_plugins = array_merge( $themeisle_plugins, $codeinwp_plugins );
 			foreach ( $all_plugins as $plugin ) {
 				if ( $plugin->active_installs < 4999 ) {
+					continue;
+				}
+				if ( ! isset( $allowed_products[ $plugin->slug ] ) ) {
 					continue;
 				}
 				$products[] = array(
@@ -439,7 +450,7 @@ class Dashboard_Widget extends Abstract_Module {
 	 */
 	function get_plugins_from_wporg( $author ) {
 		$products = wp_remote_get(
-			'https://api.wordpress.org/plugins/info/1.1/?action=query_plugins&request[author]=' . $author . '&request[per_page]=20&request[fields][active_installs]=true'
+			'https://api.wordpress.org/plugins/info/1.1/?action=query_plugins&request[author]=' . $author . '&request[per_page]=40&request[fields][active_installs]=true'
 		);
 		$products = json_decode( wp_remote_retrieve_body( $products ) );
 		if ( is_object( $products ) ) {
