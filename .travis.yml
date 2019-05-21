@@ -39,6 +39,8 @@ jobs:
         - ./bin/run-unit-tests.sh
 
     - stage: deploy
+      php: 7.0
+      name: "Deployment"
       before_install:
         - nvm install && nvm use
         - npm install npm -g
