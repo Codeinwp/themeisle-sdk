@@ -1,3 +1,10 @@
+## [3.0.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.6...v3.0.7) (2019-05-27)
+
+
+### Bug Fixes
+
+* change store url with the new domain ([6bdbe1e](https://github.com/Codeinwp/themeisle-sdk/commit/6bdbe1e))
+
 ## [3.0.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.5...v3.0.6) (2019-05-21)
 
 
