@@ -1,3 +1,10 @@
+## [3.0.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.7...v3.0.8) (2019-05-28)
+
+
+### Bug Fixes
+
+* undefined class on diff module which should check the class on global namespace ([df6bb12](https://github.com/Codeinwp/themeisle-sdk/commit/df6bb12))
+
 ## [3.0.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.6...v3.0.7) (2019-05-27)
 
 
