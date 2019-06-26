@@ -11,3 +11,11 @@
  * WordPress Available:  no
  * Requires License:    no
  */
+
+require_once 'vendor/load.php';
+
+add_filter( 'themeisle_sdk_products', function ( $products ) {
+	$products[] = __FILE__;
+
+	return $products;
+} );
