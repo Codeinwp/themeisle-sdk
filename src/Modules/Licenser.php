@@ -194,7 +194,7 @@ class Licenser extends Abstract_Module {
 			?>
 			<div class="error">
 				<p>
-					<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->get_api_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() ); ?> </strong>
+					<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->get_api_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() . '_license' ); ?> </strong>
 				</p>
 			</div>
 			<?php
