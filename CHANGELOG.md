@@ -1,3 +1,13 @@
+## [3.0.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.8...v3.0.9) (2019-06-26)
+
+
+### Bug Fixes
+
+* adds new icon for dashboard widget ([de78068](https://github.com/Codeinwp/themeisle-sdk/commit/de78068))
+* anchor element on license activation message which should link to the license field, fix [#57](https://github.com/Codeinwp/themeisle-sdk/issues/57) ([2e78856](https://github.com/Codeinwp/themeisle-sdk/commit/2e78856))
+* change uninstall feedback logo with new version, fix [#58](https://github.com/Codeinwp/themeisle-sdk/issues/58) ([2554a4f](https://github.com/Codeinwp/themeisle-sdk/commit/2554a4f))
+* remove soon to expire notice, fix https://github.com/Codeinwp/themeisle/issues/752 ([a126225](https://github.com/Codeinwp/themeisle-sdk/commit/a126225))
+
 ## [3.0.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.7...v3.0.8) (2019-05-28)
 
 
