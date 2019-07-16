@@ -1,3 +1,13 @@
+## [3.0.10](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.9...v3.0.10) (2019-07-16)
+
+
+### Bug Fixes
+
+* compatibility with lower PHP versions ([065ac8e](https://github.com/Codeinwp/themeisle-sdk/commit/065ac8e))
+* not loading licenser when SDK comes from theme [[#62](https://github.com/Codeinwp/themeisle-sdk/issues/62)] ([b706ca7](https://github.com/Codeinwp/themeisle-sdk/commit/b706ca7))
+* not loading licenser when SDK comes from theme [[#65](https://github.com/Codeinwp/themeisle-sdk/issues/65) ([419d8e6](https://github.com/Codeinwp/themeisle-sdk/commit/419d8e6))
+* preserve loaded when adding the licenser one ([cd50434](https://github.com/Codeinwp/themeisle-sdk/commit/cd50434))
+
 ## [3.0.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.8...v3.0.9) (2019-06-26)
 
 
