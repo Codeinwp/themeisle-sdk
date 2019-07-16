@@ -42,8 +42,10 @@ if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) > 0 )
 if ( ! function_exists( 'themeisle_sdk_load_licenser_if_present' ) ) :
 	/**
 	 * Always load the licenser, if present.
+	 *
+	 * @param array $to_load Previously files to load.
 	 */
-	function themeisle_sdk_load_licenser_if_present() {
+	function themeisle_sdk_load_licenser_if_present( $to_load ) {
 		global $themeisle_sdk_abs_licenser_path;
 		$to_load[] = $themeisle_sdk_abs_licenser_path;
 
