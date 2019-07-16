@@ -20,6 +20,17 @@ $themeisle_sdk_path    = dirname( __FILE__ );
 global $themeisle_sdk_max_version;
 global $themeisle_sdk_max_path;
 
+// If this is the latest SDK and it comes from a theme, we should load licenser separately.
+$licenser_path = '/src/Modules/Licenser.php';
+
+if ( ! file_exists( $themeisle_sdk_path . $licenser_path ) && file_exists( $themeisle_sdk_max_path . $licenser_path ) ) {
+	add_filter( 'themeisle_sdk_required_files', function ( $to_load ) use ( $themeisle_sdk_max_path, $licenser_path ) {
+		$to_load[] = $themeisle_sdk_max_path . $licenser_path;
+
+		return $to_load;
+	} );
+}
+
 if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 &&
 		apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
 	$themeisle_sdk_max_path = $themeisle_sdk_path;
