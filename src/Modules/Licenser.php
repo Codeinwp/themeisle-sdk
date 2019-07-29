@@ -424,7 +424,7 @@ class Licenser extends Abstract_Module {
 	function update_nag() {
 		$theme        = wp_get_theme( $this->product->get_slug() );
 		$api_response = get_transient( $this->product_key );
-		if ( false === $api_response ) {
+		if ( false === $api_response || ! isset( $api_response->new_version ) ) {
 			return;
 		}
 		$update_url     = wp_nonce_url( 'update.php?action=upgrade-theme&amp;theme=' . urlencode( $this->product->get_slug() ), 'upgrade-theme_' . $this->product->get_slug() );
@@ -486,7 +486,7 @@ class Licenser extends Abstract_Module {
 
 				return false;
 			}
-			$update_data->sections = maybe_unserialize( $update_data->sections );
+			$update_data->sections = isset( $update_data->sections ) ? maybe_unserialize( $update_data->sections ) : null;
 
 			set_transient( $this->product_key, $update_data, 12 * HOUR_IN_SECONDS );
 		}
