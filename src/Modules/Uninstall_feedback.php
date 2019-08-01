@@ -48,15 +48,15 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_plugin The main options list for plugins.
 	 */
 	private $options_plugin = array(
-		'I found a better plugin'            => array(
+		'I found a better plugin'                                       => array(
 			'id'          => 3,
 			'type'        => 'text',
 			'placeholder' => 'What\'s the plugin\'s name?',
 		),
-		'I could not get the plugin to work' => array(
+		'I could not get the plugin to work'                            => array(
 			'id' => 4,
 		),
-		'I no longer need the plugin'        => array(
+		'I no longer need the plugin'                                   => array(
 			'id'          => 5,
 			'type'        => 'textarea',
 			'placeholder' => 'If you could improve one thing about our product, what would it be?',
@@ -71,13 +71,13 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_theme The main options list for themes.
 	 */
 	private $options_theme = array(
-		'I don\'t know how to make it look like demo' => array(
+		'I don\'t know how to make it look like demo'             => array(
 			'id' => 7,
 		),
-		'It lacks options'                            => array(
+		'It lacks options'                                        => array(
 			'id' => 8,
 		),
-		'Is not working with a plugin that I need'    => array(
+		'Is not working with a plugin that I need'                => array(
 			'id'          => 9,
 			'type'        => 'text',
 			'placeholder' => 'What is the name of the plugin',
@@ -95,7 +95,7 @@ class Uninstall_Feedback extends Abstract_Module {
 		'Other' => array(
 			'id'          => 999,
 			'type'        => 'textarea',
-			'placeholder' => 'cmon cmon tell us',
+			'placeholder' => 'What can we do better?',
 		),
 	);
 	/**
@@ -109,7 +109,7 @@ class Uninstall_Feedback extends Abstract_Module {
 	 *
 	 * @var string $heading_theme The heading of the modal
 	 */
-	private $heading_theme = 'Looking to change {theme}? <span> What does not work for you?</span>';
+	private $heading_theme = 'What does not work for you in {theme}?';
 	/**
 	 * Default submit button action text.
 	 *
@@ -137,6 +137,12 @@ class Uninstall_Feedback extends Abstract_Module {
 
 		$id = $this->product->get_key() . '_deactivate';
 
+		if ( $this->product->get_type() === 'theme' ) {
+			$this->render_theme_feedback_popup();
+
+			return;
+		}
+
 		$this->add_css( $this->product->get_type(), $this->product->get_key() );
 		$this->add_js( $this->product->get_type(), $this->product->get_key(), '#TB_inline?' . apply_filters( $this->product->get_key() . '_feedback_deactivate_attributes', 'width=600&height=550' ) . '&inlineId=' . $id );
 
@@ -144,10 +150,320 @@ class Uninstall_Feedback extends Abstract_Module {
 	}
 
 	/**
+	 * Theme feedback drawer CSS.
+	 */
+	private function add_theme_feedback_drawer_css() { ?>
+		<style>
+			.ti-theme-uninstall-feedback-drawer {
+				background: #fff;
+				max-width: 400px;
+				position: fixed;
+				top: 100%;
+				right: 15px;
+				z-index: 10000;
+				box-shadow: 0 0 15px -5px rgba(0, 0, 0, .5);
+				border-top-left-radius: 5px;
+				transition: all .3s ease-out;
+			}
+
+			.ti-theme-uninstall-feedback-drawer.active {
+				transform: translateY(-100%);
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--header {
+				border-top-left-radius: 5px;
+				position: relative;
+				background-color: #23A1CE;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--header h5 {
+				margin: 0;
+				font-size: 16px;
+				padding: 15px;
+				color: #fff;
+				font-weight: 600;
+				text-align: center;
+				letter-spacing: .3px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--header .toggle {
+				position: absolute;
+				padding: 3px 0;
+				width: 30px;
+				top: -26px;
+				right: 0;
+				cursor: pointer;
+				border-top-left-radius: 5px;
+				border-top-right-radius: 5px;
+				font-size: 20px;
+				background-color: #23A1CE;
+				color: #fff;
+				border: none;
+				line-height: 20px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .toggle span {
+				margin: 0;
+				display: inline-block;
+			}
+
+			.ti-theme-uninstall-feedback-drawer:not(.active) .toggle span {
+				transform: rotate(45deg);
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--header .toggle:hover {
+				background-color: #1880a5;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--body {
+				padding: 15px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--form {
+				margin: 0;
+				font-size: 14px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--form input[type="radio"] {
+				margin: 0 10px 0 0;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--form input[type="radio"]:checked ~ textarea {
+				display: block;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--form textarea {
+				width: 100%;
+				margin: 10px 0 0;
+				display: none;
+				max-height: 150px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer li {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				margin-bottom: 15px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer li:last-child {
+				margin-bottom: 0;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .popup--footer {
+				padding: 0 15px 15px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .actions {
+				display: flex;
+				flex-wrap: wrap;
+			}
+
+			.theme-info-disclosure {
+				width: 100%;
+				margin-bottom: 15px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .theme-info-disclosure-content {
+				max-height: 0;
+				overflow: hidden;
+				width: 100%;
+				transition: .3s ease;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .theme-info-disclosure-content.active {
+				max-height: 300px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .theme-info-disclosure-content p {
+				margin: 0;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .theme-info-disclosure-content ul {
+				margin: 10px 0;
+				border-radius: 3px;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .theme-info-disclosure-content ul li {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 0;
+				padding: 5px 0;
+				border-bottom: 1px solid #ccc;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .buttons {
+				display: flex;
+				width: 100%;
+			}
+
+			.ti-theme-uninstall-feedback-drawer .buttons input:last-child {
+				margin-left: auto;
+			}
+		</style>
+	<? }
+
+	/**
+	 * Theme feedback drawer JS.
+	 */
+	private function add_theme_feedback_drawer_js() {
+		$key = $this->product->get_key();
+		?>
+		<script type="text/javascript" id="ti-deactivate-js">
+					( function($) {
+						$( document ).ready( function() {
+							setTimeout( function() {
+								$( '.ti-theme-uninstall-feedback-drawer' ).addClass( 'active' );
+							}, <?php echo absint( self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000 ); ?> );
+
+							$( '.ti-theme-uninstall-feedback-drawer .toggle' ).on( 'click', function(e) {
+								e.preventDefault();
+								$( '.ti-theme-uninstall-feedback-drawer' ).toggleClass( 'active' );
+							} );
+
+							$( '.theme-info-disclosure' ).on( 'click', function(e) {
+								e.preventDefault();
+								$( '.theme-info-disclosure-content' ).toggleClass( 'active' );
+							} );
+
+							$( '.ti-theme-uninstall-feedback-drawer input[type="radio"]' ).on( 'change', function() {
+								var radio = $( this );
+								if ( radio.parent().find( 'textarea' ).length > 0 &&
+										radio.parent().find( 'textarea' ).val().length === 0 ) {
+									$( '#ti-deactivate-yes' ).attr( 'disabled', 'disabled' );
+									radio.parent().find( 'textarea' ).on( 'keyup', function(e) {
+										if ( $( this ).val().length === 0 ) {
+											$( '#ti-deactivate-yes' ).attr( 'disabled', 'disabled' );
+										} else {
+											$( '#ti-deactivate-yes' ).removeAttr( 'disabled' );
+										}
+									} );
+								} else {
+									$( '#ti-deactivate-yes' ).removeAttr( 'disabled' );
+								}
+							} );
+
+							$( '#ti-deactivate-yes' ).on( 'click', function(e) {
+								e.preventDefault();
+								e.stopPropagation();
+
+								var selectedOption = $(
+										'.ti-theme-uninstall-feedback-drawer input[name="ti-deactivate-option"]:checked' );
+								$.post( ajaxurl, {
+									'action': '<?php echo esc_attr( $key ) . '_uninstall_feedback'; ?>',
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'id': selectedOption.
+											parent().
+											attr( 'ti-option-id' ),
+									'msg': selectedOption.
+											parent().
+											find( 'textarea' ).
+											val(),
+									'type': 'theme',
+									'key': '<?php echo esc_attr( $key ); ?>'
+								} );
+								$( '.ti-theme-uninstall-feedback-drawer' ).fadeOut();
+							} );
+						} );
+					} )( jQuery );
+
+		</script>
+		<?php
+	}
+
+	/**
+	 * Render theme feedback drawer.
+	 */
+	private function render_theme_feedback_popup() {
+		$this->add_theme_feedback_drawer_js();
+		$this->add_theme_feedback_drawer_css();
+		$heading       = str_replace( '{theme}', $this->product->get_name(), $this->heading_theme );
+		$button_submit = 'Submit';
+		$button_submit = apply_filters( $this->product->get_key() . '_feedback_deactivate_button_submit', $button_submit );
+		$options       = $this->options_theme;
+		$options       = $this->randomize_options( apply_filters( $this->product->get_key() . '_feedback_deactivate_options', $options ) );
+		$key           = $this->product->get_key();
+
+		$options += $this->other;
+
+
+
+		$disclosure_new_labels = apply_filters( $this->product->get_slug() . '_themeisle_sdk_disclosure_content_labels', [], $this->product );
+		$disclosure_labels     = array_merge(
+			[
+				'title' => 'Below is a detailed view of all data that ThemeIsle will receive if you fill in this survey. No domain name, email address or IP addresses are transmited after you submit the survey.',
+				'items' => [
+					sprintf( '%s %s version %s %s %s %s', '<strong>', ucwords( $this->product->get_type() ), '</strong>', '<code>', $this->product->get_version(), '</code>' ),
+					sprintf( '%s Uninstall reason %s %s Selected reson from the above survey %s ', '<strong>', '</strong>', '<i>', '</i>' ),
+				],
+			],
+			$disclosure_new_labels
+		);
+
+		$info_disclosure_link    = '<a href="#" class="theme-info-disclosure">' . apply_filters( $this->product->get_slug() . '_themeisle_sdk_info_collect_cta', 'What info do we collect?' ) . '</a>';
+		$info_disclosure_content = '<div class="theme-info-disclosure-content"><p>' . wp_kses_post( $disclosure_labels['title'] ) . '</p><ul>';
+		foreach ( $disclosure_labels['items'] as $disclosure_item ) {
+			$info_disclosure_content .= sprintf( '<li>%s</li>', wp_kses_post( $disclosure_item ) );
+		}
+		$info_disclosure_content .= '</ul></div>';
+
+
+		?>
+		<div class="ti-theme-uninstall-feedback-drawer">
+			<div class="popup--header">
+				<h5><?php echo wp_kses( $heading, array( 'span' => true ) ); ?> </h5>
+				<button class="toggle"><span>&times;</span></button>
+			</div><!--/.popup--header-->
+			<div class="popup--body">
+				<ul class="popup--form">
+				<?php foreach ( $options as $title => $attributes ) { ?>
+					<li ti-option-id="<?php echo esc_attr( $attributes['id'] ); ?> '">
+						<input type="radio" name="ti-deactivate-option" id="<?php echo esc_attr( $key . $attributes['id'] ); ?>">
+						<label for="<?php echo esc_attr( $key . $attributes['id'] ); ?>">
+							<?php echo str_replace( '{theme}', $this->product->get_name(), $title ); ?>
+						</label>
+					<?php if ( array_key_exists( 'type', $attributes ) ) {
+						$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
+						switch ( $attributes['type'] ) {
+							case 'text':
+								echo '<textarea rows="1" name="comments" placeholder="' . esc_attr( $placeholder ) . '"></textarea>';
+								break;
+							case 'textarea':
+								echo '<textarea rows="2" name="comments" placeholder="' . esc_attr( $placeholder ) . '"></textarea>';
+								break;
+						}
+					} ?>
+					</li>
+				<?php } ?>
+				</ul>
+			</div><!--/.popup--body-->
+			<div class="popup--footer">
+				<div class="actions">
+					<?php
+					echo wp_kses_post( $info_disclosure_link );
+					echo wp_kses_post( $info_disclosure_content );
+					echo '<div class="buttons">';
+					echo get_submit_button( $button_submit, 'secondary', 'ti-deactivate-yes', false,
+						array(
+							'data-after-text' => $button_submit,
+							'disabled'        => true,
+						)
+					);
+					echo '</div>';
+					?>
+				</div><!--/.actions-->
+			</div><!--/.popup--footer-->
+		</div>
+		<?php
+	}
+
+
+	/**
 	 * Loads the css
 	 *
 	 * @param string $type The type of product.
-	 * @param string $key The product key.
+	 * @param string $key  The product key.
 	 */
 	function add_css( $type, $key ) {
 		$key    = esc_attr( $key );
@@ -209,9 +525,10 @@ class Uninstall_Feedback extends Abstract_Module {
 			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #<?php echo $key; ?>-info-disclosure-content {
 				display: none;
 			}
+
 			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container.<?php echo $key; ?>-container-disc-open #<?php echo $key; ?>-info-disclosure-content {
 				display: block;
-				position:absolute;
+				position: absolute;
 				bottom: 100px;
 			}
 
@@ -222,6 +539,7 @@ class Uninstall_Feedback extends Abstract_Module {
 			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container.<?php echo $key; ?>-container-disc-open {
 				height: 590px !important;
 			}
+
 			body.<?php echo $suffix; ?> .<?php echo $key; ?>-container #<?php echo $key; ?>-info-disclosure {
 				position: absolute;
 				top: -50px;
@@ -411,8 +729,8 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * Loads the js.
 	 *
 	 * @param string $type The type of product.
-	 * @param string $key The product key.
-	 * @param string $src The url that will hijack the deactivate button url.
+	 * @param string $key  The product key.
+	 * @param string $src  The url that will hijack the deactivate button url.
 	 */
 	function add_js( $type, $key, $src ) {
 		$heading = Product::PLUGIN_TYPE === $type ? $this->heading_plugin : str_replace( '{theme}', $this->product->get_name(), $this->heading_theme );
@@ -420,108 +738,119 @@ class Uninstall_Feedback extends Abstract_Module {
 		$heading = apply_filters( $this->product->get_key() . '_feedback_deactivate_heading', $heading );
 		?>
 		<script type="text/javascript" id="ti-deactivate-js">
-			(function ($) {
-				$(document).ready(function () {
-					var auto_trigger = false;
-					var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
-					<?php
-					if ( 'theme' === $type ) {
-						?>
-					auto_trigger = true;
-					if ($('a.ti-auto-anchor').length == 0) {
-						$('body').append($('<a class="ti-auto-anchor" href=""></a>'));
-					}
-					target_element = 'a.ti-auto-anchor';
-						<?php
-					}
-					?>
-
-					if (auto_trigger) {
-						setTimeout(function () {
-							$('a.ti-auto-anchor').trigger('click');
-						}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
-					}
-					$(document).on('thickbox:removed', function () {
-						$.post(ajaxurl, {
-							'action': '<?php echo $key . '_uninstall_feedback'; ?>',
-							'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
-							'type': '<?php echo $type; ?>',
-							'key': '<?php echo $key; ?>'
-						});
-					});
-					var href = $(target_element).attr('href');
-					$('#<?php echo $key; ?>ti-deactivate-no').attr('data-ti-action', href).on('click', function (e) {
-						e.preventDefault();
-						e.stopPropagation();
-
-						$('body').unbind('thickbox:removed');
-						tb_remove();
-						var redirect = $(this).attr('data-ti-action');
-						if (redirect !== '') {
-							location.href = redirect;
-						}
-					});
-
-					$('#<?php echo $key; ?> ul.ti-list label, #<?php echo $key; ?> ul.ti-list input[name="ti-deactivate-option"]').on('click', function (e) {
-						$('#<?php echo $key; ?>ti-deactivate-yes').val($('#<?php echo $key; ?>ti-deactivate-yes').attr('data-after-text'));
-
-						var radio = $(this).prop('tagName') === 'LABEL' ? $(this).parent() : $(this);
-						if (radio.parent().find('textarea').length > 0 && radio.parent().find('textarea').val().length === 0) {
-							$('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
-							radio.parent().find('textarea').on('keyup', function (ee) {
-								if ($(this).val().length === 0) {
-									$('#<?php echo $key; ?>ti-deactivate-yes').attr('disabled', 'disabled');
-								} else {
-									$('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
-								}
-							});
-						} else {
-							$('#<?php echo $key; ?>ti-deactivate-yes').removeAttr('disabled');
-						}
-					});
-					$("#<?php echo $key; ?>-info-disclosure").on('click', function () {
-						$("#TB_window").toggleClass("<?php echo $key; ?>-container-disc-open");
-						return false;
-					});
-					$('#<?php echo $key; ?>ti-deactivate-yes').attr('data-ti-action', href).on('click', function (e) {
-						e.preventDefault();
-						e.stopPropagation();
-						$.post(ajaxurl, {
-							'action': '<?php echo $key . '_uninstall_feedback'; ?>',
-							'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
-							'id': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().attr('ti-option-id'),
-							'msg': $('#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked').parent().find('textarea').val(),
-							'type': '<?php echo $type; ?>',
-						});
-						var redirect = $(this).attr('data-ti-action');
-						if (redirect != '') {
-							location.href = redirect;
-						} else {
-							$('body').unbind('thickbox:removed');
-							tb_remove();
-						}
-					});
-
-					$(target_element).attr('name', '<?php echo wp_kses( $heading, array( 'span' => array() ) ); ?>').attr('href', '<?php echo $src; ?>').addClass('thickbox');
-					var thicbox_timer;
-					$(target_element).on('click', function () {
-						tiBindThickbox();
-					});
-
-					function tiBindThickbox() {
-						var thicbox_timer = setTimeout(function () {
-							if ($("#<?php echo esc_html( $key ); ?>").is(":visible")) {
-								$("body").trigger('thickbox:iframe:loaded');
-								$("#TB_window").addClass("<?php echo $key; ?>-container");
-								clearTimeout(thicbox_timer);
-								$('body').unbind('thickbox:removed');
-							} else {
-								tiBindThickbox();
+					( function($) {
+						$( document ).ready( function() {
+							var auto_trigger = false;
+							var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
+				<?php
+				if ( 'theme' === $type ) {
+				?>
+							auto_trigger = true;
+							if ( $( 'a.ti-auto-anchor' ).length == 0 ) {
+								$( 'body' ).append( $( '<a class="ti-auto-anchor" href=""></a>' ) );
 							}
-						}, 100);
-					}
-				});
-			})(jQuery);
+							target_element = 'a.ti-auto-anchor';
+				<?php
+				}
+				?>
+
+							if ( auto_trigger ) {
+								setTimeout( function() {
+									$( 'a.ti-auto-anchor' ).trigger( 'click' );
+								}, <?php echo self::AUTO_TRIGGER_DEACTIVATE_WINDOW_SECONDS * 1000; ?> );
+							}
+							$( document ).on( 'thickbox:removed', function() {
+								$.post( ajaxurl, {
+									'action': '<?php echo $key . '_uninstall_feedback'; ?>',
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'type': '<?php echo $type; ?>',
+									'key': '<?php echo $key; ?>'
+								} );
+							} );
+							var href = $( target_element ).attr( 'href' );
+							$( '#<?php echo $key; ?>ti-deactivate-no' ).attr( 'data-ti-action', href ).on( 'click', function(e) {
+								e.preventDefault();
+								e.stopPropagation();
+
+								$( 'body' ).unbind( 'thickbox:removed' );
+								tb_remove();
+								var redirect = $( this ).attr( 'data-ti-action' );
+								if ( redirect !== '' ) {
+									location.href = redirect;
+								}
+							} );
+
+							$( '#<?php echo $key; ?> ul.ti-list label, #<?php echo $key; ?> ul.ti-list input[name="ti-deactivate-option"]' ).
+									on( 'click', function(e) {
+										$( '#<?php echo $key; ?>ti-deactivate-yes' ).
+												val( $( '#<?php echo $key; ?>ti-deactivate-yes' ).attr( 'data-after-text' ) );
+
+										var radio = $( this ).prop( 'tagName' ) === 'LABEL' ? $( this ).parent() : $( this );
+										if ( radio.parent().find( 'textarea' ).length > 0 &&
+												radio.parent().find( 'textarea' ).val().length === 0 ) {
+											$( '#<?php echo $key; ?>ti-deactivate-yes' ).attr( 'disabled', 'disabled' );
+											radio.parent().find( 'textarea' ).on( 'keyup', function(e) {
+												if ( $( this ).val().length === 0 ) {
+													$( '#<?php echo $key; ?>ti-deactivate-yes' ).attr( 'disabled', 'disabled' );
+												} else {
+													$( '#<?php echo $key; ?>ti-deactivate-yes' ).removeAttr( 'disabled' );
+												}
+											} );
+										} else {
+											$( '#<?php echo $key; ?>ti-deactivate-yes' ).removeAttr( 'disabled' );
+										}
+									} );
+							$( "#<?php echo $key; ?>-info-disclosure" ).on( 'click', function() {
+								$( '#TB_window' ).toggleClass( "<?php echo $key; ?>-container-disc-open" );
+								return false;
+							} );
+							$( '#<?php echo $key; ?>ti-deactivate-yes' ).attr( 'data-ti-action', href ).on( 'click', function(e) {
+								e.preventDefault();
+								e.stopPropagation();
+								$.post( ajaxurl, {
+									'action': '<?php echo $key . '_uninstall_feedback'; ?>',
+									'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
+									'id': $( '#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked' ).
+											parent().
+											attr( 'ti-option-id' ),
+									'msg': $( '#<?php echo $key; ?> input[name="ti-deactivate-option"]:checked' ).
+											parent().
+											find( 'textarea' ).
+											val(),
+									'type': '<?php echo $type; ?>'
+								} );
+								var redirect = $( this ).attr( 'data-ti-action' );
+								if ( redirect != '' ) {
+									location.href = redirect;
+								} else {
+									$( 'body' ).unbind( 'thickbox:removed' );
+									tb_remove();
+								}
+							} );
+
+							$( target_element ).
+									attr( 'name', '<?php echo wp_kses( $heading, array( 'span' => array() ) ); ?>' ).
+									attr( 'href', '<?php echo $src; ?>' ).
+									addClass( 'thickbox' );
+							var thicbox_timer;
+							$( target_element ).on( 'click', function() {
+								tiBindThickbox();
+							} );
+
+							function tiBindThickbox() {
+								var thicbox_timer = setTimeout( function() {
+									if ( $( "#<?php echo esc_html( $key ); ?>" ).is( ':visible' ) ) {
+										$( 'body' ).trigger( 'thickbox:iframe:loaded' );
+										$( '#TB_window' ).addClass( "<?php echo $key; ?>-container" );
+										clearTimeout( thicbox_timer );
+										$( 'body' ).unbind( 'thickbox:removed' );
+									} else {
+										tiBindThickbox();
+									}
+								}, 100 );
+							}
+						} );
+					} )( jQuery );
 		</script>
 		<?php
 
@@ -532,7 +861,7 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * Generates the HTML.
 	 *
 	 * @param string $type The type of product.
-	 * @param string $key The product key.
+	 * @param string $key  The product key.
 	 */
 	function get_html( $type, $key ) {
 		$options       = Product::PLUGIN_TYPE === $type ? $this->options_plugin : $this->options_theme;
@@ -546,10 +875,10 @@ class Uninstall_Feedback extends Abstract_Module {
 
 		$list = '';
 		foreach ( $options as $title => $attributes ) {
-			$id    = $attributes['id'];
+			$id   = $attributes['id'];
 			$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 			if ( array_key_exists( 'type', $attributes ) ) {
-				$list       .= '<div>';
+				$list        .= '<div>';
 				$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 				switch ( $attributes['type'] ) {
 					case 'text':
