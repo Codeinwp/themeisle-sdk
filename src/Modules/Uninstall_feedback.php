@@ -48,15 +48,15 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_plugin The main options list for plugins.
 	 */
 	private $options_plugin = array(
-		'I found a better plugin'                                       => array(
+		'I found a better plugin'            => array(
 			'id'          => 3,
 			'type'        => 'text',
 			'placeholder' => 'What\'s the plugin\'s name?',
 		),
-		'I could not get the plugin to work'                            => array(
+		'I could not get the plugin to work' => array(
 			'id' => 4,
 		),
-		'I no longer need the plugin'                                   => array(
+		'I no longer need the plugin'        => array(
 			'id'          => 5,
 			'type'        => 'textarea',
 			'placeholder' => 'If you could improve one thing about our product, what would it be?',
@@ -71,13 +71,13 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_theme The main options list for themes.
 	 */
 	private $options_theme = array(
-		'I don\'t know how to make it look like demo'             => array(
+		'I don\'t know how to make it look like demo' => array(
 			'id' => 7,
 		),
-		'It lacks options'                                        => array(
+		'It lacks options'                            => array(
 			'id' => 8,
 		),
-		'Is not working with a plugin that I need'                => array(
+		'Is not working with a plugin that I need'    => array(
 			'id'          => 9,
 			'type'        => 'text',
 			'placeholder' => 'What is the name of the plugin',
@@ -302,7 +302,8 @@ class Uninstall_Feedback extends Abstract_Module {
 				margin-left: auto;
 			}
 		</style>
-	<? }
+		<?php
+	}
 
 	/**
 	 * Theme feedback drawer JS.
@@ -387,8 +388,6 @@ class Uninstall_Feedback extends Abstract_Module {
 
 		$options += $this->other;
 
-
-
 		$disclosure_new_labels = apply_filters( $this->product->get_slug() . '_themeisle_sdk_disclosure_content_labels', [], $this->product );
 		$disclosure_labels     = array_merge(
 			[
@@ -408,7 +407,6 @@ class Uninstall_Feedback extends Abstract_Module {
 		}
 		$info_disclosure_content .= '</ul></div>';
 
-
 		?>
 		<div class="ti-theme-uninstall-feedback-drawer">
 			<div class="popup--header">
@@ -423,7 +421,8 @@ class Uninstall_Feedback extends Abstract_Module {
 						<label for="<?php echo esc_attr( $key . $attributes['id'] ); ?>">
 							<?php echo str_replace( '{theme}', $this->product->get_name(), $title ); ?>
 						</label>
-					<?php if ( array_key_exists( 'type', $attributes ) ) {
+					<?php
+					if ( array_key_exists( 'type', $attributes ) ) {
 						$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 						switch ( $attributes['type'] ) {
 							case 'text':
@@ -433,7 +432,8 @@ class Uninstall_Feedback extends Abstract_Module {
 								echo '<textarea rows="2" name="comments" placeholder="' . esc_attr( $placeholder ) . '"></textarea>';
 								break;
 						}
-					} ?>
+					}
+					?>
 					</li>
 				<?php } ?>
 				</ul>
@@ -444,7 +444,11 @@ class Uninstall_Feedback extends Abstract_Module {
 					echo wp_kses_post( $info_disclosure_link );
 					echo wp_kses_post( $info_disclosure_content );
 					echo '<div class="buttons">';
-					echo get_submit_button( $button_submit, 'secondary', 'ti-deactivate-yes', false,
+					echo get_submit_button(
+						$button_submit,
+						'secondary',
+						'ti-deactivate-yes',
+						false,
 						array(
 							'data-after-text' => $button_submit,
 							'disabled'        => true,
@@ -744,13 +748,13 @@ class Uninstall_Feedback extends Abstract_Module {
 							var target_element = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
 				<?php
 				if ( 'theme' === $type ) {
-				?>
+					?>
 							auto_trigger = true;
 							if ( $( 'a.ti-auto-anchor' ).length == 0 ) {
 								$( 'body' ).append( $( '<a class="ti-auto-anchor" href=""></a>' ) );
 							}
 							target_element = 'a.ti-auto-anchor';
-				<?php
+					<?php
 				}
 				?>
 
@@ -875,10 +879,10 @@ class Uninstall_Feedback extends Abstract_Module {
 
 		$list = '';
 		foreach ( $options as $title => $attributes ) {
-			$id   = $attributes['id'];
+			$id    = $attributes['id'];
 			$list .= '<li ti-option-id="' . $id . '"><input type="radio" name="ti-deactivate-option" id="' . $key . $id . '"><label for="' . $key . $id . '">' . str_replace( '{theme}', $this->product->get_name(), $title ) . '</label>';
 			if ( array_key_exists( 'type', $attributes ) ) {
-				$list        .= '<div>';
+				$list       .= '<div>';
 				$placeholder = array_key_exists( 'placeholder', $attributes ) ? $attributes['placeholder'] : '';
 				switch ( $attributes['type'] ) {
 					case 'text':
