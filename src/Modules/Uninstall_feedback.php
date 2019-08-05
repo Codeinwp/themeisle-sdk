@@ -402,7 +402,7 @@ class Uninstall_Feedback extends Abstract_Module {
 				display: block;
 			}
 
-			tr[data-slug="<?php echo $this->product->get_slug(); ?>"] .deactivate {
+			tr[data-plugin^="<?php echo $this->product->get_slug(); ?>"] .deactivate {
 				position: relative;
 			}
 
