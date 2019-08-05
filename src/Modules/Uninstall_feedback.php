@@ -48,15 +48,15 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_plugin The main options list for plugins.
 	 */
 	private $options_plugin = array(
-		'I found a better plugin'                                       => array(
+		'I found a better plugin'            => array(
 			'id'          => 3,
 			'type'        => 'text',
 			'placeholder' => 'What\'s the plugin\'s name?',
 		),
-		'I could not get the plugin to work'                            => array(
+		'I could not get the plugin to work' => array(
 			'id' => 4,
 		),
-		'I no longer need the plugin'                                   => array(
+		'I no longer need the plugin'        => array(
 			'id'          => 5,
 			'type'        => 'textarea',
 			'placeholder' => 'If you could improve one thing about our product, what would it be?',
@@ -71,13 +71,13 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @var array $options_theme The main options list for themes.
 	 */
 	private $options_theme = array(
-		'I don\'t know how to make it look like demo'             => array(
+		'I don\'t know how to make it look like demo' => array(
 			'id' => 7,
 		),
-		'It lacks options'                                        => array(
+		'It lacks options'                            => array(
 			'id' => 8,
 		),
-		'Is not working with a plugin that I need'                => array(
+		'Is not working with a plugin that I need'    => array(
 			'id'          => 9,
 			'type'        => 'text',
 			'placeholder' => 'What is the name of the plugin',
@@ -157,7 +157,6 @@ class Uninstall_Feedback extends Abstract_Module {
 
 		$options += $this->other;
 
-
 		?>
 		<div class="ti-theme-uninstall-feedback-drawer ti-feedback">
 			<div class="popup--header">
@@ -165,7 +164,7 @@ class Uninstall_Feedback extends Abstract_Module {
 				<button class="toggle"><span>&times;</span></button>
 			</div><!--/.popup--header-->
 			<div class="popup--body">
-				<?php $this->render_options_list( $options ) ?>
+				<?php $this->render_options_list( $options ); ?>
 			</div><!--/.popup--body-->
 			<div class="popup--footer">
 				<div class="actions">
@@ -194,7 +193,8 @@ class Uninstall_Feedback extends Abstract_Module {
 	/**
 	 * Add feedback styles.
 	 */
-	private function add_feedback_popup_style() { ?>
+	private function add_feedback_popup_style() {
+		?>
 		<style>
 			.ti-feedback {
 				background: #fff;
@@ -513,7 +513,7 @@ class Uninstall_Feedback extends Abstract_Module {
 		$key            = $this->product->get_key();
 		$inputs_row_map = [
 			'text'     => 1,
-			'textarea' => 2
+			'textarea' => 2,
 		];
 		?>
 		<ul class="popup--form">
@@ -553,7 +553,7 @@ class Uninstall_Feedback extends Abstract_Module {
 				<h5><?php echo wp_kses( $this->heading_plugin, array( 'span' => true ) ); ?> </h5>
 			</div><!--/.popup--header-->
 			<div class="popup--body">
-				<?php $this->render_options_list( $options ) ?>
+				<?php $this->render_options_list( $options ); ?>
 			</div><!--/.popup--body-->
 			<div class="popup--footer">
 				<div class="actions">
