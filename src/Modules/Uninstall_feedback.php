@@ -375,7 +375,7 @@ class Uninstall_Feedback extends Abstract_Module {
 				white-space: normal;
 				width: 400px;
 				left: 100%;
-				top: 0;
+				top: -15px;
 			}
 
 			.ti-plugin-uninstall-feedback-popup.sending-feedback .popup--body i {
@@ -402,11 +402,11 @@ class Uninstall_Feedback extends Abstract_Module {
 				display: block;
 			}
 
-			tr[data-slug="<?php echo $this->product->get_slug(); ?>"] .plugin-title {
+			tr[data-slug="<?php echo $this->product->get_slug(); ?>"] .deactivate {
 				position: relative;
 			}
 
-			body.ti-feedback-open #wpwrap:before {
+			body.ti-feedback-open .ti-feedback-overlay {
 				content: "";
 				display: block;
 				background-color: rgba(0, 0, 0, 0.5);
@@ -414,8 +414,22 @@ class Uninstall_Feedback extends Abstract_Module {
 				bottom: 0;
 				right: 0;
 				left: 0;
-				z-index: 100;
+				z-index: 10000;
 				position: fixed;
+			}
+
+			@media (max-width: 768px) {
+				.ti-plugin-uninstall-feedback-popup {
+					position: fixed;
+					max-width: 100%;
+					margin: 0 auto;
+					left: 50%;
+					top: 50px;
+					transform: translateX(-50%);
+				}
+				.ti-plugin-uninstall-feedback-popup .popup--header:before {
+					display: none;
+				}
 			}
 		</style>
 		<?php
@@ -582,15 +596,21 @@ class Uninstall_Feedback extends Abstract_Module {
 		<script type="text/javascript" id="ti-deactivate-js">
 					( function($) {
 						$( document ).ready( function() {
-							var targetElement = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate';
-							var redirectUrl = $( targetElement + ' a' ).attr( 'href' );
-
-							$( '<?php echo esc_attr( $popup_id ); ?> ' ).appendTo( $( targetElement ).parent().parent() );
+							var targetElement = 'tr[data-plugin^="<?php echo $this->product->get_slug(); ?>/"] span.deactivate a';
+							var redirectUrl = $( targetElement ).attr( 'href' );
+							if ( $( '.ti-feedback-overlay' ).length === 0 ) {
+								$( 'body' ).prepend( '<div class="ti-feedback-overlay"></div>' );
+							}
+							$( '<?php echo esc_attr( $popup_id ); ?> ' ).appendTo( $( targetElement ).parent() );
 
 							$( targetElement ).on( 'click', function(e) {
 								e.preventDefault();
 								$( '<?php echo esc_attr( $popup_id ); ?> ' ).addClass( 'active' );
 								$( 'body' ).addClass( 'ti-feedback-open' );
+								$( '.ti-feedback-overlay' ).on( 'click', function() {
+									$( '<?php echo esc_attr( $popup_id ); ?> ' ).removeClass( 'active' );
+									$( 'body' ).removeClass( 'ti-feedback-open' );
+								} );
 							} );
 
 							$( '<?php echo esc_attr( $popup_id ); ?> .info-disclosure-link' ).on( 'click', function(e) {
@@ -623,6 +643,7 @@ class Uninstall_Feedback extends Abstract_Module {
 									on( 'click', function(e) {
 										e.preventDefault();
 										e.stopPropagation();
+										$( targetElement ).unbind( 'click' );
 										$( 'body' ).removeClass( 'ti-feedback-open' );
 										$( '<?php echo esc_attr( $popup_id ); ?>' ).remove();
 										if ( redirectUrl !== '' ) {
