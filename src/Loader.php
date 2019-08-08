@@ -84,7 +84,7 @@ final class Loader {
 	 */
 	public static function add_product( $base_file ) {
 
-		if ( ! is_readable( $base_file ) ) {
+		if ( ! is_file( $base_file ) ) {
 			return self::$instance;
 		}
 		$product = new Product( $base_file );
