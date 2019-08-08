@@ -24,7 +24,7 @@ global $themeisle_sdk_max_path;
 $themeisle_sdk_relative_licenser_path = '/src/Modules/Licenser.php';
 
 global $themeisle_sdk_abs_licenser_path;
-if ( ! file_exists( $themeisle_sdk_path . $themeisle_sdk_relative_licenser_path ) && file_exists( $themeisle_sdk_max_path . $themeisle_sdk_relative_licenser_path ) ) {
+if ( ! is_file( $themeisle_sdk_path . $themeisle_sdk_relative_licenser_path ) && is_file( $themeisle_sdk_max_path . $themeisle_sdk_relative_licenser_path ) ) {
 	$themeisle_sdk_abs_licenser_path = $themeisle_sdk_max_path . $themeisle_sdk_relative_licenser_path;
 	add_filter( 'themeisle_sdk_required_files', 'themeisle_sdk_load_licenser_if_present' );
 }

@@ -114,7 +114,7 @@ class Product {
 	 */
 	public function __construct( $basefile ) {
 		if ( ! empty( $basefile ) ) {
-			if ( is_readable( $basefile ) ) {
+			if ( is_file( $basefile ) ) {
 				$this->basefile = $basefile;
 				$this->setup_from_path();
 				$this->setup_from_fileheaders();
