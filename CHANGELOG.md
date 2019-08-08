@@ -1,3 +1,11 @@
+## [3.1.1](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.0...v3.1.1) (2019-08-08)
+
+
+### Bug Fixes
+
+* adds is_file for file existence check ([d1205c4](https://github.com/Codeinwp/themeisle-sdk/commit/d1205c4))
+* adds is_file for file existence check ([be119c1](https://github.com/Codeinwp/themeisle-sdk/commit/be119c1))
+
 # [3.1.0](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.10...v3.1.0) (2019-08-05)
 
 
