@@ -345,7 +345,7 @@ class Product {
 	public function get_store_url() {
 
 		if ( strpos( $this->store_url, '/themeisle.com' ) !== false ) {
-			return 'https://store.themeisle.com';
+			return 'https://store.themeisle.com/';
 		}
 
 		return $this->store_url;
@@ -358,6 +358,21 @@ class Product {
 	 */
 	public function get_basefile() {
 		return $this->basefile;
+	}
+
+	/**
+	 * Get changelog url.
+	 *
+	 * @return string Changelog url.
+	 */
+	public function get_changelog() {
+		return add_query_arg(
+			[
+				'name'       => rawurlencode( $this->get_name() ),
+				'edd_action' => 'view_changelog',
+			],
+			$this->get_store_url()
+		);
 	}
 
 	/**
