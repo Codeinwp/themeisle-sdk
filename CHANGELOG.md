@@ -1,3 +1,11 @@
+## [3.1.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.1...v3.1.2) (2019-08-12)
+
+
+### Bug Fixes
+
+* phpunit test case ([efe851c](https://github.com/Codeinwp/themeisle-sdk/commit/efe851c))
+* url format for license endpoint, improve changelog handling and license checks ([a492c68](https://github.com/Codeinwp/themeisle-sdk/commit/a492c68))
+
 ## [3.1.1](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.0...v3.1.1) (2019-08-08)
 
 
