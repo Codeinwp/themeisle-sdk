@@ -147,9 +147,10 @@ class Licenser extends Abstract_Module {
 				-webkit-border-radius: 3px;
 				border-radius: 3px;
 			}
-			button.button.themeisle-sdk-licenser-button-cta{
+
+			button.button.themeisle-sdk-licenser-button-cta {
 				line-height: 26px;
-				height:29px;
+				height: 29px;
 				vertical-align: top;
 			}
 
@@ -493,7 +494,7 @@ class Licenser extends Abstract_Module {
 				'<strong>%1$s %2$s</strong> is available. <a href="%3$s" class="thickbox" title="%4s">Check out what\'s new</a> or <a href="%5$s"%6$s>update now</a>.',
 				$theme->get( 'Name' ),
 				$api_response->new_version,
-				'#TB_inline?width=640&amp;inlineId=' . $this->product->get_version() . '_changelog',
+				sprintf( '%s&TB_iframe=true&amp;width=1024&amp;height=800', $this->product->get_changelog() ),
 				$theme->get( 'Name' ),
 				$update_url,
 				$update_onclick
@@ -566,18 +567,17 @@ class Licenser extends Abstract_Module {
 		$api_params = array(
 			'edd_action' => 'get_version',
 			'version'    => $this->product->get_version(),
-			'license'    => $this->license_key,
-			'name'       => $this->product->get_name(),
+			'license'    => empty( $this->license_key ) ? 'free' : '',
+			'name'       => rawurlencode( $this->product->get_name() ),
 			'slug'       => $this->product->get_slug(),
-			'author'     => $this->get_distributor_name(),
+			'author'     => rawurlencode( $this->get_distributor_name() ),
 			'url'        => rawurlencode( home_url() ),
 		);
 		$response   = wp_remote_get(
-			$this->get_api_url(),
+			add_query_arg( $api_params, $this->get_api_url() ),
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
-				'body'      => $api_params,
 			)
 		);
 		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
