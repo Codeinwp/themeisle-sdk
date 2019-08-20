@@ -1,3 +1,11 @@
+## [3.1.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.2...v3.1.3) (2019-08-20)
+
+
+### Bug Fixes
+
+* license deactivation behaviour https://github.com/Codeinwp/visua… ([59c4afe](https://github.com/Codeinwp/themeisle-sdk/commit/59c4afe))
+* license deactivation behaviour https://github.com/Codeinwp/visualizer-pro/issues/192 ([f641e18](https://github.com/Codeinwp/themeisle-sdk/commit/f641e18))
+
 ## [3.1.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.1...v3.1.2) (2019-08-12)
 
 
