@@ -158,7 +158,7 @@ class Licenser extends Abstract_Module {
 		<?php
 		echo sprintf(
 			'<p>%s<input class="themeisle-sdk-license-input %s" type="text" id="%s_license" name="%s_license" value="%s" /><a class="%s">%s</a>&nbsp;&nbsp;&nbsp;<button name="%s_btn_trigger" class="button button-primary themeisle-sdk-licenser-button-cta" value="yes" type="submit" >%s</button></p><p class="description">%s</p>',
-			( ( 'valid' === $status ) ? sprintf( '<input type="hidden" value="%s" name="%s_license" />', $this->product->get_key(), $value ) : '' ),
+			( ( 'valid' === $status ) ? sprintf( '<input type="hidden" value="%s" name="%s_license" />', $value, $this->product->get_key() ) : '' ),
 			( ( 'valid' === $status ) ? 'themeisle-sdk-text-input-valid' : '' ),
 			$this->product->get_key(),
 			( ( 'valid' === $status ) ? $this->product->get_key() . '_mask' : $this->product->get_key() ),
