@@ -567,7 +567,7 @@ class Licenser extends Abstract_Module {
 		$api_params = array(
 			'edd_action' => 'get_version',
 			'version'    => $this->product->get_version(),
-			'license'    => empty( $this->license_key ) ? 'free' : '',
+			'license'    => empty( $this->license_key ) ? 'free' : $this->license_key,
 			'name'       => rawurlencode( $this->product->get_name() ),
 			'slug'       => $this->product->get_slug(),
 			'author'     => rawurlencode( $this->get_distributor_name() ),
