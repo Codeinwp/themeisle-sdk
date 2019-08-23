@@ -1,3 +1,11 @@
+## [3.1.4](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.3...v3.1.4) (2019-08-23)
+
+
+### Bug Fixes
+
+* license key was missing on get_version call ([365cde6](https://github.com/Codeinwp/themeisle-sdk/commit/365cde6))
+* license key was missing on get_version call ([c02f225](https://github.com/Codeinwp/themeisle-sdk/commit/c02f225))
+
 ## [3.1.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.2...v3.1.3) (2019-08-20)
 
 
