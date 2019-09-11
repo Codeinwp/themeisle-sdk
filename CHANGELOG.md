@@ -1,3 +1,12 @@
+## [3.1.5](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.4...v3.1.5) (2019-09-11)
+
+
+### Bug Fixes
+
+* allow unloading certain module features ([2a2559a](https://github.com/Codeinwp/themeisle-sdk/commit/2a2559a))
+* license activation workflow, show error message when failed to a… ([ade795c](https://github.com/Codeinwp/themeisle-sdk/commit/ade795c))
+* license activation workflow, show error message when failed to activate ([2f5cbae](https://github.com/Codeinwp/themeisle-sdk/commit/2f5cbae))
+
 ## [3.1.4](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.3...v3.1.4) (2019-08-23)
 
 
