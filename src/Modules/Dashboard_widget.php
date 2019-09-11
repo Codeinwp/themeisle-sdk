@@ -72,7 +72,9 @@ class Dashboard_Widget extends Abstract_Module {
 	 * @return Dashboard_Widget Module instance.
 	 */
 	public function load( $product ) {
-
+		if ( apply_filters( 'themeisle_sdk_hide_dashboard_widget', false ) ) {
+			return;
+		}
 		$this->product        = $product;
 		$this->dashboard_name = apply_filters( 'themeisle_sdk_dashboard_widget_name', 'WordPress Guides/Tutorials' );
 		$this->feeds          = apply_filters(

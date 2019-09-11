@@ -89,6 +89,9 @@ class Licenser extends Abstract_Module {
 		if ( ! is_admin() ) {
 			return false;
 		}
+		if ( apply_filters( $this->product->get_key() . '_hide_license_field', false ) ) {
+			return;
+		}
 		add_settings_field(
 			$this->product->get_key() . '_license',
 			$this->product->get_name() . ' license',
@@ -225,6 +228,10 @@ class Licenser extends Abstract_Module {
 	function show_notice() {
 		if ( ! is_admin() ) {
 			return false;
+		}
+
+		if ( apply_filters( $this->product->get_key() . '_hide_license_notices', false ) ) {
+			return;
 		}
 		$status                = $this->get_license_status();
 		$no_activations_string = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No activations left for %s !!!. You need to upgrade your plan in order to use %s on more websites. Please ask the %s Staff for more details.' );
