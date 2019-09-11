@@ -430,6 +430,9 @@ class Notification extends Abstract_Module {
 	 * @return Notification Module instance.
 	 */
 	public function load( $product ) {
+		if ( apply_filters( 'themeisle_sdk_hide_notifications', false ) ) {
+			return;
+		}
 		$this->product = $product;
 
 		$notifications       = apply_filters( 'themeisle_sdk_registered_notifications', [] );

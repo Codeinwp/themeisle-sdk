@@ -836,6 +836,11 @@ class Uninstall_Feedback extends Abstract_Module {
 	 * @return Uninstall_Feedback Current module instance.
 	 */
 	public function load( $product ) {
+
+		if ( apply_filters( $product->get_key() . '_hide_uninstall_feedback', false ) ) {
+			return;
+		}
+
 		$this->product = $product;
 		add_action( 'admin_head', array( $this, 'load_resources' ) );
 		add_action( 'wp_ajax_' . $this->product->get_key() . '_uninstall_feedback', array( $this, 'post_deactivate' ) );
