@@ -109,6 +109,7 @@ class Licenser extends Abstract_Module {
 		$valid_string      = apply_filters( $this->product->get_key() . '_lc_valid_string', 'Valid' );
 		$invalid_string    = apply_filters( $this->product->get_key() . '_lc_invalid_string', 'Invalid' );
 		$license_message   = apply_filters( $this->product->get_key() . '_lc_license_message', 'Enter your license from %s purchase history in order to get %s updates' );
+		$error_message     = $this->get_error();
 		?>
 		<style type="text/css">
 			input.themeisle-sdk-text-input-valid {
@@ -157,7 +158,7 @@ class Licenser extends Abstract_Module {
 		</style>
 		<?php
 		echo sprintf(
-			'<p>%s<input class="themeisle-sdk-license-input %s" type="text" id="%s_license" name="%s_license" value="%s" /><a class="%s">%s</a>&nbsp;&nbsp;&nbsp;<button name="%s_btn_trigger" class="button button-primary themeisle-sdk-licenser-button-cta" value="yes" type="submit" >%s</button></p><p class="description">%s</p>',
+			'<p>%s<input class="themeisle-sdk-license-input %s" type="text" id="%s_license" name="%s_license" value="%s" /><a class="%s">%s</a>&nbsp;&nbsp;&nbsp;<button name="%s_btn_trigger" class="button button-primary themeisle-sdk-licenser-button-cta" value="yes" type="submit" >%s</button></p><p class="description">%s</p>%s',
 			( ( 'valid' === $status ) ? sprintf( '<input type="hidden" value="%s" name="%s_license" />', $value, $this->product->get_key() ) : '' ),
 			( ( 'valid' === $status ) ? 'themeisle-sdk-text-input-valid' : '' ),
 			$this->product->get_key(),
@@ -167,7 +168,8 @@ class Licenser extends Abstract_Module {
 			( 'valid' === $status ? $valid_string : $invalid_string ),
 			$this->product->get_key(),
 			( 'valid' === $status ? $deactivate_string : $activate_string ),
-			sprintf( $license_message, '<a  href="' . $this->get_api_url() . '">' . $this->get_distributor_name() . '</a> ', $this->product->get_type() )
+			sprintf( $license_message, '<a  href="' . $this->get_api_url() . '">' . $this->get_distributor_name() . '</a> ', $this->product->get_type() ),
+			empty( $error_message ) ? '' : sprintf( '<p style="color:#dd3d36">%s</p>', $error_message )
 		);
 
 	}
@@ -414,6 +416,26 @@ class Licenser extends Abstract_Module {
 	}
 
 	/**
+	 * Set license validation error message.
+	 *
+	 * @param string $message Error message.
+	 */
+	public function set_error( $message = '' ) {
+		set_transient( $this->product->get_key() . 'act_err', $message, MINUTE_IN_SECONDS );
+
+		return;
+	}
+
+	/**
+	 * Return the last error message.
+	 *
+	 * @return mixed Error message.
+	 */
+	public function get_error() {
+		return get_transient( $this->product->get_key() . 'act_err' );
+	}
+
+	/**
 	 * Activate the license remotely.
 	 */
 	function activate_license() {
@@ -439,19 +461,22 @@ class Licenser extends Abstract_Module {
 		$response = wp_remote_get( add_query_arg( $api_params, $this->get_api_url() ) );
 		// make sure the response came back okay.
 		if ( is_wp_error( $response ) ) {
-			$license_data          = new \stdClass();
-			$license_data->license = ( 'valid' != $status ) ? 'valid' : 'invalid';
+			$this->set_error( sprintf( 'ERROR: Failed to connect to the license service. Please try again later. Reason: %s', $response->get_error_message() ) );
 
-		} else {
-			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( ! is_object( $license_data ) ) {
-				$license_data          = new \stdClass();
-				$license_data->license = ( 'valid' != $status ) ? 'valid' : 'invalid';
-			}
-			if ( ! isset( $license_data->license ) ) {
-				$license_data->license = 'invalid';
-			}
+			return;
 		}
+
+		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+		if ( ! is_object( $license_data ) ) {
+			$this->set_error( 'ERROR: Failed to validate license. Please try again in one minute.' );
+
+			return;
+		}
+		if ( ! isset( $license_data->license ) ) {
+			$license_data->license = 'invalid';
+		}
+
 		if ( ! isset( $license_data->key ) ) {
 			$license_data->key = $license;
 		}
@@ -462,7 +487,7 @@ class Licenser extends Abstract_Module {
 		if ( isset( $license_data->plan ) ) {
 			update_option( $this->product->get_key() . '_license_plan', $license_data->plan );
 		}
-
+		$this->set_error( '' );
 		update_option( $this->product->get_key() . '_license_data', $license_data );
 		set_transient( $this->product->get_key() . '_license_data', $license_data, 12 * HOUR_IN_SECONDS );
 
