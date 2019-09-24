@@ -1,3 +1,11 @@
+## [3.1.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.5...v3.1.6) (2019-09-24)
+
+
+### Bug Fixes
+
+* remove license related options when deactivated ([02cd6ce](https://github.com/Codeinwp/themeisle-sdk/commit/02cd6ce))
+* remove license related options when deactivated ([d3c1a1f](https://github.com/Codeinwp/themeisle-sdk/commit/d3c1a1f))
+
 ## [3.1.5](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.4...v3.1.5) (2019-09-11)
 
 
