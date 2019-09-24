@@ -491,10 +491,19 @@ class Licenser extends Abstract_Module {
 			$this->reset_failed_checks();
 		}
 
+		$this->set_error( '' );
+
+		if ( 'deactivate_license' === $api_params['edd_action'] ) {
+
+			delete_option( $this->product->get_key() . '_license_data' );
+			delete_option( $this->product->get_key() . '_license_plan' );
+			delete_transient( $this->product->get_key() . '_license_data' );
+
+			return;
+		}
 		if ( isset( $license_data->plan ) ) {
 			update_option( $this->product->get_key() . '_license_plan', $license_data->plan );
 		}
-		$this->set_error( '' );
 		update_option( $this->product->get_key() . '_license_data', $license_data );
 		set_transient( $this->product->get_key() . '_license_data', $license_data, 12 * HOUR_IN_SECONDS );
 
