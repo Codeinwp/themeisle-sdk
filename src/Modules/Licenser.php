@@ -121,7 +121,9 @@ class Licenser extends Abstract_Module {
 
 			input.themeisle-sdk-license-input {
 				width: 300px;
-				padding: 5px;
+				padding: 0 8px;
+				line-height: 2;
+				min-height: 30px;
 			}
 
 			.themeisle-sdk-license-deactivate-cta {
