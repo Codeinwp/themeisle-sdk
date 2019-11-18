@@ -1,3 +1,10 @@
+## [3.1.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.7...v3.1.8) (2019-11-18)
+
+
+### Bug Fixes
+
+* update developers name ([6aca63e](https://github.com/Codeinwp/themeisle-sdk/commit/6aca63e))
+
 ## [3.1.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.6...v3.1.7) (2019-11-07)
 
 
