@@ -60,7 +60,7 @@ class Review extends Abstract_Module {
 			'Stefan',
 			'Uriahs',
 			'Madalin',
-			'Radu',
+			'Cristi',
 			'Silviu',
 			'Andrei',
 		];
