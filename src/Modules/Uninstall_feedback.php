@@ -533,8 +533,15 @@ class Uninstall_Feedback extends Abstract_Module {
 					?>
 				</li>
 			<?php } ?>
+			<?php
+			if ( $key === 'optimole_wp' ) {
+				echo '<input type="checkbox" name ="optimole_costum_check" id="optimole_check_remove_data">
+				<label for="optimole_check_remove_data"> Remove data on deactivate </label>';
+			}
+			?>
 		</ul>
 		<?php
+
 	}
 
 	/**
@@ -652,13 +659,16 @@ class Uninstall_Feedback extends Abstract_Module {
 						$(targetElement).unbind('click');
 						var selectedOption = $(
 							'<?php echo esc_attr( $popup_id ); ?> input[name="ti-deactivate-option"]:checked');
+						var optimoleDeactivate = $(
+							'<?php echo esc_attr( $popup_id ); ?> input[name="optimole_costum_check"]');
 						var data = {
 							'action': '<?php echo esc_attr( $key ) . '_uninstall_feedback'; ?>',
 							'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
 							'id': selectedOption.parent().attr('ti-option-id'),
 							'msg': selectedOption.parent().find('textarea').val(),
 							'type': 'plugin',
-							'key': '<?php echo esc_attr( $key ); ?>'
+							'key': '<?php echo esc_attr( $key ); ?>',
+							 ...(optimoleDeactivate.prop('checked') && {'optimole_deactivate_cleanup': 'true'})
 						};
 						$.ajax({
 							type: 'POST',
@@ -736,6 +746,15 @@ class Uninstall_Feedback extends Abstract_Module {
 	function post_deactivate() {
 		check_ajax_referer( (string) __CLASS__, 'nonce' );
 
+		if ( ! empty( $_POST['optimole_deactivate_cleanup'] ) ) {
+
+			if ( $_POST['optimole_deactivate_cleanup'] === 'true' ) {
+
+				if ( function_exists( 'optml_deactivate' ) ) {
+					optml_deactivate();
+				}
+			}
+		}
 		$this->post_deactivate_or_cancel();
 
 		if ( empty( $_POST['id'] ) ) {
