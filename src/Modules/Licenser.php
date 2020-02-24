@@ -345,40 +345,27 @@ class Licenser extends Abstract_Module {
 	 */
 	public function check_license() {
 		$status = $this->get_license_status();
-		if ( 'not_active' == $status ) {
+		if ( 'not_active' === $status ) {
 			$license_data          = new \stdClass();
 			$license_data->license = 'not_active';
 
 			return $license_data;
 		}
-		$license    = trim( $this->license_key );
-		$api_params = array(
-			'edd_action' => 'check_license',
-			'license'    => $license,
-			'item_name'  => rawurlencode( $this->product->get_name() ),
-			'url'        => rawurlencode( home_url() ),
-		);
-		// Call the custom API.
-		$response = wp_remote_get(
-			add_query_arg( $api_params, $this->get_api_url() ),
-			array(
-				'timeout'   => 15,
-				'sslverify' => false,
-			)
-		);
+		$license = trim( $this->license_key );
+
+		$response = $this->do_license_process( $license, 'check' );
+
 		if ( is_wp_error( $response ) ) {
 			$license_data          = new \stdClass();
 			$license_data->license = 'valid';
-
 		} else {
-			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( ! is_object( $license_data ) ) {
-				$license_data          = new \stdClass();
-				$license_data->license = 'valid';
-			}
+			$license_data = $response;
 		}
+
+
 		$license_old = get_option( $this->product->get_key() . '_license_data', '' );
-		if ( 'valid' == $license_old->license && ( $license_data->license != $license_old->license ) ) {
+
+		if ( 'valid' === $license_old->license && ( $license_data->license !== $license_old->license ) ) {
 			$this->increment_failed_checks();
 		} else {
 			$this->reset_failed_checks();
@@ -388,20 +375,8 @@ class Licenser extends Abstract_Module {
 			return $license_old;
 		}
 
-		if ( isset( $license_old->hide_valid ) ) {
-			$license_data->hide_valid = true;
-		}
-
 		if ( ! isset( $license_data->key ) ) {
 			$license_data->key = isset( $license_old->key ) ? $license_old->key : '';
-		}
-
-		if ( isset( $license_old->hide_expiration ) ) {
-			$license_data->hide_expiration = true;
-		}
-
-		if ( isset( $license_old->hide_activation ) ) {
-			$license_data->hide_activation = true;
 		}
 
 		return $license_data;
@@ -445,42 +420,60 @@ class Licenser extends Abstract_Module {
 	}
 
 	/**
-	 * Activate the license remotely.
+	 * Do license activation/deactivation.
+	 *
+	 * @param string $license License key.
+	 *
+	 * @return bool|\WP_Error
 	 */
-	function activate_license() {
-		// listen for our activate button to be clicked.
-		if ( ! isset( $_POST[ $this->product->get_key() . '_btn_trigger' ] ) ) {
-			return;
-		}
+	private function do_license_process( $license, $action = 'toggle' ) {
+
 		$status = $this->get_license_status();
+
+		if ( $status === 'valid' && $action === 'activate' ) {
+			return new \WP_Error( 'themeisle-license-already-active', 'License is already active.' );
+		}
+		if ( $status !== 'valid' && $action === 'deactivate' ) {
+			return new \WP_Error( 'themeisle-license-already-deactivate', 'License not active.' );
+		}
+
 		// retrieve the license from the database.
-		$license    = $_POST[ $this->product->get_key() . '_license' ];
 		$api_params = array(
 			'license'   => $license,
 			'item_name' => rawurlencode( $this->product->get_name() ),
 			'url'       => rawurlencode( home_url() ),
 		);
-		if ( 'valid' != $status ) {
-			// data to send in our API request.
-			$api_params['edd_action'] = 'activate_license';
-		} else {
-			$api_params['edd_action'] = 'deactivate_license';
+
+		switch ( $action ) {
+			case 'activate':
+				$api_params['edd_action'] = 'activate_license';
+				break;
+			case 'deactivate':
+				$api_params['edd_action'] = 'deactivate_license';
+				break;
+			case 'check':
+				$api_params['edd_action'] = 'check_license';
+				break;
+			case 'toggle':
+			case 'default':
+				$api_params['edd_action'] = ( 'valid' !== $status ? ( 'activate_license' ) : ( 'deactivate_license' ) );
+				break;
 		}
+
 		// Call the custom API.
 		$response = wp_remote_get( add_query_arg( $api_params, $this->get_api_url() ) );
 		// make sure the response came back okay.
 		if ( is_wp_error( $response ) ) {
-			$this->set_error( sprintf( 'ERROR: Failed to connect to the license service. Please try again later. Reason: %s', $response->get_error_message() ) );
-
-			return;
+			return new \WP_Error( 'themeisle-license-500', sprintf( 'ERROR: Failed to connect to the license service. Please try again later. Reason: %s', $response->get_error_message() ) );
 		}
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
 		if ( ! is_object( $license_data ) ) {
-			$this->set_error( 'ERROR: Failed to validate license. Please try again in one minute.' );
-
-			return;
+			return new \WP_Error( 'themeisle-license-404', 'ERROR: Failed to validate license. Please try again in one minute.' );
+		}
+		if ( $action === 'check' ) {
+			return $license_data;
 		}
 		if ( ! isset( $license_data->license ) ) {
 			$license_data->license = 'invalid';
@@ -489,11 +482,9 @@ class Licenser extends Abstract_Module {
 		if ( ! isset( $license_data->key ) ) {
 			$license_data->key = $license;
 		}
-		if ( 'valid' == $license_data->license ) {
+		if ( 'valid' === $license_data->license ) {
 			$this->reset_failed_checks();
 		}
-
-		$this->set_error( '' );
 
 		if ( 'deactivate_license' === $api_params['edd_action'] ) {
 
@@ -501,7 +492,7 @@ class Licenser extends Abstract_Module {
 			delete_option( $this->product->get_key() . '_license_plan' );
 			delete_transient( $this->product->get_key() . '_license_data' );
 
-			return;
+			return true;
 		}
 		if ( isset( $license_data->plan ) ) {
 			update_option( $this->product->get_key() . '_license_plan', $license_data->plan );
@@ -509,6 +500,33 @@ class Licenser extends Abstract_Module {
 		update_option( $this->product->get_key() . '_license_data', $license_data );
 		set_transient( $this->product->get_key() . '_license_data', $license_data, 12 * HOUR_IN_SECONDS );
 
+		if ( $license_data->license !== 'valid' ) {
+			return new \WP_Error( 'themeisle-license-invalid', 'ERROR: Invalid license provided.' );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Activate the license remotely.
+	 */
+	function process_license() {
+		// listen for our activate button to be clicked.
+		if ( ! isset( $_POST[ $this->product->get_key() . '_btn_trigger' ] ) ) {
+			return;
+		}
+		$license  = $_POST[ $this->product->get_key() . '_license' ];
+		$response = $this->do_license_process( $license, 'toggle' );
+		if ( is_wp_error( $response ) ) {
+			$this->set_error( $response->get_error_message() );
+
+			return;
+		}
+		if ( $response === true ) {
+			$this->set_error( '' );
+		}
+
+		return;
 	}
 
 	/**
@@ -694,7 +712,7 @@ class Licenser extends Abstract_Module {
 	 * @return object $_data
 	 */
 	public function plugins_api_filter( $_data, $_action = '', $_args = null ) {
-		if ( ( 'plugin_information' != $_action ) || ! isset( $_args->slug ) || ( $_args->slug != $this->product->get_slug() ) ) {
+		if ( ( 'plugin_information' !== $_action ) || ! isset( $_args->slug ) || ( $_args->slug !== $this->product->get_slug() ) ) {
 			return $_data;
 		}
 		$api_response = $this->api_request();
@@ -708,7 +726,7 @@ class Licenser extends Abstract_Module {
 	/**
 	 * Disable SSL verification in order to prevent download update failures.
 	 *
-	 * @param array  $args Http args.
+	 * @param array $args Http args.
 	 * @param string $url Url to check.
 	 *
 	 * @return array $array
@@ -757,6 +775,14 @@ class Licenser extends Abstract_Module {
 			$this->register_license_hooks();
 		}
 
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			$namespace = apply_filters( 'themesle_sdk_cli_' . md5( $product->get_basefile() ), false );
+			if ( $namespace !== false ) {
+				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
+				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
+				\WP_CLI::add_command( $namespace . ' is-active', [ $this, 'cli_is_active' ] );
+			}
+		}
 		if ( $this->product->is_plugin() ) {
 			add_filter(
 				'pre_set_site_transient_update_plugins',
@@ -786,11 +812,68 @@ class Licenser extends Abstract_Module {
 	}
 
 	/**
+	 * Activate product license on this site.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<license-key>]
+	 * : Product license key
+	 */
+	public function cli_activate( $args ) {
+		$license_key = isset( $args[0] ) ? trim( $args[0] ) : '';
+		$response    = $this->do_license_process( $license_key, 'activate' );
+		if ( $response !== true ) {
+			\WP_CLI::error( $response->get_error_message() );
+
+			return;
+		}
+
+		\WP_CLI::success( 'Product successfully activated.' );
+	}
+
+	/**
+	 * Deactivate product license on this site.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<license-key>]
+	 * : Product license key
+	 */
+	public function cli_deactivate( $args ) {
+		$license_key = isset( $args[0] ) ? trim( $args[0] ) : '';
+		$response    = $this->do_license_process( $license_key, 'deactivate' );
+		if ( $response !== true ) {
+			\WP_CLI::error( $response->get_error_message() );
+
+			return;
+		}
+
+		\WP_CLI::success( 'Product successfully deactivated.' );
+	}
+
+	/**
+	 * Checks if product has license activated.
+	 *
+	 * @subcommand is-active
+	 */
+	public function cli_is_active( $args ) {
+
+		$status = $this->get_license_status();
+		if ( $status === 'valid' ) {
+			\WP_CLI::halt( 0 );
+
+			return;
+		}
+
+		\WP_CLI::halt( 1 );
+	}
+
+	/**
 	 * Register license fields for the products.
 	 */
 	public function register_license_hooks() {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'admin_init', array( $this, 'activate_license' ) );
+		add_action( 'admin_init', array( $this, 'process_license' ) );
 		add_action( 'admin_init', array( $this, 'product_valid' ), 99999999 );
 		add_action( 'admin_notices', array( $this, 'show_notice' ) );
 		add_filter( $this->product->get_key() . '_license_status', array( $this, 'get_license_status' ) );
