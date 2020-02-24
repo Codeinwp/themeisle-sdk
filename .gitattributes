@@ -15,6 +15,7 @@ README.md 		export-ignore
 tests 		    export-ignore
 bin 		    export-ignore
 README.md 		export-ignore
+.github		export-ignore
 # Set the default behavior for all files.
 * text=auto
 
