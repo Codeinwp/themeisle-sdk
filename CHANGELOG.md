@@ -1,3 +1,7 @@
+##### [Version 3.1.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.8...v3.1.9) (2020-02-24)
+
+* Add integration with GitHub actions
+
 ## [3.1.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.7...v3.1.8) (2019-11-18)
 
 
