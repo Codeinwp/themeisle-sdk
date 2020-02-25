@@ -56,6 +56,13 @@ class Licenser extends Abstract_Module {
 	private $product_key;
 
 	/**
+	 * Holds local license object.
+	 *
+	 * @var null Local license object.
+	 */
+	private $license_local = null;
+
+	/**
 	 * Disable wporg updates for premium products.
 	 *
 	 * @param string $r Update payload.
@@ -233,10 +240,11 @@ class Licenser extends Abstract_Module {
 		}
 
 		if ( apply_filters( $this->product->get_key() . '_hide_license_notices', false ) ) {
-			return;
+			return false;
 		}
+
 		$status                = $this->get_license_status();
-		$no_activations_string = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No activations left for %s !!!. You need to upgrade your plan in order to use %s on more websites. Please ask the %s Staff for more details.' );
+		$no_activations_string = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No more activations left for %s. You need to upgrade your plan in order to use %s on more websites. If you need assistance, please get in touch with %s staff.' );
 		$no_valid_string       = apply_filters( $this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s, please add your license code from your  <a href="%s" target="_blank">purchase history</a> and validate it <a href="%s">here</a>. ' );
 
 		// No activations left for this license.
@@ -285,7 +293,7 @@ class Licenser extends Abstract_Module {
 			return false;
 		}
 
-		return isset( $license_data->error ) ? ( 'no_activations_left' == $license_data->error ) : false;
+		return isset( $license_data->license ) ? ( 'no_activations_left' == $license_data->license ) : false;
 
 	}
 
@@ -784,6 +792,8 @@ class Licenser extends Abstract_Module {
 				add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'process_license' ], 10, 2 );
 			}
 		}
+
+		add_action( 'admin_head', [ $this, 'auto_activate' ] );
 		if ( $this->product->is_plugin() ) {
 			add_filter(
 				'pre_set_site_transient_update_plugins',
@@ -794,6 +804,7 @@ class Licenser extends Abstract_Module {
 			);
 			add_filter( 'plugins_api', array( $this, 'plugins_api_filter' ), 10, 3 );
 			add_filter( 'http_request_args', array( $this, 'http_request_args' ), 10, 2 );
+
 
 			return $this;
 		}
@@ -810,6 +821,64 @@ class Licenser extends Abstract_Module {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Run license activation on plugin activate.
+	 */
+	public function auto_activate() {
+		if ( ! current_user_can( 'switch_themes' ) ) {
+			return;
+		}
+		$status = $this->get_license_status();
+		if ( 'not_active' !== $status ) {
+			return;
+		}
+
+		$license_file = dirname( $this->product->get_basefile() ) . '/license.json';
+
+		global $wp_filesystem;
+		if ( ! is_file( $license_file ) ) {
+			return;
+		}
+
+		require_once( ABSPATH . '/wp-admin/includes/file.php' );
+		WP_Filesystem();
+		$content = json_decode( $wp_filesystem->get_contents( $license_file ) );
+		if ( ! is_object( $content ) ) {
+			return;
+		}
+		if ( ! isset( $content->key ) ) {
+			return;
+		}
+		$this->license_local = $content;
+		$lock_key            = $this->product->get_key() . '_autoactivated';
+
+		if ( 'yes' === get_option( $lock_key, '' ) ) {
+			return;
+		}
+		$response = $this->do_license_process( $content->key, 'activate' );
+
+		update_option( $lock_key, 'yes' );
+
+		if ( apply_filters( $this->product->get_key() . '_hide_license_notices', false ) ) {
+			return;
+		}
+
+		if ( true === $response ) {
+			add_action( 'admin_notices', [ $this, 'autoactivate_notice' ] );
+		}
+	}
+
+	/**
+	 * Show auto-activate notice.
+	 */
+	public function autoactivate_notice() {
+		?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php echo sprintf( '<strong>%s</strong> has been successfully activated using <strong>%s</strong> license !', $this->product->get_name(), str_repeat( '*', 20 ) . substr( $this->license_local->key, - 10 ) ); ?></p>
+        </div>
+		<?php
 	}
 
 	/**
