@@ -843,7 +843,7 @@ class Licenser extends Abstract_Module {
 		}
 
 		require_once( ABSPATH . '/wp-admin/includes/file.php' );
-		WP_Filesystem();
+		\WP_Filesystem();
 		$content = json_decode( $wp_filesystem->get_contents( $license_file ) );
 		if ( ! is_object( $content ) ) {
 			return;
