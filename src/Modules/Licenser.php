@@ -114,53 +114,53 @@ class Licenser extends Abstract_Module {
 		$license_message   = apply_filters( $this->product->get_key() . '_lc_license_message', 'Enter your license from %s purchase history in order to get %s updates' );
 		$error_message     = $this->get_error();
 		?>
-		<style type="text/css">
-			input.themeisle-sdk-text-input-valid {
-				border: 1px solid #7ad03a;
-			}
+        <style type="text/css">
+            input.themeisle-sdk-text-input-valid {
+                border: 1px solid #7ad03a;
+            }
 
-			input.themeisle-sdk-license-input {
-				width: 300px;
-				padding: 0 8px;
-				line-height: 2;
-				min-height: 30px;
-			}
+            input.themeisle-sdk-license-input {
+                width: 300px;
+                padding: 0 8px;
+                line-height: 2;
+                min-height: 30px;
+            }
 
-			.themeisle-sdk-license-deactivate-cta {
-				color: #fff;
-				background: #7ad03a;
-				display: inline-block;
-				text-decoration: none;
-				font-size: 13px;
-				line-height: 30px;
-				height: 26px;
-				margin-left: 5px;
-				padding: 0 10px 3px;
-				-webkit-border-radius: 3px;
-				border-radius: 3px;
-			}
+            .themeisle-sdk-license-deactivate-cta {
+                color: #fff;
+                background: #7ad03a;
+                display: inline-block;
+                text-decoration: none;
+                font-size: 13px;
+                line-height: 30px;
+                height: 26px;
+                margin-left: 5px;
+                padding: 0 10px 3px;
+                -webkit-border-radius: 3px;
+                border-radius: 3px;
+            }
 
-			.themeisle-sdk-license-activate-cta {
-				color: #fff;
-				background: #dd3d36;
-				display: inline-block;
-				text-decoration: none;
-				font-size: 13px;
-				line-height: 30px;
-				height: 26px;
-				margin-left: 5px;
-				padding: 0 10px 3px;
-				-webkit-border-radius: 3px;
-				border-radius: 3px;
-			}
+            .themeisle-sdk-license-activate-cta {
+                color: #fff;
+                background: #dd3d36;
+                display: inline-block;
+                text-decoration: none;
+                font-size: 13px;
+                line-height: 30px;
+                height: 26px;
+                margin-left: 5px;
+                padding: 0 10px 3px;
+                -webkit-border-radius: 3px;
+                border-radius: 3px;
+            }
 
-			button.button.themeisle-sdk-licenser-button-cta {
-				line-height: 26px;
-				height: 29px;
-				vertical-align: top;
-			}
+            button.button.themeisle-sdk-licenser-button-cta {
+                line-height: 26px;
+                height: 29px;
+                vertical-align: top;
+            }
 
-		</style>
+        </style>
 		<?php
 		echo sprintf(
 			'<p>%s<input class="themeisle-sdk-license-input %s" type="text" id="%s_license" name="%s_license" value="%s" /><a class="%s">%s</a>&nbsp;&nbsp;&nbsp;<button name="%s_btn_trigger" class="button button-primary themeisle-sdk-licenser-button-cta" value="yes" type="submit" >%s</button></p><p class="description">%s</p>%s',
@@ -242,8 +242,8 @@ class Licenser extends Abstract_Module {
 		// No activations left for this license.
 		if ( 'valid' != $status && $this->check_activation() ) {
 			?>
-			<div class="error">
-				<p><strong>
+            <div class="error">
+                <p><strong>
 						<?php
 						echo sprintf(
 							$no_activations_string,
@@ -252,20 +252,20 @@ class Licenser extends Abstract_Module {
 							'<a href="' . $this->get_api_url() . '" target="_blank">' . $this->get_distributor_name() . '</a>'
 						);
 						?>
-					</strong>
-				</p>
-			</div>
+                    </strong>
+                </p>
+            </div>
 			<?php
 			return false;
 		}
 		// Invalid license key.
 		if ( 'valid' != $status ) {
 			?>
-			<div class="error">
-				<p>
-					<strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->get_api_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() . '_license' ); ?> </strong>
-				</p>
-			</div>
+            <div class="error">
+                <p>
+                    <strong><?php echo sprintf( $no_valid_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->get_api_url(), admin_url( 'options-general.php' ) . '#' . $this->product->get_key() . '_license' ); ?> </strong>
+                </p>
+            </div>
 			<?php
 
 			return false;
@@ -686,7 +686,7 @@ class Licenser extends Abstract_Module {
 	 * Calls the API and, if successfull, returns the object delivered by the API.
 	 *
 	 * @param string $_action The requested action.
-	 * @param array  $_data Parameters for the API action.
+	 * @param array $_data Parameters for the API action.
 	 *
 	 * @return false||object
 	 */
@@ -705,7 +705,7 @@ class Licenser extends Abstract_Module {
 	/**
 	 * Updates information on the "View version x.x details" page with custom data.
 	 *
-	 * @param mixed  $_data Plugin data.
+	 * @param mixed $_data Plugin data.
 	 * @param string $_action Action to send.
 	 * @param object $_args Arguments to use.
 	 *
@@ -781,6 +781,7 @@ class Licenser extends Abstract_Module {
 				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
 				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
 				\WP_CLI::add_command( $namespace . ' is-active', [ $this, 'cli_is_active' ] );
+				add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'process_license' ], 10, 2 );
 			}
 		}
 		if ( $this->product->is_plugin() ) {
