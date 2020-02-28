@@ -791,13 +791,14 @@ class Licenser extends Abstract_Module {
 			$this->register_license_hooks();
 		}
 
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			$namespace = apply_filters( 'themesle_sdk_cli_' . md5( $product->get_basefile() ), false );
-			if ( false !== $namespace ) {
+		$namespace = apply_filters( 'themesle_sdk_namespace_' . md5( $product->get_basefile() ), false );
+
+		if ( false !== $namespace ) {
+			add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'process_license' ], 10, 2 );
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
 				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
 				\WP_CLI::add_command( $namespace . ' is-active', [ $this, 'cli_is_active' ] );
-				add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'process_license' ], 10, 2 );
 			}
 		}
 
@@ -850,7 +851,7 @@ class Licenser extends Abstract_Module {
 		}
 
 		require_once( ABSPATH . '/wp-admin/includes/file.php' );
-		WP_Filesystem();
+		\WP_Filesystem();
 		$content = json_decode( $wp_filesystem->get_contents( $license_file ) );
 		if ( ! is_object( $content ) ) {
 			return;
