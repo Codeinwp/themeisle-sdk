@@ -13,6 +13,7 @@ namespace ThemeisleSDK\Modules;
 
 // Exit if accessed directly.
 use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Loader;
 use ThemeisleSDK\Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -435,7 +436,9 @@ class Licenser extends Abstract_Module {
 	 * @return bool|\WP_Error
 	 */
 	private function do_license_process( $license, $action = 'toggle' ) {
-
+		if ( strlen( $license ) < 10 ) {
+			return new \WP_Error( 'themeisle-license-invalid-format', 'Invalid license.' );
+		}
 		$status = $this->get_license_status();
 
 		if ( 'valid' === $status && 'activate' === $action ) {
@@ -451,25 +454,27 @@ class Licenser extends Abstract_Module {
 			'item_name' => rawurlencode( $this->product->get_name() ),
 			'url'       => rawurlencode( home_url() ),
 		);
-
-		switch ( $action ) {
-			case 'activate':
-				$api_params['edd_action'] = 'activate_license';
-				break;
-			case 'deactivate':
-				$api_params['edd_action'] = 'deactivate_license';
-				break;
-			case 'check':
-				$api_params['edd_action'] = 'check_license';
-				break;
-			case 'toggle':
-			case 'default':
-				$api_params['edd_action'] = ( 'valid' !== $status ? ( 'activate_license' ) : ( 'deactivate_license' ) );
-				break;
+		if ( 'toggle' === $action ) {
+			$action = ( 'valid' !== $status ? ( 'activate' ) : ( 'deactivate' ) );
 		}
 
 		// Call the custom API.
-		$response = wp_remote_get( add_query_arg( $api_params, $this->get_api_url() ) );
+		if ( 'check' === $action ) {
+			$response = wp_remote_get( sprintf( '%slicense/check/%s/%s/%s/%s', Product::API_URL, rawurlencode( $this->product->get_name() ), $license, rawurlencode( home_url() ), Loader::get_cache_token() ) );
+		} else {
+			$response = wp_remote_post(
+				sprintf( '%slicense/%s/%s/%s/%s/%s', Product::API_URL, $action, rawurlencode( $this->product->get_name() ), $license ),
+				array(
+					'body'    => array(
+						'url' => rawurlencode( home_url() ),
+					),
+					'headers' => array(
+						'Content-Type' => 'application/json',
+					),
+				)
+			);
+		}
+
 		// make sure the response came back okay.
 		if ( is_wp_error( $response ) ) {
 			return new \WP_Error( 'themeisle-license-500', sprintf( 'ERROR: Failed to connect to the license service. Please try again later. Reason: %s', $response->get_error_message() ) );
@@ -483,6 +488,9 @@ class Licenser extends Abstract_Module {
 		if ( 'check' === $action ) {
 			return $license_data;
 		}
+
+		Loader::clear_cache_token();
+
 		if ( ! isset( $license_data->license ) ) {
 			$license_data->license = 'invalid';
 		}

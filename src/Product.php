@@ -106,7 +106,10 @@ class Product {
 	 * @var string $version The product version.
 	 */
 	private $version;
-
+	/**
+	 * Root api endpoint.
+	 */
+	const API_URL = 'https://api.themeisle.com/';
 	/**
 	 * ThemeIsle_SDK_Product constructor.
 	 *
