@@ -463,11 +463,11 @@ class Licenser extends Abstract_Module {
 			$response = wp_remote_get( sprintf( '%slicense/check/%s/%s/%s/%s', Product::API_URL, rawurlencode( $this->product->get_name() ), $license, rawurlencode( home_url() ), Loader::get_cache_token() ) );
 		} else {
 			$response = wp_remote_post(
-				sprintf( '%slicense/%s/%s/%s/%s/%s', Product::API_URL, $action, rawurlencode( $this->product->get_name() ), $license ),
+				sprintf( '%slicense/%s/%s/%s', Product::API_URL, $action, rawurlencode( $this->product->get_name() ), $license ),
 				array(
-					'body'    => array(
+					'body'    => wp_json_encode( array(
 						'url' => rawurlencode( home_url() ),
-					),
+					) ),
 					'headers' => array(
 						'Content-Type' => 'application/json',
 					),
@@ -515,8 +515,7 @@ class Licenser extends Abstract_Module {
 		}
 		update_option( $this->product->get_key() . '_license_data', $license_data );
 		set_transient( $this->product->get_key() . '_license_data', $license_data, 12 * HOUR_IN_SECONDS );
-
-		if ( 'valid' !== $license_data->license ) {
+		if ( 'activate' === $action && 'valid' !== $license_data->license ) {
 			return new \WP_Error( 'themeisle-license-invalid', 'ERROR: Invalid license provided.' );
 		}
 
@@ -641,17 +640,15 @@ class Licenser extends Abstract_Module {
 	 * @return bool|mixed Update api response.
 	 */
 	private function get_version_data() {
-		$api_params = array(
-			'edd_action' => 'get_version',
-			'version'    => $this->product->get_version(),
-			'license'    => empty( $this->license_key ) ? 'free' : $this->license_key,
-			'name'       => rawurlencode( $this->product->get_name() ),
-			'slug'       => $this->product->get_slug(),
-			'author'     => rawurlencode( $this->get_distributor_name() ),
-			'url'        => rawurlencode( home_url() ),
-		);
-		$response   = wp_remote_get(
-			add_query_arg( $api_params, $this->get_api_url() ),
+
+		$response = wp_remote_get(
+			sprintf( '%slicense/version/%s/%s/%s/%s',
+				Product::API_URL,
+				rawurlencode( $this->product->get_name() ),
+				( empty( $this->license_key ) ? 'free' : $this->license_key ),
+				$this->product->get_version(),
+				rawurlencode( home_url() )
+			),
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
