@@ -465,9 +465,11 @@ class Licenser extends Abstract_Module {
 			$response = wp_remote_post(
 				sprintf( '%slicense/%s/%s/%s', Product::API_URL, $action, rawurlencode( $this->product->get_name() ), $license ),
 				array(
-					'body'    => wp_json_encode( array(
-						'url' => rawurlencode( home_url() ),
-					) ),
+					'body'    => wp_json_encode(
+						array(
+							'url' => rawurlencode( home_url() ),
+						)
+					),
 					'headers' => array(
 						'Content-Type' => 'application/json',
 					),
@@ -642,7 +644,8 @@ class Licenser extends Abstract_Module {
 	private function get_version_data() {
 
 		$response = wp_remote_get(
-			sprintf( '%slicense/version/%s/%s/%s/%s',
+			sprintf(
+				'%slicense/version/%s/%s/%s/%s',
 				Product::API_URL,
 				rawurlencode( $this->product->get_name() ),
 				( empty( $this->license_key ) ? 'free' : $this->license_key ),
