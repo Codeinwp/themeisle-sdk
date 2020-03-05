@@ -1,3 +1,7 @@
+##### [Version 3.2.1](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.0...v3.2.1) (2020-03-05)
+
+Fix rollback call for private products
+
 #### [Version 3.2.0](https://github.com/Codeinwp/themeisle-sdk/compare/v3.1.9...v3.2.0) (2020-03-04)
 
 * adds license activation/deactivation handlers for wp cli
