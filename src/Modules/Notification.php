@@ -226,7 +226,7 @@ class Notification extends Abstract_Module {
 	/**
 	 * Get last notification details.
 	 *
-	 * @return array Last notification details.
+	 * @return int Last notification details.
 	 */
 	private static function get_last_active_notification_timestamp() {
 		$notification = self::get_notifications_metadata();
@@ -372,6 +372,10 @@ class Notification extends Abstract_Module {
 		$confirm = isset( $_POST['confirm'] ) ? sanitize_text_field( $_POST['confirm'] ) : 'no';
 
 		if ( empty( $id ) ) {
+			wp_send_json( [] );
+		}
+		$ids = wp_list_pluck( self::$notifications, 'id' );
+		if ( ! in_array( $id, $ids, true ) ) {
 			wp_send_json( [] );
 		}
 		self::set_last_active_notification_timestamp();
