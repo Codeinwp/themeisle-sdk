@@ -1,3 +1,7 @@
+##### [Version 3.2.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.1...v3.2.2) (2020-03-13)
+
+* improve notice dismiss mechanism
+
 ##### [Version 3.2.1](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.0...v3.2.1) (2020-03-05)
 
 Fix rollback call for private products
