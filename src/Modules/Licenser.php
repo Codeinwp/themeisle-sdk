@@ -664,7 +664,9 @@ class Licenser extends Abstract_Module {
 		if ( ! is_object( $update_data ) ) {
 			return false;
 		}
-
+		if ( isset( $update_data->slug ) ) {
+			$update_data->slug = $this->product->get_slug();
+		}
 		return $update_data;
 	}
 
