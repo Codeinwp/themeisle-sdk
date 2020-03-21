@@ -1,7 +1,7 @@
 {
   "name": "themeisle-sdk",
   "description": "Themeisle SDK",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "scripts": {
     "release": "semantic-release --debug"
   },
