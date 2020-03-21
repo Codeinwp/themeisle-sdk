@@ -1,3 +1,7 @@
+##### [Version 3.2.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.2...v3.2.3) (2020-03-21)
+
+* use product slug instead of the one from api
+
 ##### [Version 3.2.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.1...v3.2.2) (2020-03-13)
 
 * improve notice dismiss mechanism
