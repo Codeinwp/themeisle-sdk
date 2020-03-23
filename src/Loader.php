@@ -51,11 +51,11 @@ final class Loader {
 		'uninstall_feedback',
 		'licenser',
 		'endpoint',
-		'notification',
 		'logger',
 		'translate',
 		'review',
 		'recommendation',
+		'notification'
 
 	];
 
