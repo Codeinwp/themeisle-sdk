@@ -448,12 +448,6 @@ class Licenser extends Abstract_Module {
 			return new \WP_Error( 'themeisle-license-already-deactivate', 'License not active.' );
 		}
 
-		// retrieve the license from the database.
-		$api_params = array(
-			'license'   => $license,
-			'item_name' => rawurlencode( $this->product->get_name() ),
-			'url'       => rawurlencode( home_url() ),
-		);
 		if ( 'toggle' === $action ) {
 			$action = ( 'valid' !== $status ? ( 'activate' ) : ( 'deactivate' ) );
 		}
@@ -504,7 +498,7 @@ class Licenser extends Abstract_Module {
 			$this->reset_failed_checks();
 		}
 
-		if ( 'deactivate_license' === $api_params['edd_action'] ) {
+		if ( 'deactivate' === $action ) {
 
 			delete_option( $this->product->get_key() . '_license_data' );
 			delete_option( $this->product->get_key() . '_license_plan' );
