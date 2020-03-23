@@ -1,3 +1,7 @@
+##### [Version 3.2.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.5...v3.2.6) (2020-03-23)
+
+* Fix notice on license deactivation
+
 ##### [Version 3.2.5](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.4...v3.2.5) (2020-03-23)
 
 * always load notification manager last
