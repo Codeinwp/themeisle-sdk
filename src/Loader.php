@@ -55,7 +55,7 @@ final class Loader {
 		'translate',
 		'review',
 		'recommendation',
-		'notification'
+		'notification',
 
 	];
 
