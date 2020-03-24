@@ -435,7 +435,7 @@ class Licenser extends Abstract_Module {
 	 *
 	 * @return bool|\WP_Error
 	 */
-	private function do_license_process( $license, $action = 'toggle' ) {
+	public function do_license_process( $license, $action = 'toggle' ) {
 		if ( strlen( $license ) < 10 ) {
 			return new \WP_Error( 'themeisle-license-invalid-format', 'Invalid license.' );
 		}
