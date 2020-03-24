@@ -1,3 +1,7 @@
+##### [Version 3.2.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.6...v3.2.7) (2020-03-24)
+
+* fix callback for license processing hook
+
 ##### [Version 3.2.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.5...v3.2.6) (2020-03-23)
 
 * Fix notice on license deactivation
