@@ -534,9 +534,11 @@ class Uninstall_Feedback extends Abstract_Module {
 				</li>
 			<?php } ?>
 			<?php
-			if ( $key === 'optimole_wp' ) {
-				echo '<input type="checkbox" name ="optimole_costum_check" id="optimole_check_remove_data">
-				<label for="optimole_check_remove_data"> Remove data on deactivate </label>';
+			$custom_deactivate_cleanup = $key;
+			$custom_deactivate_cleanup = apply_filters( 'ti_custom_deactivate_cleanup', $custom_deactivate_cleanup );
+			if ( true === $custom_deactivate_cleanup ) {
+				echo '<input type="checkbox" name ="' . $key . '_costum_check" id="' . $key . '_check_remove_data">
+				<label for="' . $key . '_check_remove_data"> Remove data on deactivate </label>';
 			}
 			?>
 		</ul>
@@ -659,8 +661,8 @@ class Uninstall_Feedback extends Abstract_Module {
 						$(targetElement).unbind('click');
 						var selectedOption = $(
 							'<?php echo esc_attr( $popup_id ); ?> input[name="ti-deactivate-option"]:checked');
-						var optimoleDeactivate = $(
-							'<?php echo esc_attr( $popup_id ); ?> input[name="optimole_costum_check"]');
+						var costum_deactivate = $(
+							'<?php echo esc_attr( $popup_id ) . ' input[name="' . $this->product->get_key() . '_costum_check"]'; ?>');
 						var data = {
 							'action': '<?php echo esc_attr( $key ) . '_uninstall_feedback'; ?>',
 							'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
@@ -668,7 +670,7 @@ class Uninstall_Feedback extends Abstract_Module {
 							'msg': selectedOption.parent().find('textarea').val(),
 							'type': 'plugin',
 							'key': '<?php echo esc_attr( $key ); ?>',
-							 ...(optimoleDeactivate.prop('checked') && {'optimole_deactivate_cleanup': 'true'})
+							...(costum_deactivate.prop('checked') && {'<?php echo esc_attr( $key ) . '_deactivate_cleanup'; ?>': 'true'})
 						};
 						$.ajax({
 							type: 'POST',
@@ -746,15 +748,8 @@ class Uninstall_Feedback extends Abstract_Module {
 	function post_deactivate() {
 		check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-		if ( ! empty( $_POST['optimole_deactivate_cleanup'] ) ) {
+		do_action( 'sdk_deactivate_cleanup', empty( $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) ? false : ( 'true' === $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) );
 
-			if ( $_POST['optimole_deactivate_cleanup'] === 'true' ) {
-
-				if ( function_exists( 'optml_deactivate' ) ) {
-					optml_deactivate();
-				}
-			}
-		}
 		$this->post_deactivate_or_cancel();
 
 		if ( empty( $_POST['id'] ) ) {
