@@ -646,11 +646,41 @@ class Uninstall_Feedback extends Abstract_Module {
 						e.preventDefault();
 						e.stopPropagation();
 						$(targetElement).unbind('click');
-						$('body').removeClass('ti-feedback-open');
-						$('<?php echo esc_attr( $popup_id ); ?>').remove();
-						if (redirectUrl !== '') {
-							location.href = redirectUrl;
+						<?php
+						if ( apply_filters( $key . '_deactivate_checkbox', false ) ) {
+							echo 'var costum_deactivate = $( \'' .
+								esc_attr( $popup_id ) . ' input[name="' . $this->product->get_key() . '_costum_check"] \' )
+                            var data = {
+                                \'action\': \'' . esc_attr( $key ) . '_uninstall_feedback\',
+                                \'nonce\': \'' . wp_create_nonce( (string) __CLASS__ ) . '\',
+                                \'type\': \'plugin\',
+                                ...(costum_deactivate.prop(\'checked\') && { ' . esc_attr( $key ) . '_deactivate_cleanup : \'true\'})
+                            };
+                            $.ajax({
+                                type: \'POST\',
+                                url:   ajaxurl,
+                                data:  data,
+                                complete() {
+                                    $(\'body\').removeClass(\'ti-feedback-open\');
+                                    $( \'' . esc_attr( $popup_id ) . '\').remove();
+                                    if (redirectUrl !== \'\') {
+                                        location.href = redirectUrl;
+                                    }
+                                },
+                                beforeSend() {
+                                    $( \'' . esc_attr( $popup_id ) . '\').addClass(\'sending-feedback\');
+                                    $( \'' . esc_attr( $popup_id ) . ' .popup--footer\').remove();
+                                    $( \'' . esc_attr( $popup_id ) . ' .popup--body\').html(\'<i class="dashicons dashicons-update-alt"></i>\');
+                                }
+                            });';
+						} else {
+							echo ' $(\'body\').removeClass(\'ti-feedback-open\');
+                                    $( \'' . esc_attr( $popup_id ) . '\').remove();
+                                    if (redirectUrl !== \'\') {
+                                        location.href = redirectUrl;
+                                    }';
 						}
+						?>
 					});
 
 					$('<?php echo esc_attr( $popup_id ); ?> #<?php echo $key; ?>ti-deactivate-yes').on('click', function (e) {
