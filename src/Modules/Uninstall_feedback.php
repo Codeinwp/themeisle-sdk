@@ -534,7 +534,9 @@ class Uninstall_Feedback extends Abstract_Module {
 				</li>
 			<?php } ?>
 			<?php
-			if ( apply_filters( $key . '_deactivate_checkbox', false ) ) {
+			$custom_deactivate_cleanup = $key;
+			$custom_deactivate_cleanup = apply_filters( 'ti_custom_deactivate_cleanup', $custom_deactivate_cleanup );
+			if ( true === $custom_deactivate_cleanup ) {
 				echo '<input type="checkbox" name ="' . $key . '_costum_check" id="' . $key . '_check_remove_data">
 				<label for="' . $key . '_check_remove_data"> Remove data on deactivate </label>';
 			}
@@ -776,7 +778,7 @@ class Uninstall_Feedback extends Abstract_Module {
 	function post_deactivate() {
 		check_ajax_referer( (string) __CLASS__, 'nonce' );
 
-		do_action( $this->product->get_key() . '_deactivate_cleanup', empty( $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) ? false : ( 'true' === $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) );
+		do_action( 'sdk_deactivate_cleanup', empty( $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) ? false : ( 'true' === $_POST[ $this->product->get_key() . '_deactivate_cleanup' ] ) );
 
 		$this->post_deactivate_or_cancel();
 
