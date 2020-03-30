@@ -535,7 +535,7 @@ class Uninstall_Feedback extends Abstract_Module {
 			<?php } ?>
 			<?php
 			if ( apply_filters( $key . '_deactivate_checkbox', false ) ) {
-				echo '<input type="checkbox" name ="' . $key . '_costum_check" id="' . $key . '_check_remove_data">
+				echo '<input type="checkbox" name ="' . $key . '_deactivate_cleanup_check" id="' . $key . '_check_remove_data">
 				<label for="' . $key . '_check_remove_data"> Remove data on deactivate </label>';
 			}
 			?>
@@ -660,7 +660,7 @@ class Uninstall_Feedback extends Abstract_Module {
 						var selectedOption = $(
 							'<?php echo esc_attr( $popup_id ); ?> input[name="ti-deactivate-option"]:checked');
 						var costum_deactivate = $(
-							'<?php echo esc_attr( $popup_id ) . ' input[name="' . $this->product->get_key() . '_costum_check"]'; ?>');
+							'<?php echo esc_attr( $popup_id ) . ' input[name="' . $this->product->get_key() . '_deactivate_cleanup_check"]'; ?>');
 						var data = {
 							'action': '<?php echo esc_attr( $key ) . '_uninstall_feedback'; ?>',
 							'nonce': '<?php echo wp_create_nonce( (string) __CLASS__ ); ?>',
