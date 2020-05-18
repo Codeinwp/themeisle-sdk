@@ -1,3 +1,7 @@
+##### [Version 3.2.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.8...v3.2.9) (2020-05-18)
+
+adds new endpoints
+
 ##### [Version 3.2.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.7...v3.2.8) (2020-03-24)
 
 * change license handler method access
