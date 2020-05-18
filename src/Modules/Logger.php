@@ -27,7 +27,7 @@ class Logger extends Abstract_Module {
 	/**
 	 * Endpoint where to collect logs.
 	 */
-	const TRACKING_ENDPOINT = 'http://log.themeisle.com/wp-json/v1/logs/';
+	const TRACKING_ENDPOINT = 'https://api.themeisle.com/tracking/log';
 
 
 	/**
@@ -151,6 +151,7 @@ class Logger extends Abstract_Module {
 		$environment['theme']           = array();
 		$environment['theme']['name']   = $theme->get( 'Name' );
 		$environment['theme']['author'] = $theme->get( 'Author' );
+		$environment['theme']['parent'] = $theme->parent() !== false ? $theme->parent()->get( 'Name' ) : $theme->get( 'Name' );
 		$environment['plugins']         = get_option( 'active_plugins' );
 		global $wp_version;
 		wp_remote_post(
@@ -167,6 +168,7 @@ class Logger extends Abstract_Module {
 					'slug'        => $this->product->get_slug(),
 					'version'     => $this->product->get_version(),
 					'wp_version'  => $wp_version,
+					'locale'      => get_locale(),
 					'data'        => apply_filters( $this->product->get_key() . '_logger_data', array() ),
 					'environment' => $environment,
 					'license'     => apply_filters( $this->product->get_key() . '_license_status', '' ),
