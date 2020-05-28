@@ -3,8 +3,7 @@
 .travis.yml 	export-ignore
 Gruntfile.js 	export-ignore
 docker-compose.local.yml 	export-ignore
-.releaserc.json 	        export-ignore
-composer.json 	        export-ignore
+.releaserc.yml 	        export-ignore
 composer.lock 	        export-ignore
 .nvmrc 	        export-ignore
 package.json 	export-ignore
