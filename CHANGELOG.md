@@ -1,3 +1,7 @@
+##### [Version 3.2.10](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.9...v3.2.10) (2020-05-28)
+
+* Remove extra files on export
+
 ##### [Version 3.2.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.8...v3.2.9) (2020-05-18)
 
 adds new endpoints
