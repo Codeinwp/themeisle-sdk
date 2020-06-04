@@ -109,7 +109,7 @@ class Uninstall_Feedback extends Abstract_Module {
 	 *
 	 * @var string $heading_plugin The heading of the modal
 	 */
-	private $heading_plugin = 'What’s wrong?';
+	private $heading_plugin = 'What\'s wrong?';
 	/**
 	 * Default heading for theme.
 	 *
