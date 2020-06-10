@@ -830,9 +830,9 @@ class Licenser extends Abstract_Module {
 
 		if ( false !== $namespace ) {
 			add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'do_license_process' ], 10, 2 );
-			add_filter( 'product_' . $namespace . '_license_status', [ $this, 'get_license_status' ] );
+			add_filter( 'product_' . $namespace . '_license_status', [ $this, 'get_license_status' ], PHP_INT_MAX );
 			add_filter( 'product_' . $namespace . '_license_key', [ $this->product, 'get_license' ] );
-			add_filter( 'product_' . $namespace . '_license_plan', [ $this, 'get_plan' ] );
+			add_filter( 'product_' . $namespace . '_license_plan', [ $this, 'get_plan' ], PHP_INT_MAX );
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
 				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
