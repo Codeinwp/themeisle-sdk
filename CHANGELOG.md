@@ -1,3 +1,7 @@
+##### [Version 3.2.12](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.11...v3.2.12) (2020-06-10)
+
+Adds key filter
+
 ##### [Version 3.2.11](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.10...v3.2.11) (2020-06-04)
 
 * remove non-printable chars
