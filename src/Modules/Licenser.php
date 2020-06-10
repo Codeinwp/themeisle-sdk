@@ -667,6 +667,7 @@ class Licenser extends Abstract_Module {
 		if ( isset( $update_data->banners ) ) {
 			$update_data->banners = (array) $update_data->banners;
 		}
+
 		return $update_data;
 	}
 
@@ -696,6 +697,7 @@ class Licenser extends Abstract_Module {
 				$_transient_data->response[ $this->product->get_slug() . '/' . $this->product->get_file() ] = $api_response;
 			}
 		}
+
 		return $_transient_data;
 	}
 
@@ -797,6 +799,7 @@ class Licenser extends Abstract_Module {
 		if ( false !== $namespace ) {
 			add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'do_license_process' ], 10, 2 );
 			add_filter( 'product_' . $namespace . '_license_status', [ $this, 'get_license_status' ] );
+			add_filter( 'product_' . $namespace . '_license_key', [ $this->product, 'get_license' ] );
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
 				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
