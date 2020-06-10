@@ -1,3 +1,7 @@
+##### [Version 3.2.14](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.13...v3.2.14) (2020-06-10)
+
+> Things are getting better every day. 🚀
+
 ##### [Version 3.2.13](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.12...v3.2.13) (2020-06-10)
 
 Adds plan logic and expiration
