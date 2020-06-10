@@ -190,18 +190,37 @@ class Licenser extends Abstract_Module {
 	/**
 	 * Return the license status.
 	 *
+	 * @param bool $check_expiration Should check if license is valid, but expired.
+	 *
 	 * @return string The License status.
 	 */
-	public function get_license_status() {
+	public function get_license_status( $check_expiration = false ) {
 
 		$license_data = get_option( $this->product->get_key() . '_license_data', '' );
 
 		if ( '' === $license_data ) {
 			return get_option( $this->product->get_key() . '_license_status', 'not_active' );
 		}
+		$status = isset( $license_data->license ) ? $license_data->license : get_option( $this->product->get_key() . '_license_status', 'not_active' );
+		if ( false === $check_expiration ) {
+			return $status;
+		}
 
-		return isset( $license_data->license ) ? $license_data->license : get_option( $this->product->get_key() . '_license_status', 'not_active' );
+		return ( 'valid' === $status && isset( $license_data->is_expired ) && 'yes' === $license_data->is_expired ) ? 'active_expired' : $status;
+	}
 
+	/**
+	 * License price id.
+	 *
+	 * @return int License plan.
+	 */
+	public function get_plan() {
+		$license_data = get_option( $this->product->get_key() . '_license_data', '' );
+		if ( ! isset( $license_data->price_id ) ) {
+			return -1;
+		}
+
+		return (int) $license_data->price_id;
 	}
 
 	/**
@@ -244,10 +263,10 @@ class Licenser extends Abstract_Module {
 			return false;
 		}
 
-		$status                = $this->get_license_status();
-		$no_activations_string = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No more activations left for %s. You need to upgrade your plan in order to use %s on more websites. If you need assistance, please get in touch with %s staff.' );
-		$no_valid_string       = apply_filters( $this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s, please add your license code from your  <a href="%s" target="_blank">purchase history</a> and validate it <a href="%s">here</a>. ' );
-
+		$status                 = $this->get_license_status( true );
+		$no_activations_string  = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No more activations left for %s. You need to upgrade your plan in order to use %s on more websites. If you need assistance, please get in touch with %s staff.' );
+		$no_valid_string        = apply_filters( $this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s, please add your license code from your  <a href="%s" target="_blank">purchase history</a> and validate it <a href="%s">here</a>. ' );
+		$expired_license_string = apply_filters( $this->product->get_key() . '_lc_expired_string', 'Your %s License Key has expired. In order to continue receiving support and software updates you must  <a href="%s" target="_blank">renew</a> your license key.' );
 		// No activations left for this license.
 		if ( 'valid' != $status && $this->check_activation() ) {
 			?>
@@ -265,6 +284,19 @@ class Licenser extends Abstract_Module {
 				</p>
 			</div>
 			<?php
+			return false;
+		}
+
+		// Invalid license key.
+		if ( 'active_expired' === $status ) {
+			?>
+			<div class="error">
+				<p>
+					<strong><?php echo sprintf( $expired_license_string, $this->product->get_name() . ' ' . $this->product->get_type(), $this->get_api_url() . '?license=' . $this->license_key ); ?> </strong>
+				</p>
+			</div>
+			<?php
+
 			return false;
 		}
 		// Invalid license key.
@@ -800,6 +832,7 @@ class Licenser extends Abstract_Module {
 			add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'do_license_process' ], 10, 2 );
 			add_filter( 'product_' . $namespace . '_license_status', [ $this, 'get_license_status' ] );
 			add_filter( 'product_' . $namespace . '_license_key', [ $this->product, 'get_license' ] );
+			add_filter( 'product_' . $namespace . '_license_plan', [ $this, 'get_plan' ] );
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				\WP_CLI::add_command( $namespace . ' activate', [ $this, 'cli_activate' ] );
 				\WP_CLI::add_command( $namespace . ' deactivate', [ $this, 'cli_deactivate' ] );
