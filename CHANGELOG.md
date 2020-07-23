@@ -1,3 +1,7 @@
+##### [Version 3.2.15](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.14...v3.2.15) (2020-07-23)
+
+* remove no redundant module
+
 ##### [Version 3.2.14](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.13...v3.2.14) (2020-06-10)
 
 > Things are getting better every day. 🚀
