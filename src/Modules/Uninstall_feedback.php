@@ -363,18 +363,18 @@ class Uninstall_Feedback extends Abstract_Module {
 
 
 			.ti-plugin-uninstall-feedback-popup .popup--header:before {
-                content: "";
-                display: block;
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
+				content: "";
+				display: block;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
 				<?php
 				echo is_rtl() ?
 				'right: -10px;
-			    border-top: 20px solid transparent;
-			    border-left: 20px solid #23A1CE;
-			    border-bottom: 20px solid transparent;' :
-			    'left: -10px;
+				border-top: 20px solid transparent;
+				border-left: 20px solid #23A1CE;
+				border-bottom: 20px solid transparent;' :
+				'left: -10px;
 				border-top: 20px solid transparent;
 				border-right: 20px solid #23A1CE;
 				border-bottom: 20px solid transparent;';
