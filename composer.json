@@ -14,7 +14,7 @@
       "homepage": "https://themeisle.com"
     }
   ],
-  "version": "3.2.15",
+  "version": "3.2.16",
   "require-dev": {
 	"squizlabs/php_codesniffer": "^3.3",
 	"wp-coding-standards/wpcs": "^1",
