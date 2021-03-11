@@ -548,7 +548,7 @@ class Licenser extends Abstract_Module {
 			return;
 		}
 		if ( ! isset( $_POST[ $this->product->get_key() . 'nonce_field' ] )
-			|| ! wp_verify_nonce( $this->product->get_key() . 'nonce_field', $this->product->get_key() . 'nonce' )
+			|| ! wp_verify_nonce( $_POST[ $this->product->get_key() . 'nonce_field' ], $this->product->get_key() . 'nonce' ) //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		) {
 			return;
 		}
