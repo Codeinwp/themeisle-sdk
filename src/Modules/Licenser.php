@@ -735,6 +735,8 @@ class Licenser extends Abstract_Module {
 		if ( false !== $api_response && is_object( $api_response ) && isset( $api_response->new_version ) ) {
 			if ( version_compare( $this->product->get_version(), $api_response->new_version, '<' ) ) {
 				$_transient_data->response[ $this->product->get_slug() . '/' . $this->product->get_file() ] = $api_response;
+			} else {
+				$_transient_data->no_update[ $this->product->get_slug() . '/' . $this->product->get_file() ] = $api_response;
 			}
 		}
 
