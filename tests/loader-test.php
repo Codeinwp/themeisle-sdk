@@ -9,6 +9,7 @@
  * Test loader manager.
  *
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class Loader_Test extends WP_UnitTestCase {
 
