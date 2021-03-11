@@ -96,7 +96,7 @@ class Dashboard_Widget extends Abstract_Module {
 	 *
 	 * @return string|void
 	 */
-	function add_widget() {
+	public function add_widget() {
 		global $wp_meta_boxes;
 		if ( isset( $wp_meta_boxes['dashboard']['normal']['core']['themeisle'] ) ) {
 			return;
@@ -114,7 +114,7 @@ class Dashboard_Widget extends Abstract_Module {
 	/**
 	 * Render widget content
 	 */
-	function render_dashboard_widget() {
+	public function render_dashboard_widget() {
 		$this->setup_feeds();
 		if ( empty( $this->items ) || ! is_array( $this->items ) ) {
 			return;
@@ -220,19 +220,21 @@ class Dashboard_Widget extends Abstract_Module {
 				<li class="ti-dw-feed-item">
 					<a href="
 						<?php
-						echo add_query_arg(
-							array(
-								'utm_source'   => 'wpadmin',
-								'utm_campaign' => 'feed',
-								'utm_medium'   => 'dashboard_widget',
-							),
-							$item['link']
+						echo esc_url(
+							add_query_arg(
+								array(
+									'utm_source'   => 'wpadmin',
+									'utm_campaign' => 'feed',
+									'utm_medium'   => 'dashboard_widget',
+								),
+								$item['link']
+							)
 						);
 						?>
 						" target="_blank">
 							<span class="ti-dw-date-container"><span
-										class="ti-dw-day-container"><?php echo date( 'd', $item['date'] ); ?></span> <span
-										class="ti-dw-month-container"><?php echo substr( date( 'M', $item['date'] ), 0, 3 ); ?></span></span><?php echo $item['title']; ?>
+										class="ti-dw-day-container"><?php echo esc_attr( gmdate( 'd', $item['date'] ) ); ?></span> <span
+										class="ti-dw-month-container"><?php echo esc_attr( substr( gmdate( 'M', $item['date'] ), 0, 3 ) ); ?></span></span><?php echo esc_attr( $item['title'] ); ?>
 					</a>
 				</li>
 				<?php
@@ -275,26 +277,28 @@ class Dashboard_Widget extends Abstract_Module {
 		?>
 		<div class="ti-dw-footer">
 					<span class="ti-dw-recommend-item ">
-							<span class="ti-dw-recommend"><?php echo apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ); ?>
+							<span class="ti-dw-recommend"><?php echo esc_attr( apply_filters( 'themeisle_sdk_dashboard_popular_label', sprintf( 'Popular %s', ucwords( $type ) ) ) ); ?>
 								: </span>
 						<?php
-						echo trim(
-							str_replace(
-								array(
-									'lite',
-									'Lite',
-									'(Lite)',
-									'(lite)',
-								),
-								'',
-								$recommend['name']
+						echo esc_attr(
+							trim(
+								str_replace(
+									array(
+										'lite',
+										'Lite',
+										'(Lite)',
+										'(lite)',
+									),
+									'',
+									$recommend['name']
+								)
 							)
 						);
 						?>
 						(<a class="thickbox open-plugin-details-modal"
-							href="<?php echo $url . '&TB_iframe=true&width=600&height=500'; ?>"><?php echo apply_filters( 'themeisle_sdk_dashboard_install_label', 'Install' ); ?></a>)
+							href="<?php echo esc_url( $url . '&TB_iframe=true&width=600&height=500' ); ?>"><?php echo esc_attr( apply_filters( 'themeisle_sdk_dashboard_install_label', 'Install' ) ); ?></a>)
 					</span>
-			<span class="ti-dw-powered-by"><span><?php echo apply_filters( 'themeisle_sdk_dashboard_widget_powered_by', esc_attr( sprintf( 'Powered by %s', $this->product->get_friendly_name() ) ) ); ?></span></span>
+			<span class="ti-dw-powered-by"><span><?php echo esc_attr( apply_filters( 'themeisle_sdk_dashboard_widget_powered_by', sprintf( 'Powered by %s', $this->product->get_friendly_name() ) ) ); ?></span></span>
 		</div>
 
 		<?php
@@ -305,7 +309,7 @@ class Dashboard_Widget extends Abstract_Module {
 	 * Setup feed items.
 	 */
 	private function setup_feeds() {
-		if ( false === ( $items_normalized = get_transient( 'themeisle_sdk_feed_items' ) ) ) {
+		if ( false === ( $items_normalized = get_transient( 'themeisle_sdk_feed_items' ) ) ) { //phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 			// Load SimplePie Instance.
 			$feed = fetch_feed( $this->feeds );
 			// TODO report error when is an error loading the feed.
@@ -353,7 +357,7 @@ class Dashboard_Widget extends Abstract_Module {
 	/**
 	 * Contact the API and fetch the recommended plugins/themes
 	 */
-	function recommend_plugin_or_theme() {
+	public function recommend_plugin_or_theme() {
 		$products = $this->get_product_from_api();
 		if ( ! is_array( $products ) ) {
 			$products = array();
@@ -374,8 +378,8 @@ class Dashboard_Widget extends Abstract_Module {
 	 *
 	 * @return array|mixed The list of products to use in recomended section.
 	 */
-	function get_product_from_api() {
-		if ( false === ( $products = get_transient( 'themeisle_sdk_products' ) ) ) {
+	public function get_product_from_api() {
+		if ( false === ( $products = get_transient( 'themeisle_sdk_products' ) ) ) { //phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 			$products                = array();
 			$all_themes              = $this->get_themes_from_wporg( 'themeisle' );
 			$all_plugins             = $this->get_plugins_from_wporg( 'themeisle' );
@@ -429,8 +433,8 @@ class Dashboard_Widget extends Abstract_Module {
 	 *
 	 * @return array The list of themes.
 	 */
-	function get_themes_from_wporg( $author ) {
-		$products = wp_remote_get(
+	public function get_themes_from_wporg( $author ) {
+		$products = $this->safe_get(
 			'https://api.wordpress.org/themes/info/1.1/?action=query_themes&request[author]=' . $author . '&request[per_page]=30&request[fields][active_installs]=true'
 		);
 		$products = json_decode( wp_remote_retrieve_body( $products ) );
@@ -450,8 +454,8 @@ class Dashboard_Widget extends Abstract_Module {
 	 *
 	 * @return array The list of plugins for the selected author.
 	 */
-	function get_plugins_from_wporg( $author ) {
-		$products = wp_remote_get(
+	public function get_plugins_from_wporg( $author ) {
+		$products = $this->safe_get(
 			'https://api.wordpress.org/plugins/info/1.1/?action=query_plugins&request[author]=' . $author . '&request[per_page]=40&request[fields][active_installs]=true'
 		);
 		$products = json_decode( wp_remote_retrieve_body( $products ) );
