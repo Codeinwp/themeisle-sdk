@@ -63,13 +63,13 @@ class Translate_Test extends WP_UnitTestCase {
 		$this->assertFalse( ( new \ThemeisleSDK\Modules\Translate() )->can_load( $product ) );
 
 	}
-	public function __return_local() {
+	public function return_locale() {
 		return 'fy';
 	}
 	public function test_load_non_english() {
 		add_filter(
 			'locale',
-			[ $this, '__return_local' ]
+			[ $this, 'return_locale' ]
 		);
 		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 
