@@ -1,8 +1,9 @@
 name: Test PHP
 
-
-on: [pull_request]
-
+on:
+  push:
+    branches-ignore:
+      - 'master'
 jobs:
   phplint:
     name: Phplint
