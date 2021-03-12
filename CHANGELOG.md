@@ -1,3 +1,8 @@
+##### [Version 3.2.19](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.18...v3.2.19) (2021-03-12)
+
+* Adds compatibility with latest PHPCS coding standards.
+* Adds compatibility with core auto-update.
+
 ##### [Version 3.2.18](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.17...v3.2.18) (2021-03-04)
 
 * Fix regression on rollback order
