@@ -47,12 +47,14 @@ class Rollback_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'sample_theme_external', $modules );
 		$modules['sample_theme_external'] = array_filter(
 			$modules['sample_theme_external'],
-			function ( $value ) {
-				return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Rollback' );
-			}
+			[ $this, 'filter_value' ]
 		);
-		$this->assertEquals( count( $modules['sample_theme_external'] ), 0 );
+		$this->assertCount( 0, $modules['sample_theme_external'] );
 
+	}
+
+	private function filter_value( $value ) {
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Rollback' );
 	}
 
 	/**

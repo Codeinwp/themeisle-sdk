@@ -22,12 +22,14 @@ class Translate_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'sample_theme_external', $modules );
 		$modules['sample_theme_external'] = array_filter(
 			$modules['sample_theme_external'],
-			function ( $value ) {
-				return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Translate' );
-			}
+			[ $this, 'filter_value' ]
 		);
-		$this->assertEquals( count( $modules['sample_theme_external'] ), 0 );
+		$this->assertCount( 0, $modules['sample_theme_external'] );
 
+	}
+
+	private function filter_value( $value ) {
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Translate' );
 	}
 
 	public function test_product_loading() {
@@ -61,13 +63,13 @@ class Translate_Test extends WP_UnitTestCase {
 		$this->assertFalse( ( new \ThemeisleSDK\Modules\Translate() )->can_load( $product ) );
 
 	}
-
+	public function return_locale() {
+		return 'fy';
+	}
 	public function test_load_non_english() {
 		add_filter(
 			'locale',
-			function () {
-				return 'fy';
-			}
+			[ $this, 'return_locale' ]
 		);
 		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 

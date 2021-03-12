@@ -22,12 +22,14 @@ class Logger_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'sample_theme_external', $modules );
 		$modules['sample_theme_external'] = array_filter(
 			$modules['sample_theme_external'],
-			function ( $value ) {
-				return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Logger' );
-			}
+			[ $this, 'filter_value' ]
 		);
 		$this->assertEquals( count( $modules['sample_theme_external'] ), 1 );
 
+	}
+
+	private function filter_value( $value ) {
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Logger' );
 	}
 
 	public function test_product_loading() {

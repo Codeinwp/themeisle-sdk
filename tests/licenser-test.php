@@ -25,12 +25,14 @@ class Licenser_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'sample_theme_external', $modules );
 		$modules['sample_theme_external'] = array_filter(
 			$modules['sample_theme_external'],
-			function ( $value ) {
-				return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Licenser' );
-			}
+			[ $this, 'filter_value' ]
 		);
 		$this->assertCount( 1, $modules['sample_theme_external'] );
 
+	}
+
+	private function filter_value( $value ) {
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Licenser' );
 	}
 
 	/**

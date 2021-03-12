@@ -9,6 +9,7 @@
  * Test sdk loading.
  *
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class Sdk_Loading_Test extends WP_UnitTestCase {
 	/**

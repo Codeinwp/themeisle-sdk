@@ -14,8 +14,9 @@
 
 require_once 'vendor/load.php';
 
-add_filter( 'themeisle_sdk_products', function ( $products ) {
+add_filter( 'themeisle_sdk_products', '_add_product' );
+function _add_product( $products ) {
 	$products[] = __FILE__;
 
 	return $products;
-} );
+}
