@@ -24,7 +24,7 @@ class Logger_Test extends WP_UnitTestCase {
 			$modules['sample_theme_external'],
 			[ $this, 'filter_value' ]
 		);
-		$this->assertCount( 0, $modules['sample_theme_external'] );
+		$this->assertEquals( count( $modules['sample_theme_external'] ), 1 );
 
 	}
 
