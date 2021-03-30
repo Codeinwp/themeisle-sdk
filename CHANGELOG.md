@@ -1,3 +1,7 @@
+##### [Version 3.2.20](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.19...v3.2.20) (2021-03-30)
+
+add wp-config support
+
 ##### [Version 3.2.19](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.18...v3.2.19) (2021-03-12)
 
 * Adds compatibility with latest PHPCS coding standards.
