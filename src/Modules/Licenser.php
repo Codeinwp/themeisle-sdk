@@ -62,6 +62,12 @@ class Licenser extends Abstract_Module {
 	 * @var null Local license object.
 	 */
 	private $license_local = null;
+	/**
+	 * Product namespace, used for fixed name filters/cli commands.
+	 *
+	 * @var string $namespace Product namespace.
+	 */
+	private $namespace = null;
 
 	/**
 	 * Disable wporg updates for premium products.
@@ -839,6 +845,7 @@ class Licenser extends Abstract_Module {
 		$namespace = apply_filters( 'themesle_sdk_namespace_' . md5( $product->get_basefile() ), false );
 
 		if ( false !== $namespace ) {
+			$this->namespace = $namespace;
 			add_filter( 'themeisle_sdk_license_process_' . $namespace, [ $this, 'do_license_process' ], 10, 2 );
 			add_filter( 'product_' . $namespace . '_license_status', [ $this, 'get_license_status' ], PHP_INT_MAX );
 			add_filter( 'product_' . $namespace . '_license_key', [ $this->product, 'get_license' ] );
@@ -891,42 +898,63 @@ class Licenser extends Abstract_Module {
 	}
 
 	/**
-	 * Run license activation on plugin activate.
+	 * Check license on filesystem.
+	 *
+	 * @return mixed License key.
 	 */
-	public function auto_activate() {
-		if ( ! current_user_can( 'switch_themes' ) ) {
-			return;
-		}
-		$status = $this->get_license_status();
-		if ( 'not_active' !== $status ) {
-			return;
-		}
+	public function get_file_license() {
 
 		$license_file = dirname( $this->product->get_basefile() ) . '/license.json';
 
 		global $wp_filesystem;
 		if ( ! is_file( $license_file ) ) {
-			return;
+			return false;
 		}
 
 		require_once ABSPATH . '/wp-admin/includes/file.php';
 		\WP_Filesystem();
 		$content = json_decode( $wp_filesystem->get_contents( $license_file ) );
 		if ( ! is_object( $content ) ) {
-			return;
+			return false;
 		}
 		if ( ! isset( $content->key ) ) {
+			return false;
+		}
+		return $content->key;
+	}
+	/**
+	 * Run license activation on plugin activate.
+	 */
+	public function auto_activate() {
+		$status = $this->get_license_status();
+		if ( 'not_active' !== $status ) {
+			return false;
+		}
+
+		if ( ! empty( $this->namespace ) ) {
+			$license_key = apply_filters( 'product_' . $this->namespace . '_license_key_constant', '' );
+		}
+
+		if ( empty( $license_key ) ) {
+			$license_key = $this->get_file_license();
+		}
+		if ( empty( $license_key ) ) {
 			return;
 		}
-		$this->license_local = $content;
+
+
+		$this->license_local = $license_key;
 		$lock_key            = $this->product->get_key() . '_autoactivated';
 
 		if ( 'yes' === get_option( $lock_key, '' ) ) {
 			return;
 		}
-		$response = $this->do_license_process( $content->key, 'activate' );
+		if ( 'yes' === get_transient( $lock_key ) ) {
+			return;
+		}
+		$response = $this->do_license_process( $license_key, 'activate' );
 
-		update_option( $lock_key, 'yes' );
+		set_transient( $lock_key, 'yes', 6 * HOUR_IN_SECONDS );
 
 		if ( apply_filters( $this->product->get_key() . '_hide_license_notices', false ) ) {
 			return;
@@ -943,7 +971,7 @@ class Licenser extends Abstract_Module {
 	public function autoactivate_notice() {
 		?>
 		<div class="notice notice-success is-dismissible">
-			<p><?php echo sprintf( '<strong>%s</strong> has been successfully activated using <strong>%s</strong> license !', esc_attr( $this->product->get_name() ), esc_attr( str_repeat( '*', 20 ) . substr( $this->license_local->key, - 10 ) ) ); ?></p>
+			<p><?php echo sprintf( '<strong>%s</strong> has been successfully activated using <strong>%s</strong> license !', esc_attr( $this->product->get_name() ), esc_attr( str_repeat( '*', 20 ) . substr( $this->license_local, - 10 ) ) ); ?></p>
 		</div>
 		<?php
 	}
