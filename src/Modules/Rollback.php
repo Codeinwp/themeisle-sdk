@@ -340,10 +340,10 @@ class Rollback extends Abstract_Module {
 	 * @param mixed $a First version to compare.
 	 * @param mixed $b Second version to compare.
 	 *
-	 * @return bool Which version is greater?
+	 * @return int Which version is greater?
 	 */
 	public function sort_rollback_array( $a, $b ) {
-		return version_compare( $b['version'], $a['version'] );
+		return (int) version_compare( $b['version'], $a['version'] );
 	}
 
 	/**
