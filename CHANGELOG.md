@@ -1,3 +1,7 @@
+##### [Version 3.2.21](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.20...v3.2.21) (2021-06-30)
+
+review and improve compatibility with auto-updates on custom updates endpoint
+
 ##### [Version 3.2.20](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.19...v3.2.20) (2021-03-30)
 
 add wp-config support
