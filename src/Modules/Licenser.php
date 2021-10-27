@@ -30,7 +30,7 @@ class Licenser extends Abstract_Module {
 	 *
 	 * @var int $max_failed Maximum failed checks allowed before show the notice
 	 */
-	private static $max_failed = 5;
+	private static $max_failed = 2;
 	/**
 	 * License key string.
 	 *
@@ -244,7 +244,7 @@ class Licenser extends Abstract_Module {
 	 */
 	public function get_distributor_name() {
 		if ( $this->is_from_partner( $this->product ) ) {
-			return 'ThemeIsle';
+			return 'Themeisle';
 		}
 
 		return $this->product->get_store_name();
@@ -281,7 +281,7 @@ class Licenser extends Abstract_Module {
 		$status                 = $this->get_license_status( true );
 		$no_activations_string  = apply_filters( $this->product->get_key() . '_lc_no_activations_string', 'No more activations left for %s. You need to upgrade your plan in order to use %s on more websites. If you need assistance, please get in touch with %s staff.' );
 		$no_valid_string        = apply_filters( $this->product->get_key() . '_lc_no_valid_string', 'In order to benefit from updates and support for %s, please add your license code from your  <a href="%s" target="_blank">purchase history</a> and validate it <a href="%s">here</a>. ' );
-		$expired_license_string = apply_filters( $this->product->get_key() . '_lc_expired_string', 'Your %s License Key has expired. In order to continue receiving support and software updates you must  <a href="%s" target="_blank">renew</a> your license key.' );
+		$expired_license_string = apply_filters( $this->product->get_key() . '_lc_expired_string', 'Your %s\'s License Key has expired. In order to continue receiving support and software updates you must  <a href="%s" target="_blank">renew</a> your license key.' );
 		// No activations left for this license.
 		if ( 'valid' != $status && $this->check_activation() ) {
 			?>
@@ -413,26 +413,22 @@ class Licenser extends Abstract_Module {
 
 		if ( is_wp_error( $response ) ) {
 			$license_data          = new \stdClass();
-			$license_data->license = 'valid';
+			$license_data->license = 'invalid';
 		} else {
 			$license_data = $response;
 		}
 
 		$license_old = get_option( $this->product->get_key() . '_license_data', '' );
-
-		if ( 'valid' === $license_old->license && ( $license_data->license !== $license_old->license ) ) {
+		if ( 'valid' === $license_old->license && ( $license_data->license !== $license_old->license ) && $this->failed_checks <= self::$max_failed ) {
 			$this->increment_failed_checks();
-		} else {
-			$this->reset_failed_checks();
-		}
 
-		if ( $this->failed_checks <= self::$max_failed ) {
 			return $license_old;
 		}
 
 		if ( ! isset( $license_data->key ) ) {
 			$license_data->key = isset( $license_old->key ) ? $license_old->key : '';
 		}
+		$this->reset_failed_checks();
 
 		return $license_data;
 
