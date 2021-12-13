@@ -30,7 +30,7 @@ if ( ! is_file( $themeisle_sdk_path . $themeisle_sdk_relative_licenser_path ) &&
 }
 
 if ( ( is_null( $themeisle_sdk_max_path ) || version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 ) &&
-    apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
+	apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
     $themeisle_sdk_max_path = $themeisle_sdk_path;
 }
 
