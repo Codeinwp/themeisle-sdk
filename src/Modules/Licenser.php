@@ -633,7 +633,7 @@ class Licenser extends Abstract_Module {
 	 */
 	public function theme_update_transient( $value ) {
 		$update_data = $this->check_for_update();
-		if ( $update_data ) {
+		if ( ! empty( $value ) && $update_data ) {
 			$value->response[ $this->product->get_slug() ] = $update_data;
 		}
 
@@ -876,11 +876,11 @@ class Licenser extends Abstract_Module {
 		}
 		if ( $this->product->is_theme() ) {
 			add_filter( 'site_transient_update_themes', array( &$this, 'theme_update_transient' ) );
-			add_action( 'delete_site_transient_update_themes', array( &$this, 'delete_theme_update_transient' ) );
-			add_action( 'load-update-core.php', array( &$this, 'delete_theme_update_transient' ) );
-			add_action( 'load-themes.php', array( &$this, 'delete_theme_update_transient' ) );
-			add_action( 'load-themes.php', array( &$this, 'load_themes_screen' ) );
-			add_filter( 'http_request_args', array( $this, 'disable_wporg_update' ), 5, 2 ); //phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.http_request_args
+//			add_action( 'delete_site_transient_update_themes', array( &$this, 'delete_theme_update_transient' ) );
+//			add_action( 'load-update-core.php', array( &$this, 'delete_theme_update_transient' ) );
+//			add_action( 'load-themes.php', array( &$this, 'delete_theme_update_transient' ) );
+//			add_action( 'load-themes.php', array( &$this, 'load_themes_screen' ) );
+//			add_filter( 'http_request_args', array( $this, 'disable_wporg_update' ), 5, 2 ); //phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.http_request_args
 
 			return $this;
 
