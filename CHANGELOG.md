@@ -1,3 +1,20 @@
+##### [Version 3.2.22](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.21...v3.2.22) (2021-10-27)
+
+Fix edge case when reset failed checks was not working properly
+
+##### [Version 3.2.21](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.20...v3.2.21) (2021-06-30)
+
+review and improve compatibility with auto-updates on custom updates endpoint
+
+##### [Version 3.2.20](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.19...v3.2.20) (2021-03-30)
+
+add wp-config support
+
+##### [Version 3.2.19](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.18...v3.2.19) (2021-03-12)
+
+* Adds compatibility with latest PHPCS coding standards.
+* Adds compatibility with core auto-update.
+
 ##### [Version 3.2.18](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.17...v3.2.18) (2021-03-04)
 
 * Fix regression on rollback order
