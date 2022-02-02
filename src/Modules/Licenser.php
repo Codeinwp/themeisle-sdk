@@ -628,9 +628,7 @@ class Licenser extends Abstract_Module {
 	 * @return mixed
 	 */
 	public function theme_update_transient( $value ) {
-
 		$update_data = $this->check_for_update();
-
 		if ( empty( $value ) ) {
 			return $value;
 		}
