@@ -629,19 +629,10 @@ class Licenser extends Abstract_Module {
 	 */
 	public function theme_update_transient( $value ) {
 		$update_data = $this->check_for_update();
-		if ( empty( $value ) ) {
-			return $value;
+		if ( $update_data ) {
+			$value->response[ $this->product->get_slug() ] = $update_data;
 		}
 
-		if ( ! property_exists( $value, 'response' ) ) {
-			return $value;
-		}
-
-		if ( ! $update_data ) {
-			return $value;
-		}
-
-		$value->response[ $this->product->get_slug() ] = $update_data;
 		return $value;
 	}
 
