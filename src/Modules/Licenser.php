@@ -633,7 +633,7 @@ class Licenser extends Abstract_Module {
 			return $value;
 		}
 
-		if ( ! property_exists( $value, 'response' ) ) {
+		if ( ! isset( $value->response ) ) {
 			return $value;
 		}
 
