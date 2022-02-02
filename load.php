@@ -28,12 +28,13 @@ if ( ! is_file( $themeisle_sdk_path . $themeisle_sdk_relative_licenser_path ) &&
 	$themeisle_sdk_abs_licenser_path = $themeisle_sdk_max_path . $themeisle_sdk_relative_licenser_path;
 	add_filter( 'themeisle_sdk_required_files', 'themeisle_sdk_load_licenser_if_present' );
 }
-if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 &&
+
+if ( ( is_null( $themeisle_sdk_max_path ) || version_compare( $themeisle_sdk_version, $themeisle_sdk_max_path ) == 0 ) &&
 	apply_filters( 'themeisle_sdk_should_overwrite_path', false, $themeisle_sdk_path, $themeisle_sdk_max_path ) ) {
 	$themeisle_sdk_max_path = $themeisle_sdk_path;
 }
 
-if ( version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) > 0 ) {
+if ( is_null( $themeisle_sdk_max_version ) || version_compare( $themeisle_sdk_version, $themeisle_sdk_max_version ) > 0 ) {
 	$themeisle_sdk_max_version = $themeisle_sdk_version;
 	$themeisle_sdk_max_path    = $themeisle_sdk_path;
 }
