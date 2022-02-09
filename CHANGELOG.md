@@ -1,3 +1,8 @@
+##### [Version 3.2.24](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.23...v3.2.24) (2022-02-09)
+
+Fix edge case issue on dismiss
+Avoid issues with open_basedir restrictions
+
 ##### [Version 3.2.23](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.22...v3.2.23) (2022-02-02)
 
 Fix php 8.1 issues
