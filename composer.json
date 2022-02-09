@@ -25,5 +25,10 @@
   },
   "support": {
     "issues": "https://github.com/Codeinwp/themeisle-sdk/issues"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
