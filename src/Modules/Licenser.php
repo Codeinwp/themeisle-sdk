@@ -522,6 +522,10 @@ class Licenser extends Abstract_Module {
 			return new \WP_Error( 'themeisle-license-invalid', 'ERROR: Invalid license provided.' );
 		}
 
+        // Remove the versions transient upon activation so that newer version for rollback can be acquired.
+		$versions_cache = $this->product->get_key() . '_' . preg_replace( '/[^0-9a-zA-Z ]/m', '', $this->product->get_version() ) . 'versions';
+		delete_transient( $versions_cache );
+
 		return true;
 	}
 

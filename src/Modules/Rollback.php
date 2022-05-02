@@ -102,9 +102,7 @@ class Rollback extends Abstract_Module {
 		$cache_versions = get_transient( $cache_key );
 		if ( false === $cache_versions ) {
 			$versions = $this->get_remote_versions();
-			if ( ! empty( $versions ) ) {
-				set_transient( $cache_key, $versions, 5 * DAY_IN_SECONDS );
-			}
+			set_transient( $cache_key, $versions, 5 * DAY_IN_SECONDS );
 		} else {
 			$versions = is_array( $cache_versions ) ? $cache_versions : array();
 		}
