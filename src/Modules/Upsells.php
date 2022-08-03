@@ -42,13 +42,13 @@ class Upsells extends Abstract_Module {
 			return false;
 		}
 
-        $this->upsells_to_load = apply_filters( $product->get_slug() . '_load_upsells', array() );
+        $this->upsells_to_load = apply_filters( $product->get_key() . '_load_upsells', array() );
 
 		if ( 0 === count( $this->upsells_to_load ) ) {
 			return false;
 		}
 
-		return true;
+        return true;
 	}
 
 	/**
@@ -59,7 +59,6 @@ class Upsells extends Abstract_Module {
 	 * @return Upsells Module instance.
 	 */
 	public function load( $product ) {
-        die( 'Hello' );
 		if ( 0 === count( $this->upsells_to_load ) ) {
 			return;
 		}
