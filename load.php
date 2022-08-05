@@ -21,8 +21,8 @@ global $themeisle_sdk_max_path;
 global $themeisle_sdk_path;
 global $themeisle_sdk_src;
 
-$themeisle_sdk_path    = dirname( __FILE__ );
-$themeisle_sdk_src     = plugins_url( '/', __FILE__ );
+$themeisle_sdk_path = dirname( __FILE__ );
+$themeisle_sdk_src  = plugins_url( '/', __FILE__ );
 
 // If this is the latest SDK and it comes from a theme, we should load licenser separately.
 $themeisle_sdk_relative_licenser_path = '/src/Modules/Licenser.php';
