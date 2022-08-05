@@ -90,7 +90,7 @@ class Upsells extends Abstract_Module {
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'show_in_rest'      => true,
-				'default'           => '{}'
+				'default'           => '{}',
 			)
 		);
 	}
