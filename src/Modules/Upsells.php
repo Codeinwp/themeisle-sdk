@@ -65,9 +65,12 @@ class Upsells extends Abstract_Module {
 
 		$this->product = $product;
 
-        if ( in_array( 'otter', $this->upsells_to_load ) ) {
+        if ( in_array( 'otter', $this->upsells_to_load ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) ) {
             add_action( 'init', array( $this, 'register_settings' ), 99 );
-            add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_otter_assets' ) );
+
+			if ( false !== $this->show_otter_upsell() ) {
+				add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ) );
+			}
         }
 
 		return $this;
@@ -84,32 +87,52 @@ class Upsells extends Abstract_Module {
 			'themeisle_sdk_settings',
 			'themeisle_sdk_upsells_otter',
 			array(
-				'type'         => 'object',
-				'description'  => __( 'Otter Upsells.', 'otter-blocks' ),
-				'show_in_rest'      => array(
-					'schema' => array(
-						'type'       => 'object',
-						'properties' => array(
-							'blocks_css' => array(
-								'type' => 'array',
-							),
-							'blocks_animation' => array(
-								'type' => 'array',
-							),
-							'blocks_conditions' => array(
-								'type' => 'array',
-							),
-						),
-					),
-				),
-				'default'           => array(
-					'blocks_css' => array(),
-					'blocks_animation' => array(),
-					'blocks_conditions' => array(),
-				),
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'show_in_rest'      => true,
+				'default'           => '{}'
 			)
 		);
     }
+
+	/**
+	 * Get the Otter Blocks plugin status.
+	 *
+	 * @return string
+	 */
+	private function is_otter_installed() {
+		$status = false;
+
+		if ( file_exists( ABSPATH . 'wp-content/plugins/otter-blocks/otter-blocks.php' ) ) {
+			return true;
+		}
+
+		return $status;
+	}
+
+	public function show_otter_upsell() {
+		$upsells = array(
+			'blocks_css',
+			'blocks_animation',
+			'blocks_conditions'
+		);
+
+		$option = json_decode( get_option( 'themeisle_sdk_upsells_otter', '{}' ), true );
+
+		if ( 0 === count( $option ) ) {
+			return 'blocks-css';
+		}
+
+		if ( isset( $option['blocks-css'] ) && ! isset( $option['blocks-animation'] ) && $option['blocks-css'] < strtotime( '-7 days' ) ) {
+			return 'blocks-animation';
+		}
+
+		if ( isset( $option['blocks-animation'] ) && ! isset( $option['blocks-conditions'] ) && $option['blocks-animation'] < strtotime( '-7 days' ) ) {
+			return 'blocks-conditions';
+		}
+
+		return false;
+	}
 
 	/**
 	 * Load Gutenberg editor assets.
@@ -118,14 +141,40 @@ class Upsells extends Abstract_Module {
 	 * @access  public
 	 */
 	public function enqueue_editor_assets() {
+		global $themeisle_sdk_path, $themeisle_sdk_src;
 		$asset_file = include $themeisle_sdk_path . '/assets/js/build/index.asset.php';
 
 		wp_enqueue_script(
 			'themeisle-sdk-otter-upsells',
 			$themeisle_sdk_src . 'assets/js/build/index.js',
-			$asset_file['dependencies'],
+			array_merge( $asset_file['dependencies'], [ 'updates' ] ),
 			$asset_file['version'],
 			true
+		);
+
+		$option = get_option( 'themeisle_sdk_upsells_otter', '{}' );
+
+		wp_localize_script(
+			'themeisle-sdk-otter-upsells',
+			'themeisleSDKUpsells',
+			array(
+				'product'       => $this->product->get_name(),
+				'assets'        => $themeisle_sdk_src . 'assets/images/',
+				'showUpsell'    => $this->show_otter_upsell(),
+				'upsells_otter' => $option,
+				'activationUrl' => esc_url(
+					add_query_arg(
+						array(
+							'plugin_status' => 'all',
+							'paged'         => '1',
+							'action'        => 'activate',
+							'plugin'        => rawurlencode( 'otter-blocks/otter-blocks.php' ),
+							'_wpnonce'      => wp_create_nonce( 'activate-plugin_otter-blocks/otter-blocks.php' ),
+						),
+						admin_url( 'plugins.php' ) 
+					) 
+				),
+			)
 		);
 	}
 }

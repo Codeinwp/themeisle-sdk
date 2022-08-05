@@ -3,6 +3,7 @@
   "description": "Themeisle SDK",
   "version": "3.2.22",
   "scripts": {
+    "start": "wp-scripts start assets/js/src/index.js --output-path=assets/js/build",
     "build": "wp-scripts build assets/js/src/index.js --output-path=assets/js/build",
     "release": "semantic-release --debug"
   },
@@ -13,6 +14,7 @@
     "@semantic-release/git": "^9.0.0",
     "@wordpress/scripts": "^23.6.0",
     "conventional-changelog-simple-preset": "^1.0.13",
+    "eslint-config-wordpress": "^2.0.0",
     "grunt-version": "^1.3.1",
     "semantic-release": "^17.0.3"
   }
