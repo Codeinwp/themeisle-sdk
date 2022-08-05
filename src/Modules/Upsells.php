@@ -2,11 +2,11 @@
 /**
  * The upsells model class for ThemeIsle SDK
  *
- * @package	 ThemeIsleSDK
+ * @package     ThemeIsleSDK
  * @subpackage  Modules
  * @copyright   Copyright (c) 2017, Marius Cristea
- * @license	 http://opensource.org/licenses/gpl-3.0.php GNU Public License
- * @since	   1.0.0
+ * @license     http://opensource.org/licenses/gpl-3.0.php GNU Public License
+ * @since       1.0.0
  */
 
 namespace ThemeisleSDK\Modules;
@@ -87,10 +87,10 @@ class Upsells extends Abstract_Module {
 			'themeisle_sdk_settings',
 			'themeisle_sdk_upsells_otter',
 			array(
-				'type'			  => 'string',
+				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
-				'show_in_rest'	  => true,
-				'default'		   => '{}'
+				'show_in_rest'      => true,
+				'default'           => '{}'
 			)
 		);
 	}
@@ -119,7 +119,7 @@ class Upsells extends Abstract_Module {
 		$upsells = array(
 			'blocks_css',
 			'blocks_animation',
-			'blocks_conditions'
+			'blocks_conditions',
 		);
 
 		$option = json_decode( get_option( 'themeisle_sdk_upsells_otter', '{}' ), true );
@@ -163,18 +163,18 @@ class Upsells extends Abstract_Module {
 			'themeisle-sdk-otter-upsells',
 			'themeisleSDKUpsells',
 			array(
-				'product'	   => $this->product->get_name(),
-				'assets'		=> $themeisle_sdk_src . 'assets/images/',
-				'showUpsell'	=> $this->show_otter_upsell(),
+				'product'       => $this->product->get_name(),
+				'assets'        => $themeisle_sdk_src . 'assets/images/',
+				'showUpsell'    => $this->show_otter_upsell(),
 				'upsells_otter' => $option,
 				'activationUrl' => esc_url(
 					add_query_arg(
 						array(
 							'plugin_status' => 'all',
-							'paged'		 => '1',
-							'action'		=> 'activate',
-							'plugin'		=> rawurlencode( 'otter-blocks/otter-blocks.php' ),
-							'_wpnonce'	  => wp_create_nonce( 'activate-plugin_otter-blocks/otter-blocks.php' ),
+							'paged'         => '1',
+							'action'        => 'activate',
+							'plugin'        => rawurlencode( 'otter-blocks/otter-blocks.php' ),
+							'_wpnonce'      => wp_create_nonce( 'activate-plugin_otter-blocks/otter-blocks.php' ),
 						),
 						admin_url( 'plugins.php' ) 
 					) 
