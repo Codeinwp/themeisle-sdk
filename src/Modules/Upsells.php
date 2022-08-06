@@ -2,6 +2,13 @@
 /**
  * The upsells model class for ThemeIsle SDK
  *
+ * add_filter(
+ *  'menu_icons_load_upsells',
+ *  function() {
+ *   return array( 'otter' );
+ *  }
+ * );
+ *
  * @package     ThemeIsleSDK
  * @subpackage  Modules
  * @copyright   Copyright (c) 2017, Marius Cristea
