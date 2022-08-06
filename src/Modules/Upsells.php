@@ -2,12 +2,7 @@
 /**
  * The upsells model class for ThemeIsle SDK
  *
- * add_filter(
- *  'menu_icons_load_upsells',
- *  function() {
- *   return array( 'otter' );
- *  }
- * );
+ * Here's how to hook it in your plugin: add_filter( 'menu_icons_load_upsells', function() { return array( 'otter' ); } );
  *
  * @package     ThemeIsleSDK
  * @subpackage  Modules
