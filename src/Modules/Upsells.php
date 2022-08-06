@@ -65,7 +65,8 @@ class Upsells extends Abstract_Module {
 
 		$this->product = $product;
 
-		if ( in_array( 'otter', $this->upsells_to_load ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) ) {
+		if ( in_array( 'otter', $this->upsells_to_load ) && false === apply_filters( 'themeisle_sdk_load_upsells_otter', false ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) ) {
+			add_filter( 'themeisle_sdk_load_upsells_otter', '__return_true' );
 			add_action( 'init', array( $this, 'register_settings' ), 99 );
 
 			if ( false !== $this->show_otter_upsell() ) {
