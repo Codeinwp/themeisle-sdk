@@ -82,14 +82,14 @@ const Footer = ({ onClick }) => {
             >
                 { __( 'Skip for now' ) }
             </Button>
-            <span style={ style.skip.poweredby }>{ __( 'Recommended by ' ) + window.themeisleSDKUpsells.product }</span>
+            <span style={ style.skip.poweredby }>{ __( 'Recommended by ' ) + window.themeisleSDKPromotions.product }</span>
         </div>
     );
 };
 
 const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-		if ( props.isSelected && Boolean( window.themeisleSDKUpsells.showUpsell ) ) {
+		if ( props.isSelected && Boolean( window.themeisleSDKPromotions.showPromotion ) ) {
 
             const [ isLoading, setLoading ] = useState( false );
             const [ installStatus, setInstallStatus ] = useState( 'default' );
@@ -100,7 +100,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
             const install = async () => {
                 setLoading( true );
                 await installPlugin( 'otter-blocks' );
-                await activatePlugin( window.themeisleSDKUpsells.activationUrl );
+                await activatePlugin( window.themeisleSDKPromotions.activationUrl );
                 setLoading( false );
                 setInstallStatus( 'installed' );
             };
@@ -123,10 +123,10 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
             };
 
             const onSkip = () => {
-                const option = JSON.parse( window.themeisleSDKUpsells.upsells_otter );
-                option[ window.themeisleSDKUpsells.showUpsell ] = new Date().getTime() / 1000 | 0;
-                updateOption( 'themeisle_sdk_upsells_otter', JSON.stringify( option ) );
-                window.themeisleSDKUpsells.showUpsell = false;
+                const option = JSON.parse( window.themeisleSDKPromotions.promotions_otter );
+                option[ window.themeisleSDKPromotions.showPromotion ] = new Date().getTime() / 1000 | 0;
+                updateOption( 'themeisle_sdk_promotions_otter', JSON.stringify( option ) );
+                window.themeisleSDKPromotions.showPromotion = false;
             };
 
             useEffect( () => {
@@ -145,7 +145,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 					<InspectorControls>
                         { Object.keys( upsells ).map( key => {
-                            if ( key === window.themeisleSDKUpsells.showUpsell ) {
+                            if ( key === window.themeisleSDKPromotions.showPromotion ) {
                                 const upsell = upsells[ key ];
 
                                 return (
@@ -157,7 +157,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
         
                                         <Install />
         
-                                        <img style={ style.image } src={ window.themeisleSDKUpsells.assets + upsell.image } />
+                                        <img style={ style.image } src={ window.themeisleSDKPromotions.assets + upsell.image } />
         
                                         <Footer onClick={ () => setHasSkipped( true ) } />
                                     </PanelBody>
