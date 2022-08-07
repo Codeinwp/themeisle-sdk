@@ -104,7 +104,6 @@ class Promotions extends Abstract_Module {
 	 * @return string
 	 */
 	private function is_otter_installed() {
-		return false;
 		$status = false;
 
 		if ( file_exists( ABSPATH . 'wp-content/plugins/otter-blocks/otter-blocks.php' ) ) {
