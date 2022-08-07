@@ -67,7 +67,7 @@ class Promotions extends Abstract_Module {
 
 		$this->product = $product;
 
-		if ( in_array( 'otter', $this->promotions_to_load ) && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) ) {
+		if ( in_array( 'otter', $this->promotions_to_load ) && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
 			add_filter( 'themeisle_sdk_load_promotions_otter', '__return_true' );
 			add_action( 'init', array( $this, 'register_settings' ), 99 );
 
