@@ -15,6 +15,7 @@ tests                    export-ignore
 bin                      export-ignore
 README.md                export-ignore
 .github                  export-ignore
+.eslintrc                export-ignore
 assets/js/src            export-ignore
 # Set the default behavior for all files.
 * text=auto
