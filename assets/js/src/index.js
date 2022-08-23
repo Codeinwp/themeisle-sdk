@@ -56,17 +56,17 @@ const style = {
 
 const upsells = {
     'blocks-css': {
-        title: __( 'Custom CSS', 'otter-blocks' ),
+        title: __( 'Custom CSS', 'textdomain' ),
         description: __( 'Enable Otter and add your Custom CSS for this block.' ),
         image: 'css.jpg'
     },
     'blocks-animation': {
-        title: __( 'Animations', 'otter-blocks' ),
+        title: __( 'Animations', 'textdomain' ),
         description: __( 'Enable Otter to add Animations to this block.' ),
         image: 'animation.jpg'
     },
     'blocks-conditions': {
-        title: __( 'Visibility Conditions', 'otter-blocks' ),
+        title: __( 'Visibility Conditions', 'textdomain' ),
         description: __( 'Enable Otter to add Visibility Conditions to this block.' ),
         image: 'conditions.jpg'
     }
