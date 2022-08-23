@@ -32,6 +32,7 @@ $files_to_load          = [
 	$themeisle_library_path . '/src/Modules/Translate.php',
 	$themeisle_library_path . '/src/Modules/Review.php',
 	$themeisle_library_path . '/src/Modules/Recommendation.php',
+	$themeisle_library_path . '/src/Modules/Promotions.php',
 ];
 
 $files_to_load = array_merge( $files_to_load, apply_filters( 'themeisle_sdk_required_files', [] ) );
