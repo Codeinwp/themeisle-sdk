@@ -73,7 +73,11 @@ class Promotions extends Abstract_Module {
 
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
 
-		if ( in_array( 'otter', $this->promotions_to_load ) && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
+		if ( in_array( 'otter', $this->promotions_to_load )
+			 && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false )
+			 && ! ( defined( 'OTTER_BLOCKS_VERSION' )
+					|| $this->is_plugin_installed( 'otter-blocks' ) )
+			 && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
 			add_filter( 'themeisle_sdk_load_promotions_otter', '__return_true' );
 
 			if ( false !== $this->show_otter_promotion() ) {
@@ -117,16 +121,20 @@ class Promotions extends Abstract_Module {
 	/**
 	 * Get the Otter Blocks plugin status.
 	 *
+	 * @param string $plugin Plugin slug.
+	 *
 	 * @return string
 	 */
-	private function is_otter_installed() {
-		$status = false;
-
-		if ( file_exists( ABSPATH . 'wp-content/plugins/otter-blocks/otter-blocks.php' ) ) {
+	private function is_plugin_installed( $plugin ) {
+		static $allowed_keys = [ 'otter-blocks' => 'otter-blocks/otter-blocks.php' ];
+		if ( ! isset( $allowed_keys[ $plugin ] ) ) {
+			return false;
+		}
+		if ( file_exists( WP_CONTENT_DIR . '/plugins/' . $allowed_keys[ $plugin ] ) ) {
 			return true;
 		}
 
-		return $status;
+		return false;
 	}
 
 	/**
@@ -218,8 +226,8 @@ class Promotions extends Abstract_Module {
 							'plugin'        => rawurlencode( 'otter-blocks/otter-blocks.php' ),
 							'_wpnonce'      => wp_create_nonce( 'activate-plugin_otter-blocks/otter-blocks.php' ),
 						),
-						admin_url( 'plugins.php' ) 
-					) 
+						admin_url( 'plugins.php' )
+					)
 				),
 			)
 		);
