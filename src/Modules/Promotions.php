@@ -65,11 +65,16 @@ class Promotions extends Abstract_Module {
 			return;
 		}
 
+		if ( ! $this->is_writeable() || ! current_user_can( 'install_plugins' ) ) {
+			return;
+		}
+
 		$this->product = $product;
+
+		add_action( 'init', array( $this, 'register_settings' ), 99 );
 
 		if ( in_array( 'otter', $this->promotions_to_load ) && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false ) && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_otter_installed() ) && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
 			add_filter( 'themeisle_sdk_load_promotions_otter', '__return_true' );
-			add_action( 'init', array( $this, 'register_settings' ), 99 );
 
 			if ( false !== $this->show_otter_promotion() ) {
 				add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ) );
@@ -94,6 +99,17 @@ class Promotions extends Abstract_Module {
 				'sanitize_callback' => 'sanitize_text_field',
 				'show_in_rest'      => true,
 				'default'           => '{}',
+			)
+		);
+
+		register_setting(
+			'themeisle_sdk_settings',
+			'themeisle_sdk_promotions_otter_installed',
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
 			)
 		);
 	}
@@ -143,9 +159,28 @@ class Promotions extends Abstract_Module {
 	}
 
 	/**
+	 * Check if the path is writable.
+	 *
+	 * @return boolean
+	 * @access  public
+	 */
+	public function is_writeable() {
+		global $wp_filesystem;
+		include_once ABSPATH . 'wp-admin/includes/file.php';
+		WP_Filesystem();
+
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			return false;
+		}
+
+		$writable = WP_Filesystem( false, ABSPATH . 'wp-content' );
+
+		return $writable && 'direct' === $wp_filesystem->method;
+	}
+
+	/**
 	 * Load Gutenberg editor assets.
 	 *
-	 * @since   1.0.0
 	 * @access  public
 	 */
 	public function enqueue_editor_assets() {

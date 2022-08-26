@@ -100,6 +100,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
             const install = async () => {
                 setLoading( true );
                 await installPlugin( 'otter-blocks' );
+                updateOption( 'themeisle_sdk_promotions_otter_installed', ! Boolean( getOption( 'themeisle_sdk_promotions_otter_installed' ) ) );
                 await activatePlugin( window.themeisleSDKPromotions.activationUrl );
                 setLoading( false );
                 setInstallStatus( 'installed' );
