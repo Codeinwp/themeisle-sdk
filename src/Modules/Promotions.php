@@ -96,7 +96,7 @@ class Promotions extends Abstract_Module {
 	 */
 	public function register_reference() {
 
-		$reference_key = isset( $_GET['reference_key'] ) ? '' : sanitize_key( $_GET['reference_key'] );
+		$reference_key = ! isset( $_GET['reference_key'] ) ? '' : sanitize_key( $_GET['reference_key'] );
 		if ( empty( $reference_key ) ) {
 			return;
 		}

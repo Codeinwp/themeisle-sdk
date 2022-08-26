@@ -57,17 +57,17 @@ const style = {
 const upsells = {
     'blocks-css': {
         title: __( 'Custom CSS', 'textdomain' ),
-        description: __( 'Enable Otter and add your Custom CSS for this block.' ),
+        description: __( 'Enable Otter Blocks to add Custom CSS for this block.' ),
         image: 'css.jpg'
     },
     'blocks-animation': {
         title: __( 'Animations', 'textdomain' ),
-        description: __( 'Enable Otter to add Animations to this block.' ),
+        description: __( 'Enable Otter Blocks to add Animations for this block.' ),
         image: 'animation.jpg'
     },
     'blocks-conditions': {
         title: __( 'Visibility Conditions', 'textdomain' ),
-        description: __( 'Enable Otter to add Visibility Conditions to this block.' ),
+        description: __( 'Enable Otter Blocks to add Visibility Conditions for this block.' ),
         image: 'conditions.jpg'
     }
 };
@@ -108,7 +108,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
 
             const Install = () => {
                 if ( 'installed' === installStatus ) {
-                    return  <p>{ __( 'Awesome! Refresh the page to see Otter in action.' ) }</p>;
+                    return  <p><strong>{ __( 'Awesome! Refresh the page to see Otter Blocks in action.' ) }</strong></p>;
                 }
 
                 return (
@@ -118,7 +118,7 @@ const withInspectorControls = createHigherOrderComponent( ( BlockEdit ) => {
                         isBusy={ isLoading }
                         style={ style.button }
                     >
-                        { __( 'Install & Activate Otter' ) }
+                        { __( 'Install & Activate Otter Blocks' ) }
                     </Button>
                 );
             };
