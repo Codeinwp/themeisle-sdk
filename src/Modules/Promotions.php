@@ -72,6 +72,7 @@ class Promotions extends Abstract_Module {
 		$this->product = $product;
 
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
+		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
 
 		if ( in_array( 'otter', $this->promotions_to_load )
 			 && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false )
@@ -86,6 +87,23 @@ class Promotions extends Abstract_Module {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Register plugin reference.
+	 *
+	 * @return void
+	 */
+	public function register_reference() {
+
+		$reference_key = isset( $_GET['reference_key'] ) ? '' : sanitize_key( $_GET['reference_key'] );
+		if ( empty( $reference_key ) ) {
+			return;
+		}
+		if ( get_option( 'otter_reference_key', false ) !== false ) {
+			return;
+		}
+		update_option( 'otter_reference_key', $reference_key );
 	}
 
 	/**
@@ -223,6 +241,7 @@ class Promotions extends Abstract_Module {
 							'plugin_status' => 'all',
 							'paged'         => '1',
 							'action'        => 'activate',
+							'reference_key' => $this->product->get_key(),
 							'plugin'        => rawurlencode( 'otter-blocks/otter-blocks.php' ),
 							'_wpnonce'      => wp_create_nonce( 'activate-plugin_otter-blocks/otter-blocks.php' ),
 						),
