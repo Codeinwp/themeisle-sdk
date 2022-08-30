@@ -41,6 +41,9 @@
     <rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
+    <rule ref="WordPress.WhiteSpace.PrecisionAlignment.Found">
+        <exclude-pattern>src/*</exclude-pattern>
+    </rule>
 
 
     <arg name="extensions" value="php"/>
