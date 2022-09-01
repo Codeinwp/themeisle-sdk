@@ -5,6 +5,7 @@
 
 
     <exclude-pattern>./vendor</exclude-pattern>
+    <exclude-pattern>./node_modules</exclude-pattern>
     <exclude-pattern>./old</exclude-pattern>
     <exclude-pattern>./tests/sample_products</exclude-pattern>
     <exclude-pattern>./assets/js/build</exclude-pattern>
@@ -42,6 +43,9 @@
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
     <rule ref="WordPress.WhiteSpace.PrecisionAlignment.Found">
+        <exclude-pattern>src/*</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.NamingConventions.ValidHookName.UseUnderscores">
         <exclude-pattern>src/*</exclude-pattern>
     </rule>
 
