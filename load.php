@@ -106,3 +106,54 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 
 	add_filter( 'tsdk_utmify', 'tsdk_utmify', 10, 3 );
 }
+
+
+if ( ! function_exists( 'tsdk_lstatus' ) ) {
+	/**
+	 * Check license status.
+	 *
+	 * @param string $file Product basefile.
+	 *
+	 * @return string Status.
+	 */
+	function tsdk_lstatus( $file ) {
+		return \ThemeisleSDK\Modules\Licenser::status( $file );
+	}
+}
+if ( ! function_exists( 'tsdk_lis_valid' ) ) {
+	/**
+	 * Check if license is valid.
+	 *
+	 * @param string $file Product basefile.
+	 *
+	 * @return bool Validness.
+	 */
+	function tsdk_lis_valid( $file ) {
+		return \ThemeisleSDK\Modules\Licenser::is_valid( $file );
+	}
+}
+if ( ! function_exists( 'tsdk_lplan' ) ) {
+	/**
+	 * Get license plan.
+	 *
+	 * @param string $file Product basefile.
+	 *
+	 * @return string Plan.
+	 */
+	function tsdk_lplan( $file ) {
+		return \ThemeisleSDK\Modules\Licenser::plan( $file );
+	}
+}
+
+if ( ! function_exists( 'tsdk_lkey' ) ) {
+	/**
+	 * Get license key.
+	 *
+	 * @param string $file Product basefile.
+	 *
+	 * @return string Key.
+	 */
+	function tsdk_lkey( $file ) {
+		return \ThemeisleSDK\Modules\Licenser::key( $file );
+	}
+}
