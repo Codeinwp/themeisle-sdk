@@ -91,13 +91,29 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 			$current_page = sanitize_key( str_replace( '.php', '', $current_page ) );
 		}
 		$location = $location === null ? $current_page : $location;
-
+		$content  = sanitize_key(
+			trim(
+				str_replace(
+					[
+						'https://',
+						'themeisle.com',
+						'/themes/',
+						'/plugins/',
+						'/upgrade',
+					],
+					'',
+					$url 
+				),
+				'/' 
+			) 
+		);
 		return esc_url_raw(
 			add_query_arg(
 				[
 					'utm_source'   => 'wpadmin',
 					'utm_medium'   => $location,
 					'utm_campaign' => $area,
+					'utm_content'  => $content,
 				],
 				$url 
 			) 
