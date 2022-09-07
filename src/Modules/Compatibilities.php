@@ -82,7 +82,7 @@ class Compatibilities extends Abstract_Module {
 			$check_type = self::REQUIRED;
 			if ( ! version_compare( $requirement->get_version(), $required, '<' ) ) {
 				$check_type = self::TESTED_UP;
-				if ( version_compare( $requirement->get_version(), $tested_up, '<' ) ) {
+				if ( version_compare( $requirement->get_version(), $tested_up . '.9999', '<' ) ) {
 					return $this;
 				}
 			}
