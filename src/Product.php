@@ -207,7 +207,7 @@ class Product {
 		}
 		$file_headers = get_file_data( $this->basefile, $file_headers );
 
-		$name = apply_filters( 'themesle_sdk_product_name_' . md5( $this->basefile ), $file_headers['Name'] );
+		$name             = apply_filters( 'themesle_sdk_product_name_' . md5( $this->basefile ), $file_headers['Name'] );
 		$this->name       = $name;
 		$this->store_name = $file_headers['AuthorName'];
 		$this->author_url = $file_headers['AuthorURI'];
