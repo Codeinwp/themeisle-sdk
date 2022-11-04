@@ -15,6 +15,7 @@ namespace ThemeisleSDK\Modules;
 
 use ThemeisleSDK\Common\Abstract_Module;
 use ThemeisleSDK\Product;
+use ThemeisleSDK\Promotions\Performance;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -44,7 +45,8 @@ class Promotions extends Abstract_Module {
 			return false;
 		}
 
-		$this->promotions_to_load = apply_filters( $product->get_key() . '_load_promotions', array() );
+		$this->promotions_to_load   = apply_filters( $product->get_key() . '_load_promotions', array() );
+		$this->promotions_to_load[] = 'optimole';
 
 		if ( 0 === count( $this->promotions_to_load ) ) {
 			return false;
@@ -74,11 +76,11 @@ class Promotions extends Abstract_Module {
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
 		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
 
-		if ( in_array( 'otter', $this->promotions_to_load )
-			 && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false )
-			 && ! ( defined( 'OTTER_BLOCKS_VERSION' )
-					|| $this->is_plugin_installed( 'otter-blocks' ) )
-			 && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
+
+		if ( in_array( 'otter', $this->promotions_to_load, true )
+		     && false === apply_filters( 'themeisle_sdk_load_promotions_otter', false )
+		     && ! ( defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_plugin_installed( 'otter-blocks' ) )
+		     && version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
 			add_filter( 'themeisle_sdk_load_promotions_otter', '__return_true' );
 
 			if ( false !== $this->show_otter_promotion() ) {
@@ -86,7 +88,21 @@ class Promotions extends Abstract_Module {
 			}
 		}
 
+		if ( in_array( 'optimole', $this->promotions_to_load, true )
+		     && false === apply_filters( 'themeisle_sdk_load_promotions_optimole', false )
+		     && ! ( defined( 'OPTML_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' ) )
+		) {
+			add_filter( 'themeisle_sdk_load_promotions_optimole', '__return_true' );
+			$this->load_optimole_promotions();
+		}
+
 		return $this;
+	}
+
+	public function load_optimole_promotions() {
+		require_once 'Promotions/Performance.php';
+
+		new Performance( $this->product, $this->get_sdk_uri() );
 	}
 
 	/**
@@ -134,6 +150,28 @@ class Promotions extends Abstract_Module {
 				'default'           => false,
 			)
 		);
+
+		register_setting(
+			'themeisle_sdk_settings',
+			'themeisle_sdk_promotions_optimole',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'show_in_rest'      => true,
+				'default'           => '{}',
+			)
+		);
+
+		register_setting(
+			'themeisle_sdk_settings',
+			'themeisle_sdk_promotions_optimole_installed',
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
 	}
 
 	/**
@@ -144,7 +182,10 @@ class Promotions extends Abstract_Module {
 	 * @return string
 	 */
 	private function is_plugin_installed( $plugin ) {
-		static $allowed_keys = [ 'otter-blocks' => 'otter-blocks/otter-blocks.php' ];
+		static $allowed_keys = [
+			'otter-blocks' => 'otter-blocks/otter-blocks.php',
+			'optimole-wp'  => 'optimole-wp/optimole-wp.php'
+		];
 		if ( ! isset( $allowed_keys[ $plugin ] ) ) {
 			return false;
 		}
@@ -198,6 +239,7 @@ class Promotions extends Abstract_Module {
 		if ( 'direct' === $filesystem_method ) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -210,7 +252,7 @@ class Promotions extends Abstract_Module {
 		global $themeisle_sdk_max_path;
 
 		$themeisle_sdk_path = dirname( $themeisle_sdk_max_path );
-		$themeisle_sdk_src  = plugins_url( '/', $themeisle_sdk_max_path );
+		$themeisle_sdk_src  = $this->get_sdk_uri();
 
 		$asset_file = include $themeisle_sdk_path . '/themeisle-sdk/assets/js/build/index.asset.php';
 
@@ -247,5 +289,20 @@ class Promotions extends Abstract_Module {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Get the SDK base url.
+	 *
+	 * @return string
+	 */
+	private function get_sdk_uri() {
+		global $themeisle_sdk_max_path;
+
+		if ( $this->product->is_plugin() ) {
+			return plugins_url( '/', $themeisle_sdk_max_path );
+		};
+
+		return get_template_directory_uri() . '/vendor/codeinwp/themeisle-sdk/';
 	}
 }

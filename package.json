@@ -3,8 +3,9 @@
   "description": "Themeisle SDK",
   "version": "3.2.29",
   "scripts": {
-    "start": "wp-scripts start assets/js/src/index.js --output-path=assets/js/build",
-    "build": "wp-scripts build assets/js/src/index.js --output-path=assets/js/build",
+    "dev": "yarn start",
+    "start": "wp-scripts start assets/js/src/*.js --output-path=assets/js/build",
+    "build": "wp-scripts build assets/js/src/*.js --output-path=assets/js/build",
     "release": "semantic-release --debug"
   },
   "author": "Themeisle",

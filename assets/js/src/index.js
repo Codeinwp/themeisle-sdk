@@ -26,8 +26,8 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies.
  */
 
-import useSettings from './useSettings.js';
-import { installPlugin, activatePlugin } from './utils.js';
+import useSettings from './common/useSettings.js';
+import { installPlugin, activatePlugin } from './common/utils.js';
 
 const style = {
     button: {
