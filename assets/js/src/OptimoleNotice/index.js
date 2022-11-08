@@ -4,15 +4,24 @@ import {Button} from '@wordpress/components';
 
 import './style.scss';
 
-export default function OptimoleNotice({stacked = false, noImage = false, type }) {
+export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss }) {
     const [showForm, setShowForm] = useState(false);
-    const {logo, title, email: initialEmail} = tiSdkData;
+    const {assets, title, email: initialEmail, option} = window.themeisleSDKPromotions;
     const [email, setEmail] = useState(initialEmail || '');
-
-
+    const [dismissed, setDismissed] = useState(false);
 
     const dismissNotice = () => {
+        console.log('clicked')
+        setDismissed(true);
 
+
+        if (onDismiss) {
+            onDismiss();
+        }
+        // const value = JSON.parse(option);
+        // value[type] = new Date().getTime() / 1000 | 0;
+        //
+        // window.tiSdkData.option = JSON.stringify(value);
     };
 
     const toggleForm = () => {
@@ -23,6 +32,10 @@ export default function OptimoleNotice({stacked = false, noImage = false, type }
     }
     const submitForm = (e) => {
         e.preventDefault();
+    }
+
+    if( dismissed ) {
+        return null;
     }
 
     const form = () => (
@@ -38,6 +51,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type }
         </form>
     );
 
+
     if (stacked) {
         return (
             <div className="ti-om-stack-wrap">
@@ -46,7 +60,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type }
                         <span className="dashicons-no-alt dashicons"/>
                         <span className="screen-reader-text">Dismiss this notice.</span>
                     </Button>
-                    <img src={logo} alt={__('Optimole logo', 'textdomain')}/>
+                    <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>
 
                     <h2>{__('Get more with Optimole', 'textdomain')}</h2>
                     <p>{__('Optimize, store and deliver this image with 80% less size while looking just as great, using Optimole.', 'textdomain')}</p>
@@ -57,7 +71,6 @@ export default function OptimoleNotice({stacked = false, noImage = false, type }
                         </Button>
                     )}
                     {showForm && form()}
-
 
                     <i>{title}</i>
                 </div>
@@ -73,7 +86,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type }
             </Button>
 
             <div className="content">
-                {!noImage && <img src={logo} alt={__('Optimole logo', 'textdomain')}/>}
+                {!noImage && <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>}
 
                 <div>
                     <p>{title}</p>
