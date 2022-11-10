@@ -117,7 +117,7 @@ class Promotions extends Abstract_Module {
 			return;
 		}
 
-		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_attachment' ), 10, 2 );
+		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
@@ -233,7 +233,7 @@ class Promotions extends Abstract_Module {
 	private function is_plugin_installed( $plugin ) {
 		static $allowed_keys = [
 			'otter-blocks' => 'otter-blocks/otter-blocks.php',
-			'optimole-wp'  => 'optimole-wp/optimole-wp.php'
+			'optimole-wp'  => 'optimole-wp/optimole-wp.php',
 		];
 
 		if ( ! isset( $allowed_keys[ $plugin ] ) ) {
@@ -394,6 +394,11 @@ class Promotions extends Abstract_Module {
 		return array_keys( $return );
 	}
 
+	/**
+	 * Load single promotion.
+	 *
+	 * @param string $slug slug of the promotion.
+	 */
 	private function load_promotion( $slug ) {
 		$this->loaded_promo = $slug;
 
@@ -418,23 +423,28 @@ class Promotions extends Abstract_Module {
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				break;
 			case 'om-media':
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_optimole_dash_notice' ] );
 				break;
 		}
 	}
 
+	/**
+	 * Render dashboard notice.
+	 */
 	public function render_optimole_dash_notice() {
 		$screen = get_current_screen();
 
 		if ( ! isset( $screen->id ) || $screen->id !== 'upload' ) {
-			return false;
+			return;
 		}
-
-		$this->enqueue();
 
 		echo '<div id="ti-optml-notice" class="notice notice-info ti-sdk-om-notice"></div>';
 	}
 
+	/**
+	 * Enqueue the assets.
+	 */
 	public function enqueue() {
 		global $themeisle_sdk_max_path;
 		$handle            = 'ti-sdk-promo';
@@ -445,26 +455,39 @@ class Promotions extends Abstract_Module {
 
 
 		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/index.js', $deps, $asset_file['version'], true );
-		wp_localize_script( $handle, 'themeisleSDKPromotions', [
-			'debug'                 => $this->debug,
-			'email'                 => $user->user_email,
-			'showPromotion'         => $this->loaded_promo,
-			'optionKey'             => $this->option_main,
-			'product'               => $this->product->get_name(),
-			'option'                => $this->get_upsells_dismiss_time(),
-			'nonce'                 => wp_create_nonce( 'wp_rest' ),
-			'assets'                => $themeisle_sdk_src . 'assets/images/',
-			'optimoleApi'           => esc_url( rest_url( 'optml/v1/register_service' ) ),
-			'optimoleActivationUrl' => $this->get_plugin_activation_link( 'optimole-wp' ),
-			'otterActivationUrl'    => $this->get_plugin_activation_link( 'otter-blocks' ),
-			'optimoleDash'          => esc_url( add_query_arg( [ 'page' => 'optimole' ], admin_url( 'upload.php' ) ) ),
-			'title'                 => esc_html( sprintf( __( 'Recommended by %s', 'textdomain' ), $this->product->get_name() ) ),
-		] );
+		wp_localize_script(
+			$handle,
+			'themeisleSDKPromotions',
+			[
+				'debug'                 => $this->debug,
+				'email'                 => $user->user_email,
+				'showPromotion'         => $this->loaded_promo,
+				'optionKey'             => $this->option_main,
+				'product'               => $this->product->get_name(),
+				'option'                => $this->get_upsells_dismiss_time(),
+				'nonce'                 => wp_create_nonce( 'wp_rest' ),
+				'assets'                => $themeisle_sdk_src . 'assets/images/',
+				'optimoleApi'           => esc_url( rest_url( 'optml/v1/register_service' ) ),
+				'optimoleActivationUrl' => $this->get_plugin_activation_link( 'optimole-wp' ),
+				'otterActivationUrl'    => $this->get_plugin_activation_link( 'otter-blocks' ),
+				'optimoleDash'          => esc_url( add_query_arg( [ 'page' => 'optimole' ], admin_url( 'upload.php' ) ) ),
+				// translators: %s is the product name.
+				'title'                 => esc_html( sprintf( __( 'Recommended by %s', 'textdomain' ), $this->product->get_name() ) ),
+			]
+		);
 		wp_enqueue_script( $handle );
 		wp_enqueue_style( $handle, $themeisle_sdk_src . 'assets/js/build/style-index.css', [ 'wp-components' ], $asset_file['version'] );
 	}
 
-	public function edit_attachment( $fields, $post ) {
+	/**
+	 * Add promo to attachment modal.
+	 *
+	 * @param array    $fields Fields array.
+	 * @param \WP_Post $post Post object.
+	 *
+	 * @return array
+	 */
+	public function add_attachment_field( $fields, $post ) {
 		if ( $post->post_type !== 'attachment' ) {
 			return $fields;
 		}
@@ -491,6 +514,13 @@ class Promotions extends Abstract_Module {
 		return $fields;
 	}
 
+	/**
+	 * Get plugin activation link.
+	 *
+	 * @param string $slug The plugin slug.
+	 *
+	 * @return string
+	 */
 	private function get_plugin_activation_link( $slug ) {
 		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
 
