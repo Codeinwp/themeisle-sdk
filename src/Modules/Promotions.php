@@ -15,7 +15,6 @@ namespace ThemeisleSDK\Modules;
 
 use ThemeisleSDK\Common\Abstract_Module;
 use ThemeisleSDK\Product;
-use ThemeisleSDK\Promotions\Performance;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,15 +28,31 @@ class Promotions extends Abstract_Module {
 
 	/**
 	 * Holds the promotions.
+	 *
+	 * @var array
 	 */
 	private $promotions = array();
 
 	/**
-	 * Option key to count for promos.
+	 * Option key for promos.
 	 *
 	 * @var string
 	 */
-	private $option_key = 'themeisle_sdk_promotions';
+	private $option_main = 'themeisle_sdk_promotions';
+
+	/**
+	 * Option key for otter promos.
+	 *
+	 * @var string
+	 */
+	private $option_otter = 'themeisle_sdk_promotions_otter_installed';
+
+	/**
+	 * Option key for optimole promos.
+	 *
+	 * @var string
+	 */
+	private $option_optimole = 'themeisle_sdk_promotions_optimole_installed';
 
 	/**
 	 * Loaded promotion.
@@ -45,6 +60,13 @@ class Promotions extends Abstract_Module {
 	 * @var string
 	 */
 	private $loaded_promo;
+
+	/**
+	 * Debug mode.
+	 *
+	 * @var bool
+	 */
+	private $debug = false;
 
 	/**
 	 * Should we load this module.
@@ -83,6 +105,7 @@ class Promotions extends Abstract_Module {
 		}
 
 		$this->product = $product;
+		$this->debug   = apply_filters( 'ti_sdk_promo_debug', $this->debug );
 
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
 		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
@@ -90,8 +113,8 @@ class Promotions extends Abstract_Module {
 
 		$last_dismiss = $this->get_last_dismiss_time();
 
-		if ( $last_dismiss && ( time() - $last_dismiss ) < 7 * DAY_IN_SECONDS ) {
-//			return;
+		if ( ! $this->debug && $last_dismiss && ( time() - $last_dismiss ) < 7 * DAY_IN_SECONDS ) {
+			return;
 		}
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_attachment' ), 10, 2 );
@@ -119,14 +142,13 @@ class Promotions extends Abstract_Module {
 	 * @return void
 	 */
 	public function register_reference() {
-		$reference_key = ! isset( $_GET['reference_key'] ) ? '' : sanitize_key( $_GET['reference_key'] );
-		if ( empty( $reference_key ) ) {
-			return;
+		if ( isset( $_GET['reference_key'] ) ) {
+			update_option( 'otter_reference_key', sanitize_key( $_GET['reference_key'] ) );
 		}
-		if ( get_option( 'otter_reference_key', false ) !== false ) {
-			return;
+
+		if ( isset( $_GET['optimole_reference_key'] ) ) {
+			update_option( 'optimole_reference_key', sanitize_key( $_GET['optimole_reference_key'] ) );
 		}
-		update_option( 'otter_reference_key', $reference_key );
 	}
 
 	/**
@@ -137,7 +159,7 @@ class Promotions extends Abstract_Module {
 
 		register_setting(
 			'themeisle_sdk_settings',
-			'themeisle_sdk_promotions',
+			$this->option_main,
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
@@ -148,7 +170,17 @@ class Promotions extends Abstract_Module {
 
 		register_setting(
 			'themeisle_sdk_settings',
-			'themeisle_sdk_promotions_otter_installed',
+			$this->option_otter,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
+		register_setting(
+			'themeisle_sdk_settings',
+			$this->option_optimole,
 			array(
 				'type'              => 'boolean',
 				'sanitize_callback' => 'rest_sanitize_boolean',
@@ -221,41 +253,43 @@ class Promotions extends Abstract_Module {
 	 * @return array
 	 */
 	private function get_promotions() {
-		$has_otter        = defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_plugin_installed( 'otter-blocks' );
-		$has_optimole     = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
-		$is_min_req_v     = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
-		$attachment_count = array_sum( (array) wp_count_attachments( 'image' ) );
+		$has_otter               = defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_plugin_installed( 'otter-blocks' );
+		$had_otter_from_promo    = get_option( $this->option_otter, false );
+		$has_optimole            = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
+		$had_optimole_from_promo = get_option( $this->option_optimole, false );
+		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
+		$attachment_count        = array_sum( (array) wp_count_attachments( 'image' ) );
 
 		$all = [
 			'optimole' => [
-				'om-editor'    => [
-					'env'    => ! $has_optimole,
+				'om-editor'     => [
+					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen' => 'editor',
 				],
-//				'om-attachment' => [
-//					'env'    => ! $has_optimole,
-//					'screen' => 'media',
-//				],
-				'om-media'     => [
-					'env'    => ! $has_optimole && $attachment_count > 50,
+				'om-attachment' => [
+					'env'    => ! $has_optimole && ! $had_optimole_from_promo,
 					'screen' => 'media',
 				],
-				'om-elementor' => [
-					'env'    => ! $has_optimole && defined( 'ELEMENTOR_VERSION' ),
+				'om-media'      => [
+					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $attachment_count > 50,
+					'screen' => 'media',
+				],
+				'om-elementor'  => [
+					'env'    => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
 					'screen' => 'elementor',
 				],
 			],
 			'otter'    => [
 				'blocks-css'        => [
-					'env'    => ! $has_otter && $is_min_req_v,
+					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
 					'screen' => 'editor',
 				],
 				'blocks-animation'  => [
-					'env'    => ! $has_otter && $is_min_req_v,
+					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
 					'screen' => 'editor',
 				],
 				'blocks-conditions' => [
-					'env'    => ! $has_otter && $is_min_req_v,
+					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
 					'screen' => 'editor',
 				],
 			],
@@ -291,7 +325,7 @@ class Promotions extends Abstract_Module {
 	 */
 	private function get_upsells_dismiss_time( $key = '' ) {
 		$old  = get_option( 'themeisle_sdk_promotions_otter', '{}' );
-		$data = get_option( $this->option_key, $old );
+		$data = get_option( $this->option_main, $old );
 
 		$data = json_decode( $data, true );
 
@@ -363,7 +397,15 @@ class Promotions extends Abstract_Module {
 	private function load_promotion( $slug ) {
 		$this->loaded_promo = $slug;
 
-		error_log( var_export( $slug, true ) );
+		if ( $this->debug ) {
+			add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue' ] );
+			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
+			if ( $this->get_upsells_dismiss_time( 'om-media' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_optimole_dash_notice' ] );
+			}
+
+			return;
+		}
 
 		switch ( $slug ) {
 			case 'om-editor':
@@ -404,13 +446,18 @@ class Promotions extends Abstract_Module {
 
 		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/index.js', $deps, $asset_file['version'], true );
 		wp_localize_script( $handle, 'themeisleSDKPromotions', [
+			'debug'                 => $this->debug,
 			'email'                 => $user->user_email,
 			'showPromotion'         => $this->loaded_promo,
+			'optionKey'             => $this->option_main,
 			'product'               => $this->product->get_name(),
 			'option'                => $this->get_upsells_dismiss_time(),
+			'nonce'                 => wp_create_nonce( 'wp_rest' ),
 			'assets'                => $themeisle_sdk_src . 'assets/images/',
-			'otterActivationUrl'    => $this->get_plugin_activation_link( 'otter-blocks' ),
+			'optimoleApi'           => esc_url( rest_url( 'optml/v1/register_service' ) ),
 			'optimoleActivationUrl' => $this->get_plugin_activation_link( 'optimole-wp' ),
+			'otterActivationUrl'    => $this->get_plugin_activation_link( 'otter-blocks' ),
+			'optimoleDash'          => esc_url( add_query_arg( [ 'page' => 'optimole' ], admin_url( 'upload.php' ) ) ),
 			'title'                 => esc_html( sprintf( __( 'Recommended by %s', 'textdomain' ), $this->product->get_name() ) ),
 		] );
 		wp_enqueue_script( $handle );
@@ -445,13 +492,15 @@ class Promotions extends Abstract_Module {
 	}
 
 	private function get_plugin_activation_link( $slug ) {
+		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
+
 		return esc_url(
 			add_query_arg(
 				array(
 					'plugin_status' => 'all',
 					'paged'         => '1',
 					'action'        => 'activate',
-					'reference_key' => $this->product->get_key(),
+					$reference_key  => $this->product->get_key(),
 					'plugin'        => rawurlencode( $slug . '/' . $slug . '.php' ),
 					'_wpnonce'      => wp_create_nonce( 'activate-plugin_' . $slug . '/' . $slug . '.php' ),
 				),

@@ -3,25 +3,38 @@ import {useState} from '@wordpress/element';
 import {Button} from '@wordpress/components';
 
 import './style.scss';
+import {activatePlugin, installPlugin} from "../common/utils";
+import useSettings from "../common/useSettings";
 
-export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss }) {
+export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss}) {
+    const {
+        assets,
+        title,
+        email: initialEmail,
+        option,
+        optionKey,
+        optimoleActivationUrl,
+        optimoleApi,
+        optimoleDash,
+        nonce,
+    } = window.themeisleSDKPromotions;
     const [showForm, setShowForm] = useState(false);
-    const {assets, title, email: initialEmail, option} = window.themeisleSDKPromotions;
     const [email, setEmail] = useState(initialEmail || '');
     const [dismissed, setDismissed] = useState(false);
+    const [progress, setProgress] = useState(null);
+    const [getOption, updateOption, status] = useSettings();
 
-    const dismissNotice = () => {
-        console.log('clicked')
+
+    const dismissNotice = async () => {
         setDismissed(true);
-
+        const newValue = {...option};
+        newValue[type] = new Date().getTime() / 1000 | 0;
+        window.themeisleSDKPromotions.option = newValue;
+        await updateOption(optionKey, JSON.stringify(newValue));
 
         if (onDismiss) {
             onDismiss();
         }
-        // const value = JSON.parse(option);
-        // value[type] = new Date().getTime() / 1000 | 0;
-        //
-        // window.tiSdkData.option = JSON.stringify(value);
     };
 
     const toggleForm = () => {
@@ -30,25 +43,91 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const updateEmail = (e) => {
         setEmail(e.target.value);
     }
-    const submitForm = (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
+        setProgress('installing');
+        await installPlugin('optimole-wp');
+
+        setProgress('activating');
+        await activatePlugin(optimoleActivationUrl);
+
+        setProgress('connecting');
+        try {
+            await fetch(optimoleApi, {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': nonce,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'email': email,
+                }),
+            });
+
+            updateOption('themeisle_sdk_promotions_optimole_installed', !Boolean(getOption('themeisle_sdk_promotions_optimole_installed')));
+
+            setProgress('done');
+        } catch (e) {
+            setProgress('done');
+        }
+
     }
 
-    if( dismissed ) {
+    if (dismissed) {
         return null;
     }
 
-    const form = () => (
-        <form onSubmit={submitForm}>
-            <input
-                defaultValue={email}
-                type="email"
-                onChange={updateEmail}
-                placeholder={__('Email address', 'textdomain')}
-            />
+    const form = () => {
+        if (progress === 'done') {
+            return (
+                <div className={"done"}>
+                    <p>{__('Awesome! You are all set!', 'textdomain')}</p>
+                    <Button icon={'external'} isPrimary href={optimoleDash} target="_blank">
+                        {__('Go to Optimole dashboard', 'textdomain')}
+                    </Button>
+                </div>
+            );
+        }
 
-            <Button isPrimary type="submit">{__('Start using Optimole', 'textdomain')}</Button>
-        </form>
+        if (progress) {
+            return (
+                <p className="om-progress">
+                    <span className="dashicons dashicons-update spin"/>
+                    <span>
+                        {progress === 'installing' && __('Installing', 'textdomain')}
+                        {progress === 'activating' && __('Activating', 'textdomain')}
+                        {progress === 'connecting' && __('Connecting to API', 'textdomain')}
+                        &hellip;
+                    </span>
+                </p>
+            );
+        }
+
+        return (
+            <>
+                <span>{__('Enter your email address to create & connect your account', 'textdomain')}</span>
+                <form onSubmit={submitForm}>
+                    <input
+                        defaultValue={email}
+                        type="email"
+                        onChange={updateEmail}
+                        placeholder={__('Email address', 'textdomain')}
+                    />
+
+                    <Button isPrimary type="submit">
+                        {__('Start using Optimole', 'textdomain')}
+                    </Button>
+                </form>
+            </>
+        );
+    };
+
+    const dismissButton = () => (
+        <Button disabled={progress && progress !== 'done'} onClick={dismissNotice} isLink
+                className="om-notice-dismiss">
+            <span className="dashicons-no-alt dashicons"/>
+            <span className="screen-reader-text">Dismiss this notice.</span>
+        </Button>
     );
 
 
@@ -56,14 +135,17 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         return (
             <div className="ti-om-stack-wrap">
                 <div className="om-stack-notice">
-                    <Button onClick={dismissNotice} isLink className="om-notice-dismiss">
-                        <span className="dashicons-no-alt dashicons"/>
-                        <span className="screen-reader-text">Dismiss this notice.</span>
-                    </Button>
+                    {dismissButton()}
                     <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>
 
                     <h2>{__('Get more with Optimole', 'textdomain')}</h2>
-                    <p>{__('Optimize, store and deliver this image with 80% less size while looking just as great, using Optimole.', 'textdomain')}</p>
+
+                    <p>
+                        {type === 'om-editor' ?
+                            __('Increase this page speed and SEO ranking by optimizing images with Optimole.', 'textdomain') :
+                            __('Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!', 'textdomain')
+                        }
+                    </p>
 
                     {!showForm && (
                         <Button isPrimary onClick={toggleForm} className="cta">
@@ -80,17 +162,17 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
 
     return (
         <>
-            <Button onClick={dismissNotice} isLink className={"om-notice-dismiss"}>
-                <span className="dashicons-no-alt dashicons"/>
-                <span className="screen-reader-text">Dismiss this notice.</span>
-            </Button>
-
+            {dismissButton()}
             <div className="content">
                 {!noImage && <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>}
 
                 <div>
                     <p>{title}</p>
-                    <p className="description">{__('Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.', 'textdomain')}</p>
+                    <p className="description">{
+                        type === 'om-media' ?
+                            __('Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.', 'textdomain') :
+                            __('Optimize, store and deliver this image with 80% less size while looking just as great, using Optimole.', 'textdomain')
+                    }</p>
                     {!showForm && (
                         <div className="actions">
                             <Button isPrimary onClick={toggleForm}>
@@ -103,8 +185,6 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     )}
                     {showForm && (
                         <div className="form-wrap">
-                            <span>{__('Enter your email address to create & connect your account', 'textdomain')}</span>
-
                             {form()}
                         </div>
                     )}

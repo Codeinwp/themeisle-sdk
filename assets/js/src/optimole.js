@@ -1,100 +1,178 @@
-import {render, unmountComponentAtNode} from '@wordpress/element';
-import {registerPlugin} from '@wordpress/plugins';
+import {render, unmountComponentAtNode, useState} from '@wordpress/element';
+import {registerPlugin,} from '@wordpress/plugins';
 import {PluginPostPublishPanel} from '@wordpress/edit-post';
 import {useSelect} from '@wordpress/data';
 
 import {getBlocksByType} from "./common/utils";
 import OptimoleNotice from "./OptimoleNotice";
 
-const {showPromotion, option} = window.themeisleSDKPromotions;
+const TiSdkMoleEditorPromo = () => {
+    const [show, setShow] = useState(true);
 
-const remove = () => {
-    const div = document.querySelector('#ti-optml-notice-helper');
-    if (!div) {
-        return;
-    }
-    unmountComponentAtNode(div);
-}
-
-const add = () => {
-    const mount = document.querySelector('#ti-optml-notice-helper');
-
-    if (option['om-attachment']) {
-        return;
-    }
-
-    if (!mount) {
-        return;
-    }
-
-    render(<div className="notice notice-info ti-sdk-om-notice" style={{margin: 0}}>
-        <OptimoleNotice
-            noImage={true}
-            type="om-attachment"
-            onDismiss={() => {
-                remove();
-                window.themeisleSDKPromotions.option['om-attachment'] = true;
-            }}/>
-    </div>, mount);
-}
-
-
-if (showPromotion === 'om-attachment') {
-    wp.media.view.Attachment.Details.prototype.on("ready", () => {
-        setTimeout(() => {
-            remove();
-            add();
-        }, 100)
-    });
-    wp.media.view.Modal.prototype.on("close", () => {
-        setTimeout(remove, 100)
-    });
-}
-
-if (showPromotion === 'om-media') {
-    const root = document.getElementById('ti-optml-notice');
-
-    if (root) {
-        render(<OptimoleNotice
-            type="om-attachment"
-            onDismiss={() => {
-                unmountComponentAtNode(root);
-                root.parentNode.removeChild(root);
-            }}
-        />, root);
-    }
-}
-
-if (showPromotion === 'om-editor') {
-    const TiSDKPromo = () => {
-        const {getBlocks} = useSelect((select) => {
-            const {getBlocks} = select('core/block-editor');
-            return {
-                getBlocks
-            };
-        });
-
-        const imageBlocksCount = getBlocksByType(getBlocks(), 'core/image').length;
-
-        if (imageBlocksCount < 2) {
-            return null;
-        }
-
-        return (
-            <PluginPostPublishPanel className="ti-sdk-optimole-post-publish">
-                <OptimoleNotice stacked type="editor"/>
-            </PluginPostPublishPanel>
-        );
+    const hide = () => {
+        setShow(false);
     };
 
-    registerPlugin('post-publish-panel-test', {
-        render: TiSDKPromo,
+    const {getBlocks} = useSelect((select) => {
+        const {getBlocks} = select('core/block-editor');
+        return {
+            getBlocks
+        };
     });
-}
-if (showPromotion === 'om-elementor' && window.elementor) {
-    const runElementorActions = (panel, model, view) => {
 
-        if (option['om-elementor']) {
+    const imageBlocksCount = getBlocksByType(getBlocks(), 'core/image').length;
+
+    if (imageBlocksCount < 2) {
+        return null;
+    }
+
+    const classes = `ti-sdk-optimole-post-publish ${show ? '' : 'hidden'}`;
+
+    return (
+        <PluginPostPublishPanel className={classes}>
+            <OptimoleNotice stacked type="om-editor" onDismiss={hide}/>
+        </PluginPostPublishPanel>
+    );
+};
+
+class Optimole {
+    constructor() {
+        const {showPromotion, debug} = window.themeisleSDKPromotions;
+        this.promo = showPromotion;
+        this.debug = debug === '1';
+        this.domRef = null;
+
+        this.run();
+    }
+
+    run() {
+        if (this.debug) {
+            this.runAll();
+
+            return;
+        }
+
+        switch (this.promo) {
+            case 'om-attachment' :
+                this.runAttachmentPromo();
+                break;
+            case 'om-media' :
+                this.runMediaPromo();
+                break;
+            case 'om-editor' :
+                this.runEditorPromo();
+                break;
+            case 'om-elementor' :
+                this.runElementorPromo();
+                break;
+        }
+    }
+
+    runAttachmentPromo() {
+        wp.media.view.Attachment.Details.prototype.on("ready", () => {
+            setTimeout(() => {
+                this.removeAttachmentPromo();
+                this.addAttachmentPromo();
+            }, 100)
+        });
+        wp.media.view.Modal.prototype.on("close", () => {
+            setTimeout(this.removeAttachmentPromo, 100)
+        });
+    }
+
+    runMediaPromo() {
+        if (window.themeisleSDKPromotions.option['om-media']) {
+            return;
+        }
+
+        const root = document.querySelector('#ti-optml-notice');
+
+        if (!root) {
+            return;
+        }
+
+        render(
+            <OptimoleNotice
+                type="om-media"
+                onDismiss={() => {
+                    root.style.opacity = 0;
+                }}
+            />, root);
+    }
+
+    runEditorPromo() {
+        registerPlugin('post-publish-panel-test', {
+            render: TiSdkMoleEditorPromo,
+        });
+    }
+
+    runElementorPromo() {
+        if (!window.elementor) {
+            return;
+        }
+
+        const self = this;
+
+        elementor.on("preview:loaded", () => {
+            elementor.panel.currentView.on("set:page:editor", (details) => {
+                if (self.domRef) {
+                    unmountComponentAtNode(self.domRef);
+                }
+
+                if (!details.activeSection) {
+                    return;
+                }
+
+                if (details.activeSection !== 'section_image') {
+                    return;
+                }
+
+                self.runElementorActions(self)
+            })
+        });
+    }
+
+    addAttachmentPromo() {
+        if (this.domRef) {
+            unmountComponentAtNode(this.domRef);
+        }
+
+        if (window.themeisleSDKPromotions.option['om-attachment']) {
+            return;
+        }
+
+        const mount = document.querySelector('#ti-optml-notice-helper');
+
+        if (!mount) {
+            return;
+        }
+
+        this.domRef = mount;
+
+        render(
+            <div className="notice notice-info ti-sdk-om-notice" style={{margin: 0}}>
+                <OptimoleNotice
+                    noImage={true}
+                    type="om-attachment"
+                    onDismiss={() => {
+                        mount.style.opacity = 0;
+                    }}/>
+            </div>, mount);
+
+    }
+
+    removeAttachmentPromo() {
+        const mount = document.querySelector('#ti-optml-notice-helper');
+
+        if (!mount) {
+            return;
+        }
+
+        unmountComponentAtNode(mount);
+    }
+
+    runElementorActions(self) {
+        if ((window.themeisleSDKPromotions.option)['om-elementor']) {
             return;
         }
 
@@ -102,19 +180,27 @@ if (showPromotion === 'om-elementor' && window.elementor) {
         const mountPoint = document.createElement('div');
         mountPoint.id = 'ti-optml-notice';
 
+        self.domRef = mountPoint;
+
         if (controlsWrap) {
-            // insert before the help button
             controlsWrap.parentNode.insertBefore(mountPoint, controlsWrap);
-            render(<OptimoleNotice stacked type="elementor"
-            onDismiss={() => {
-                window.themeisleSDKPromotions.option['om-elementor'] = true;
-                unmountComponentAtNode(mountPoint);
-            }}
+            render(<OptimoleNotice
+                stacked
+                type="om-elementor"
+                onDismiss={() => {
+                    mountPoint.style.opacity = 0;
+                }}
             />, mountPoint);
         }
-
-
     }
 
-    elementor.hooks.addAction('panel/open_editor/widget/image', runElementorActions);
+
+    runAll() {
+        this.runAttachmentPromo();
+        this.runMediaPromo();
+        this.runEditorPromo();
+        this.runElementorPromo();
+    }
 }
+
+new Optimole();

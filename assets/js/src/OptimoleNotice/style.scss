@@ -27,6 +27,7 @@
   .actions {
     margin-top: auto;
     display: flex;
+    margin-bottom: 0;
     gap: 20px;
   }
 
@@ -53,6 +54,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .done {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    a {
+      width: auto;
+    }
   }
 }
 
@@ -101,6 +112,10 @@
     text-align: center;
     padding: 20px 10px;
 
+    > span {
+      display: none;
+    }
+
     img {
       max-width: 90px !important;
     }
@@ -113,7 +128,7 @@
 
     p {
       font-size: 13px;
-      max-width: 240px;
+      max-width: 250px;
       margin: 0 auto;
       line-height: 17px;
     }
@@ -144,5 +159,45 @@
       margin-top: 10px;
       gap: 10px;
     }
+
+    .done {
+      margin-top: 15px;
+      display: grid;
+      gap: 10px;
+
+      p {
+        font-size: 15px;
+        font-weight: 500;
+      }
+    }
+
+    .om-progress {
+      margin: 20px 0;
+    }
   }
+}
+
+
+.om-progress {
+  gap: 5px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+
+  .spin {
+    animation: om-rotation 2s infinite linear;
+  }
+}
+
+@keyframes om-rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.ti-sdk-om-promo.hidden {
+  display: none;
 }
