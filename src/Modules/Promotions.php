@@ -76,6 +76,9 @@ class Promotions extends Abstract_Module {
 	 * @return bool
 	 */
 	public function can_load( $product ) {
+		if ( apply_filters( 'themeisle_sdk_ran_promos', false ) === true ) {
+			return false;
+		}
 		if ( $this->is_from_partner( $product ) ) {
 			return false;
 		}
@@ -120,6 +123,7 @@ class Promotions extends Abstract_Module {
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
 	}
 
 	/**
