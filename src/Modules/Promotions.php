@@ -262,7 +262,7 @@ class Promotions extends Abstract_Module {
 		$has_optimole            = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
 		$had_optimole_from_promo = get_option( $this->option_optimole, false );
 		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
-		$attachment_count        = array_sum( (array) wp_count_attachments( 'image' ) );
+		$has_enough_attachments  = $this->has_min_media_attachments();
 
 		$all = [
 			'optimole' => [
@@ -275,7 +275,7 @@ class Promotions extends Abstract_Module {
 					'screen' => 'media',
 				],
 				'om-media'      => [
-					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $attachment_count > 50,
+					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
 					'screen' => 'media',
 				],
 				'om-elementor'  => [
@@ -541,5 +541,18 @@ class Promotions extends Abstract_Module {
 				admin_url( 'plugins.php' )
 			)
 		);
+	}
+
+	/**
+	 * Check if has 50 image media items.
+	 *
+	 * @return bool
+	 */
+	private function has_min_media_attachments() {
+		if ( $this->debug ) {
+			return true;
+		}
+
+		return array_sum( (array) wp_count_attachments( 'image' ) ) > 50;
 	}
 }
