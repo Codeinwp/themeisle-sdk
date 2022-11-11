@@ -105,7 +105,7 @@ class Promotions extends Abstract_Module {
 		}
 
 		$this->product = $product;
-		$this->debug   = apply_filters( 'ti_sdk_promo_debug', $this->debug );
+		$this->debug   = apply_filters( 'themeisle_sdk_promo_debug', $this->debug );
 
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
 		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
