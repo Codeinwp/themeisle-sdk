@@ -22,7 +22,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const [email, setEmail] = useState(initialEmail || '');
     const [dismissed, setDismissed] = useState(false);
     const [progress, setProgress] = useState(null);
-    const [getOption, updateOption, status] = useSettings();
+    const [getOption, updateOption] = useSettings();
 
 
     const dismissNotice = async () => {
@@ -51,6 +51,8 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         setProgress('activating');
         await activatePlugin(optimoleActivationUrl);
 
+        updateOption('themeisle_sdk_promotions_optimole_installed', !Boolean(getOption('themeisle_sdk_promotions_optimole_installed')));
+
         setProgress('connecting');
         try {
             await fetch(optimoleApi, {
@@ -63,8 +65,6 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     'email': email,
                 }),
             });
-
-            updateOption('themeisle_sdk_promotions_optimole_installed', !Boolean(getOption('themeisle_sdk_promotions_optimole_installed')));
 
             setProgress('done');
         } catch (e) {
