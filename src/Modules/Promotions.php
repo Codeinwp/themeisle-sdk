@@ -203,7 +203,7 @@ class Promotions extends Abstract_Module {
 		global $themeisle_sdk_max_path;
 
 		if ( $this->product->is_plugin() ) {
-			return plugins_url( '/', $themeisle_sdk_max_path );
+			return plugins_url( '/', $themeisle_sdk_max_path . '/themeisle-sdk/' );
 		};
 
 		return get_template_directory_uri() . '/vendor/codeinwp/themeisle-sdk/';
