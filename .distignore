@@ -21,3 +21,5 @@ assets/js/src
 node_modules
 dist
 artifact
+.git
+composer.json
