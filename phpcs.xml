@@ -9,6 +9,7 @@
     <exclude-pattern>./old</exclude-pattern>
     <exclude-pattern>./tests/sample_products</exclude-pattern>
     <exclude-pattern>./assets/js/build</exclude-pattern>
+    <exclude-pattern>./bin</exclude-pattern>
 
 
 
