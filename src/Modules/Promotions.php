@@ -452,11 +452,11 @@ class Promotions extends Abstract_Module {
 	public function enqueue() {
 		global $themeisle_sdk_max_path;
 		$handle            = 'ti-sdk-promo';
+		$saved             = $this->get_upsells_dismiss_time();
 		$themeisle_sdk_src = $this->get_sdk_uri();
 		$user              = wp_get_current_user();
 		$asset_file        = require $themeisle_sdk_max_path . '/assets/js/build/index.asset.php';
 		$deps              = array_merge( $asset_file['dependencies'], [ 'updates' ] );
-
 
 		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/index.js', $deps, $asset_file['version'], true );
 		wp_localize_script(
@@ -468,7 +468,7 @@ class Promotions extends Abstract_Module {
 				'showPromotion'         => $this->loaded_promo,
 				'optionKey'             => $this->option_main,
 				'product'               => $this->product->get_name(),
-				'option'                => $this->get_upsells_dismiss_time(),
+				'option'                => empty( $saved ) ? new \stdClass() : $saved,
 				'nonce'                 => wp_create_nonce( 'wp_rest' ),
 				'assets'                => $themeisle_sdk_src . 'assets/images/',
 				'optimoleApi'           => esc_url( rest_url( 'optml/v1/register_service' ) ),

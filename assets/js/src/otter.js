@@ -104,7 +104,7 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
             };
 
             const onSkip = () => {
-                const option = window.themeisleSDKPromotions.option;
+                const option = {...window.themeisleSDKPromotions.option};
                 option[window.themeisleSDKPromotions.showPromotion] = new Date().getTime() / 1000 | 0;
                 updateOption('themeisle_sdk_promotions', JSON.stringify(option));
                 window.themeisleSDKPromotions.showPromotion = false;
