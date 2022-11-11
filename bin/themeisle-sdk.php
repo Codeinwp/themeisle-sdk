@@ -21,4 +21,9 @@ function _add_product( $products ) {
 }
 
 add_filter( 'themeisle_sdk_products', '_add_product' );
-add_filter('themeisle_sdk_promo_debug', '__return_true');
+add_filter( 'themeisle_sdk_promo_debug', '__return_true' );
+add_filter( 'themeisle_sdk_load_promotions', function ( $promos ) {
+	$promos[] = 'otter';
+
+	return $promos;
+} );
