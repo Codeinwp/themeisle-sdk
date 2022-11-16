@@ -83,6 +83,7 @@ class Promotions extends Abstract_Module {
 			return false;
 		}
 
+		$this->debug	      = apply_filters( 'themeisle_sdk_promo_debug', $this->debug );
 		$promotions_to_load   = apply_filters( $product->get_key() . '_load_promotions', array() );
 		$promotions_to_load[] = 'optimole';
 
@@ -108,7 +109,6 @@ class Promotions extends Abstract_Module {
 		}
 
 		$this->product = $product;
-		$this->debug   = apply_filters( 'themeisle_sdk_promo_debug', $this->debug );
 
 		add_action( 'init', array( $this, 'register_settings' ), 99 );
 		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
