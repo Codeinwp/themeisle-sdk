@@ -95,6 +95,9 @@ class Promotions extends Abstract_Module {
 			}
 		}
 
+		add_action( 'init', array( $this, 'register_settings' ), 99 );
+		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
+
 		return ! empty( $this->promotions );
 	}
 
@@ -109,10 +112,6 @@ class Promotions extends Abstract_Module {
 		}
 
 		$this->product = $product;
-
-		add_action( 'init', array( $this, 'register_settings' ), 99 );
-		add_action( 'admin_init', array( $this, 'register_reference' ), 99 );
-
 
 		$last_dismiss = $this->get_last_dismiss_time();
 
