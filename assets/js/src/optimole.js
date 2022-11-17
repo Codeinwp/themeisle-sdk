@@ -101,6 +101,9 @@ class Optimole {
     }
 
     runEditorPromo() {
+        if (window.themeisleSDKPromotions.option['om-editor']) {
+            return;
+        }
         registerPlugin('post-publish-panel-test', {
             render: TiSdkMoleEditorPromo,
         });
