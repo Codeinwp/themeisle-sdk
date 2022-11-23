@@ -3,3 +3,5 @@ node_modules
 logs
 vendor
 .DS_Store
+dist
+artifact

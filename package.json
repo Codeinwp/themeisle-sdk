@@ -3,9 +3,11 @@
   "description": "Themeisle SDK",
   "version": "3.2.30",
   "scripts": {
+    "dev": "npm run start",
     "start": "wp-scripts start assets/js/src/index.js --output-path=assets/js/build",
     "build": "wp-scripts build assets/js/src/index.js --output-path=assets/js/build",
-    "release": "semantic-release --debug"
+    "release": "semantic-release --debug",
+    "dist": "bash ./bin/dist.sh"
   },
   "author": "Themeisle",
   "devDependencies": {
