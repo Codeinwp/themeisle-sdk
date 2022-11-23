@@ -1,3 +1,7 @@
+##### [Version 3.2.31](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.30...v3.2.31) (2022-11-23)
+
+- improve the promotions module
+
 ##### [Version 3.2.30](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.29...v3.2.30) (2022-09-15)
 
 - fix filesystem wrong use - ref [#138](https://github.com/Codeinwp/themeisle-sdk/issues/138), props [@ethanclevenger91](https://github.com/ethanclevenger91) for reporting
