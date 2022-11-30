@@ -508,7 +508,7 @@ class Promotions extends Abstract_Module {
 		$fields['optimole'] = array(
 			'input' => 'html',
 			'html'  => '<div id="ti-optml-notice-helper"></div>',
-			'label'	=> '',
+			'label' => '',
 		);
 
 		if ( count( $fields ) < 2 ) {
