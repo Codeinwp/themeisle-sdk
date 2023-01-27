@@ -170,7 +170,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     <p className="description">{
                         type === 'om-media' ?
                             'Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.' :
-                            'Optimize, store and deliver this image with 80% less size while looking just as great, using Optimole.'
+                            'This image looks to be too large and would affect your site speed, we recommend you to install Optimole to optimize your images.'
                     }</p>
                     {!showForm && (
                         <div className="actions">
