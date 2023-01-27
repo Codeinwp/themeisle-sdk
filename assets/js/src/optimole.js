@@ -1,7 +1,10 @@
-import {render, unmountComponentAtNode, useState} from '@wordpress/element';
+import {Fragment, render, unmountComponentAtNode, useState} from '@wordpress/element';
 import {registerPlugin,} from '@wordpress/plugins';
 import {PluginPostPublishPanel} from '@wordpress/edit-post';
 import {useSelect} from '@wordpress/data';
+import {createHigherOrderComponent} from '@wordpress/compose';
+import {addFilter} from '@wordpress/hooks';
+import {InspectorControls} from '@wordpress/block-editor';
 
 import {getBlocksByType} from "./common/utils";
 import OptimoleNotice from "./OptimoleNotice";
@@ -62,6 +65,9 @@ class Optimole {
             case 'om-editor' :
                 this.runEditorPromo();
                 break;
+            case 'om-image-block' :
+                this.runImageBlockPromo();
+                break;
             case 'om-elementor' :
                 this.runElementorPromo();
                 break;
@@ -100,11 +106,49 @@ class Optimole {
             />, root);
     }
 
+    runImageBlockPromo() {
+        if (window.themeisleSDKPromotions.option['om-image-block']) {
+            return;
+        }
+
+        let showNotice = true;
+        let initialStatus = null;
+
+        const withImagePromo = createHigherOrderComponent( BlockEdit => {
+            return props => {
+                if ( 'core/image' === props.name && showNotice ) {
+                    return (
+                        <Fragment>
+                            <BlockEdit { ...props } />
+                            <InspectorControls>
+                                <OptimoleNotice
+                                    stacked
+                                    type="om-image-block"
+                                    initialStatus={ initialStatus }
+                                    onDismiss={() => {
+                                        showNotice = false;
+                                    }}
+                                    onSuccess={() => {
+                                        initialStatus = 'done';
+                                    }}
+                                />
+                            </InspectorControls>
+                        </Fragment>
+                    );
+                }
+
+                return <BlockEdit { ...props } />;
+            };
+        }, 'withImagePromo' );
+        
+        addFilter( 'editor.BlockEdit', 'optimole-promo/image-promo', withImagePromo, 99 );
+    }
+
     runEditorPromo() {
         if (window.themeisleSDKPromotions.option['om-editor']) {
             return;
         }
-        registerPlugin('post-publish-panel-test', {
+        registerPlugin('optimole-promo', {
             render: TiSdkMoleEditorPromo,
         });
     }
@@ -202,6 +246,7 @@ class Optimole {
         this.runAttachmentPromo();
         this.runMediaPromo();
         this.runEditorPromo();
+        this.runImageBlockPromo();
         this.runElementorPromo();
     }
 }
