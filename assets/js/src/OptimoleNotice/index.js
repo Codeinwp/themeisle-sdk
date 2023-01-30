@@ -144,7 +144,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     <h2>Get more with Optimole</h2>
 
                     <p>
-                        {type === 'om-editor' ?
+                        {(type === 'om-editor' || type === 'om-image-block') ?
                             'Increase this page speed and SEO ranking by optimizing images with Optimole.' :
                             'Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!'
                         }
