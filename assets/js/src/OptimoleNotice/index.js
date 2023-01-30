@@ -178,7 +178,8 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                                 Get Started Free
                             </Button>
                             <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
-                                Learn more
+                                <span className="dashicons dashicons-external"/>
+                                <span>Learn more</span>
                             </Button>
                         </div>
                     )}

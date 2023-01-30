@@ -39,7 +39,7 @@
   .form-wrap {
     display: grid;
 
-    span {
+    span:not(.dashicons) {
       margin-bottom: 5px;
       font-weight: 500;
     }
@@ -47,13 +47,29 @@
 
   input {
     border-radius: 0;
-    min-width: 250px;
+    flex-grow: 1;
+    min-width: unset;
   }
 
   a.components-button {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .is-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+
+    span {
+      line-height: normal;
+    }
+  }
+
+  .dashicons {
+    margin-right: 2px;
+    text-decoration: none;
   }
 
   .done {
@@ -200,4 +216,25 @@
 
 .ti-sdk-om-promo.hidden {
   display: none;
+}
+
+.media-sidebar {
+  .ti-sdk-om-notice {
+    .description {
+      margin-bottom: 10px;
+    }
+
+    .content {
+      padding: 15px 10px;
+    }
+
+    .actions {
+      gap: 10px;
+    }
+
+    form {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+  }
 }
