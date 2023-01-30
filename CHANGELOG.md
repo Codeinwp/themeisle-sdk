@@ -1,3 +1,7 @@
+##### [Version 3.2.32](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.31...v3.2.32) (2022-11-30)
+
+Release
+
 ##### [Version 3.2.31](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.30...v3.2.31) (2022-11-23)
 
 - improve the promotions module

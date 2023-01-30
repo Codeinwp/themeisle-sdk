@@ -5,7 +5,7 @@ import './style.scss';
 import {activatePlugin, installPlugin} from "../common/utils";
 import useSettings from "../common/useSettings";
 
-export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss}) {
+export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss, onSuccess, initialStatus = null }) {
     const {
         assets,
         title,
@@ -20,7 +20,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const [showForm, setShowForm] = useState(false);
     const [email, setEmail] = useState(initialEmail || '');
     const [dismissed, setDismissed] = useState(false);
-    const [progress, setProgress] = useState(null);
+    const [progress, setProgress] = useState( initialStatus );
     const [getOption, updateOption] = useSettings();
 
 
@@ -64,6 +64,10 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     'email': email,
                 }),
             });
+
+            if (onSuccess) {
+                onSuccess();
+            }
 
             setProgress('done');
         } catch (e) {
@@ -140,18 +144,18 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     <h2>Get more with Optimole</h2>
 
                     <p>
-                        {type === 'om-editor' ?
+                        {(type === 'om-editor' || type === 'om-image-block') ?
                             'Increase this page speed and SEO ranking by optimizing images with Optimole.' :
                             'Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!'
                         }
                     </p>
 
-                    {!showForm && (
+                    {( !showForm && 'done' !== progress ) && (
                         <Button isPrimary onClick={toggleForm} className="cta">
                             Get Started Free
                         </Button>
                     )}
-                    {showForm && form()}
+                    {( showForm || 'done' === progress ) && form()}
 
                     <i>{title}</i>
                 </div>
