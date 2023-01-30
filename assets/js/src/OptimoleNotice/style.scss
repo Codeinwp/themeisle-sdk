@@ -33,6 +33,7 @@
 
   form {
     display: flex;
+    align-items: center;
     gap: 10px;
   }
 
@@ -47,8 +48,7 @@
 
   input {
     border-radius: 0;
-    flex-grow: 1;
-    min-width: unset;
+    min-width: 250px;
   }
 
   a.components-button {
@@ -226,6 +226,11 @@
 
 .media-sidebar {
   .ti-sdk-om-notice {
+    input {
+      min-width: unset;
+      flex-grow: 1;
+    }
+
     .description {
       margin-bottom: 10px;
     }
@@ -240,7 +245,24 @@
 
     form {
       flex-wrap: wrap;
-      align-items: flex-start;
+      justify-content: center;
+    }
+  }
+}
+
+.attachment-info {
+  .ti-sdk-om-notice {
+    input {
+      min-width: unset;
+      flex-grow: 1;
+    }
+    form {
+      flex-wrap: wrap;
+      justify-content: center;
+
+      @media screen and (min-width: 1200px) {
+        flex-wrap: unset;
+      }
     }
   }
 }
