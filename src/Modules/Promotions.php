@@ -271,7 +271,7 @@ class Promotions extends Abstract_Module {
 				],
 				'om-attachment' => [
 					'env'    => ! $has_optimole && ! $had_optimole_from_promo,
-					'screen' => 'media',
+					'screen' => 'media-editor',
 				],
 				'om-media'      => [
 					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
@@ -373,6 +373,11 @@ class Promotions extends Abstract_Module {
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
 				switch ( $data['screen'] ) {
+					case 'media-editor':
+						if ( ! $is_media && ! $is_editor ) {
+							unset( $this->promotions[ $slug ][ $key ] );
+						}
+						break;
 					case 'media':
 						if ( ! $is_media ) {
 							unset( $this->promotions[ $slug ][ $key ] );

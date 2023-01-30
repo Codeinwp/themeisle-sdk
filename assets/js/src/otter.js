@@ -1,4 +1,3 @@
-import {__} from '@wordpress/i18n';
 import {InspectorControls} from '@wordpress/block-editor';
 import {Button, PanelBody} from '@wordpress/components';
 import {createHigherOrderComponent} from '@wordpress/compose';
@@ -36,18 +35,18 @@ const style = {
 
 const upsells = {
     'blocks-css': {
-        title: __('Custom CSS', 'textdomain'),
-        description: __('Enable Otter Blocks to add Custom CSS for this block.'),
+        title: 'Custom CSS',
+        description: 'Enable Otter Blocks to add Custom CSS for this block.',
         image: 'css.jpg'
     },
     'blocks-animation': {
-        title: __('Animations', 'textdomain'),
-        description: __('Enable Otter Blocks to add Animations for this block.'),
+        title: 'Animations',
+        description: 'Enable Otter Blocks to add Animations for this block.',
         image: 'animation.jpg'
     },
     'blocks-conditions': {
-        title: __('Visibility Conditions', 'textdomain'),
-        description: __('Enable Otter Blocks to add Visibility Conditions for this block.'),
+        title: 'Visibility Conditions',
+        description: 'Enable Otter Blocks to add Visibility Conditions for this block.',
         image: 'conditions.jpg'
     }
 };
@@ -60,9 +59,9 @@ const Footer = ({onClick}) => {
                 variant="tertiary"
                 onClick={onClick}
             >
-                {__('Skip for now')}
+                Skip for now
             </Button>
-            <span style={style.skip.poweredby}>{__('Recommended by ') + window.themeisleSDKPromotions.product}</span>
+            <span style={style.skip.poweredby}>Recommended by {window.themeisleSDKPromotions.product}</span>
         </div>
     );
 };
@@ -88,7 +87,7 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
 
             const Install = () => {
                 if ('installed' === installStatus) {
-                    return <p><strong>{__('Awesome! Refresh the page to see Otter Blocks in action.')}</strong></p>;
+                    return <p><strong>Awesome! Refresh the page to see Otter Blocks in action.</strong></p>;
                 }
 
                 return (
@@ -98,7 +97,7 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
                         isBusy={isLoading}
                         style={style.button}
                     >
-                        {__('Install & Activate Otter Blocks')}
+                        Install & Activate Otter Blocks
                     </Button>
                 );
             };
