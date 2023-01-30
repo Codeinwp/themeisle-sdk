@@ -265,19 +265,23 @@ class Promotions extends Abstract_Module {
 
 		$all = [
 			'optimole' => [
-				'om-editor'     => [
+				'om-editor'      => [
 					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen' => 'editor',
 				],
-				'om-attachment' => [
+				'om-image-block' => [
+					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
+					'screen' => 'editor',
+				],
+				'om-attachment'  => [
 					'env'    => ! $has_optimole && ! $had_optimole_from_promo,
 					'screen' => 'media-editor',
 				],
-				'om-media'      => [
+				'om-media'       => [
 					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
 					'screen' => 'media',
 				],
-				'om-elementor'  => [
+				'om-elementor'   => [
 					'env'    => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
 					'screen' => 'elementor',
 				],
@@ -422,6 +426,7 @@ class Promotions extends Abstract_Module {
 
 		switch ( $slug ) {
 			case 'om-editor':
+			case 'om-image-block':
 			case 'blocks-css':
 			case 'blocks-animation':
 			case 'blocks-conditions':
