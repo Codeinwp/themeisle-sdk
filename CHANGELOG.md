@@ -1,3 +1,8 @@
+##### [Version 3.2.33](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.32...v3.2.33) (2023-01-30)
+
+* Adds PHP 8.2 compatibility
+* Update promotions
+
 ##### [Version 3.2.32](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.31...v3.2.32) (2022-11-30)
 
 Release
