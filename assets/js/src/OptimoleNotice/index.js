@@ -1,4 +1,3 @@
-import {__} from '@wordpress/i18n';
 import {useState} from '@wordpress/element';
 import {Button} from '@wordpress/components';
 
@@ -6,7 +5,7 @@ import './style.scss';
 import {activatePlugin, installPlugin} from "../common/utils";
 import useSettings from "../common/useSettings";
 
-export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss}) {
+export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss, onSuccess, initialStatus = null }) {
     const {
         assets,
         title,
@@ -21,7 +20,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const [showForm, setShowForm] = useState(false);
     const [email, setEmail] = useState(initialEmail || '');
     const [dismissed, setDismissed] = useState(false);
-    const [progress, setProgress] = useState(null);
+    const [progress, setProgress] = useState( initialStatus );
     const [getOption, updateOption] = useSettings();
 
 
@@ -66,6 +65,10 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                 }),
             });
 
+            if (onSuccess) {
+                onSuccess();
+            }
+
             setProgress('done');
         } catch (e) {
             setProgress('done');
@@ -81,9 +84,9 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         if (progress === 'done') {
             return (
                 <div className={"done"}>
-                    <p>{__('Awesome! You are all set!', 'textdomain')}</p>
+                    <p>Awesome! You are all set!</p>
                     <Button icon={'external'} isPrimary href={optimoleDash} target="_blank">
-                        {__('Go to Optimole dashboard', 'textdomain')}
+                        Go to Optimole dashboard
                     </Button>
                 </div>
             );
@@ -94,9 +97,9 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                 <p className="om-progress">
                     <span className="dashicons dashicons-update spin"/>
                     <span>
-                        {progress === 'installing' && __('Installing', 'textdomain')}
-                        {progress === 'activating' && __('Activating', 'textdomain')}
-                        {progress === 'connecting' && __('Connecting to API', 'textdomain')}
+                        {progress === 'installing' && 'Installing'}
+                        {progress === 'activating' && 'Activating'}
+                        {progress === 'connecting' && 'Connecting to API'}
                         &hellip;
                     </span>
                 </p>
@@ -105,17 +108,17 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
 
         return (
             <>
-                <span>{__('Enter your email address to create & connect your account', 'textdomain')}</span>
+                <span>Enter your email address to create & connect your account</span>
                 <form onSubmit={submitForm}>
                     <input
                         defaultValue={email}
                         type="email"
                         onChange={updateEmail}
-                        placeholder={__('Email address', 'textdomain')}
+                        placeholder="Email address"
                     />
 
                     <Button isPrimary type="submit">
-                        {__('Start using Optimole', 'textdomain')}
+                        Start using Optimole
                     </Button>
                 </form>
             </>
@@ -136,23 +139,23 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
             <div className="ti-om-stack-wrap">
                 <div className="om-stack-notice">
                     {dismissButton()}
-                    <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>
+                    <img src={assets + '/optimole-logo.svg'} alt="Optimole logo"/>
 
-                    <h2>{__('Get more with Optimole', 'textdomain')}</h2>
+                    <h2>Get more with Optimole</h2>
 
                     <p>
-                        {type === 'om-editor' ?
-                            __('Increase this page speed and SEO ranking by optimizing images with Optimole.', 'textdomain') :
-                            __('Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!', 'textdomain')
+                        {(type === 'om-editor' || type === 'om-image-block') ?
+                            'Increase this page speed and SEO ranking by optimizing images with Optimole.' :
+                            'Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!'
                         }
                     </p>
 
-                    {!showForm && (
+                    {( !showForm && 'done' !== progress ) && (
                         <Button isPrimary onClick={toggleForm} className="cta">
-                            {__('Get Started Free', 'textdomain')}
+                            Get Started Free
                         </Button>
                     )}
-                    {showForm && form()}
+                    {( showForm || 'done' === progress ) && form()}
 
                     <i>{title}</i>
                 </div>
@@ -164,22 +167,22 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         <>
             {dismissButton()}
             <div className="content">
-                {!noImage && <img src={assets + '/optimole-logo.svg'} alt={__('Optimole logo', 'textdomain')}/>}
+                {!noImage && <img src={assets + '/optimole-logo.svg'} alt="Optimole logo"/>}
 
                 <div>
                     <p>{title}</p>
                     <p className="description">{
                         type === 'om-media' ?
-                            __('Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.', 'textdomain') :
-                            __('Optimize, store and deliver this image with 80% less size while looking just as great, using Optimole.', 'textdomain')
+                            'Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.' :
+                            'This image looks to be too large and would affect your site speed, we recommend you to install Optimole to optimize your images.'
                     }</p>
                     {!showForm && (
                         <div className="actions">
                             <Button isPrimary onClick={toggleForm}>
-                                {__('Get Started Free', 'textdomain')}
+                                Get Started Free
                             </Button>
                             <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
-                                {__('Learn more', 'textdomain')}
+                                Learn more
                             </Button>
                         </div>
                     )}

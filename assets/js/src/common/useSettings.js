@@ -3,8 +3,6 @@
  */
 import api from '@wordpress/api';
 
-import { __ } from '@wordpress/i18n';
-
 import { dispatch } from '@wordpress/data';
 
 import {
@@ -56,7 +54,7 @@ const useSettings = () => {
 		return settings?.[option];
 	};
 
-	const updateOption = ( option, value, success = __( 'Settings saved.', 'textdomain' ) ) => {
+	const updateOption = ( option, value, success = 'Settings saved.' ) => {
 		setStatus( 'saving' );
 
 		const save = new api.models.Settings({ [option]: value }).save();
@@ -80,7 +78,7 @@ const useSettings = () => {
 
 				createNotice(
 					'error',
-					__( 'An unknown error occurred.', 'textdomain' ),
+					'An unknown error occurred.',
 					{
 						isDismissible: true,
 						type: 'snackbar'
@@ -96,7 +94,7 @@ const useSettings = () => {
 
 			createNotice(
 				'error',
-				response.responseJSON.message ? response.responseJSON.message : __( 'An unknown error occurred.', 'textdomain' ),
+				response.responseJSON.message ? response.responseJSON.message : 'An unknown error occurred.',
 				{
 					isDismissible: true,
 					type: 'snackbar'
