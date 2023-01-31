@@ -33,13 +33,14 @@
 
   form {
     display: flex;
+    align-items: center;
     gap: 10px;
   }
 
   .form-wrap {
     display: grid;
 
-    span {
+    span:not(.dashicons) {
       margin-bottom: 5px;
       font-weight: 500;
     }
@@ -54,6 +55,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .is-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+
+    span {
+      line-height: normal;
+    }
+  }
+
+  .dashicons {
+    margin-right: 2px;
+    text-decoration: none;
   }
 
   .done {
@@ -206,4 +222,47 @@
 
 .ti-sdk-om-promo.hidden {
   display: none;
+}
+
+.media-sidebar {
+  .ti-sdk-om-notice {
+    input {
+      min-width: unset;
+      flex-grow: 1;
+    }
+
+    .description {
+      margin-bottom: 10px;
+    }
+
+    .content {
+      padding: 15px 10px;
+    }
+
+    .actions {
+      gap: 10px;
+    }
+
+    form {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+}
+
+.attachment-info {
+  .ti-sdk-om-notice {
+    input {
+      min-width: unset;
+      flex-grow: 1;
+    }
+    form {
+      flex-wrap: wrap;
+      justify-content: center;
+
+      @media screen and (min-width: 1200px) {
+        flex-wrap: unset;
+      }
+    }
+  }
 }
