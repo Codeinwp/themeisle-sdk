@@ -1,3 +1,7 @@
+##### [Version 3.2.35](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.34...v3.2.35) (2023-02-22)
+
+Added Codeinwp and wpshout feeds to dashboard widget
+
 ##### [Version 3.2.34](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.33...v3.2.34) (2023-01-31)
 
 Improve promotions
