@@ -562,7 +562,22 @@ class Promotions extends Abstract_Module {
 		if ( $this->debug ) {
 			return true;
 		}
+		$attachment_count = get_transient( 'tsk_attachment_count' );
+		if ( false === $attachment_count ) {
+			$args = array(
+				'post_type'      => 'attachment',
+				'posts_per_page' => 51,
+				'fields'         => 'ids',
+				'post_status'    => 'inherit',
+				'no_found_rows'  => true,
+			);
 
-		return array_sum( (array) wp_count_attachments( 'image' ) ) > 50;
+			$query            = new \WP_Query( $args );
+			$attachment_count = $query->post_count;
+
+
+			set_transient( 'tsk_attachment_count', $attachment_count, DAY_IN_SECONDS );
+		}
+		return $attachment_count > 50;
 	}
 }
