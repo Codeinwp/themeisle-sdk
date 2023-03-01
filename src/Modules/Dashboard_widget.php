@@ -321,6 +321,7 @@ class Dashboard_Widget extends Abstract_Module {
 			}
 
 			$items = $feed->get_items( 0, 5 );
+			$items = is_array( $items ) ? $items : [];
 			foreach ( (array) $items as $item ) {
 				$items_normalized[] = array(
 					'title' => $item->get_title(),
