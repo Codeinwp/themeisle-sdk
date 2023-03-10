@@ -1,3 +1,7 @@
+##### [Version 3.2.37](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.36...v3.2.37) (2023-03-01)
+
+Fix array casting
+
 ##### [Version 3.2.36](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.35...v3.2.36) (2023-03-01)
 
 fix perfomance issues on attachments count https://github.com/Codeinwp/themeisle-sdk/issues/159
