@@ -173,3 +173,46 @@ if ( ! function_exists( 'tsdk_lkey' ) ) {
 		return \ThemeisleSDK\Modules\Licenser::key( $file );
 	}
 }
+if ( ! function_exists( 'tsdk_support_link' ) ) {
+
+	/**
+	 * Get Themeisle Support URL.
+	 *
+	 * @param string $file Product basefile.
+	 *
+	 * @return false|string Return support URL or false if no license is active.
+	 */
+	function tsdk_support_link( $file ) {
+
+		if ( ! did_action( 'init' ) ) {
+			_doing_it_wrong( __FUNCTION__, 'tsdk_support_link() should not be called before the init action.', '3.2.39' );
+		}
+		$params = [];
+		if ( ! tsdk_lis_valid( $file ) ) {
+			return false;
+		}
+		$product = \ThemeisleSDK\Product::get( $file );
+		if ( ! $product->requires_license() ) {
+			return false;
+		}
+		static $site_params = null;
+		if ( $site_params === null ) {
+			if ( is_user_logged_in() && function_exists( 'wp_get_current_user' ) ) {
+				$current_user          = wp_get_current_user();
+				$site_params['semail'] = urlencode( $current_user->user_email );
+			}
+			$site_params['swb'] = urlencode( home_url() );
+			global $wp_version;
+			$site_params['snv'] = urlencode( sprintf( 'WP-%s-PHP-%s', $wp_version, ( PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION ) ) );
+		}
+		$params['slkey'] = tsdk_lkey( $file );
+		$params['sprd']  = urlencode( $product->get_name() );
+		$params['svrs']  = urlencode( $product->get_version() );
+
+
+		return add_query_arg(
+			array_merge( $site_params, $params ),
+			'https://store.themeisle.com/direct-support/'
+		);
+	}
+}
