@@ -183,8 +183,16 @@ if ( ! function_exists( 'tsdk_support_link' ) ) {
 	 * @return false|string Return support URL or false if no license is active.
 	 */
 	function tsdk_support_link( $file ) {
+
+		if ( ! did_action( 'init' ) ) {
+			_doing_it_wrong( __FUNCTION__, 'tsdk_support_link() should not be called before the init action.', '3.2.39' );
+		}
 		$params = [];
 		if ( ! tsdk_lis_valid( $file ) ) {
+			return false;
+		}
+		$product = \ThemeisleSDK\Product::get( $file );
+		if ( ! $product->requires_license() ) {
 			return false;
 		}
 		static $site_params = null;
@@ -198,8 +206,8 @@ if ( ! function_exists( 'tsdk_support_link' ) ) {
 			$site_params['snv'] = urlencode( sprintf( 'WP-%s-PHP-%s', $wp_version, ( PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION ) ) );
 		}
 		$params['slkey'] = tsdk_lkey( $file );
-		$params['sprd']  = urlencode( \ThemeisleSDK\Product::get( $file )->get_name() );
-		$params['svrs']  = urlencode( \ThemeisleSDK\Product::get( $file )->get_version() );
+		$params['sprd']  = urlencode( $product->get_name() );
+		$params['svrs']  = urlencode( $product->get_version() );
 
 
 		return add_query_arg(
