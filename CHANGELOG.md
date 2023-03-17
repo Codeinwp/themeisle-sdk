@@ -1,3 +1,7 @@
+##### [Version 3.2.38](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.37...v3.2.38) (2023-03-10)
+
+Fix promotions path-breaking
+
 ##### [Version 3.2.37](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.36...v3.2.37) (2023-03-01)
 
 Fix array casting
