@@ -463,6 +463,9 @@ class Promotions extends Abstract_Module {
 			if ( $this->get_upsells_dismiss_time( 'om-media' ) === false ) {
 				add_action( 'admin_notices', [ $this, 'render_optimole_dash_notice' ] );
 			}
+			if ( $this->get_upsells_dismiss_time( 'rop-posts' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_rop_dash_notice' ] );
+			}
 
 			return;
 		}
