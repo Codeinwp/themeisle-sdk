@@ -657,26 +657,26 @@ class Promotions extends Abstract_Module {
 		}
 
 		// Create a new WP_Query object to get all posts
-		$args = array(
-			'post_type' => 'post',
+		$args  = array(
+			'post_type'      => 'post',
 			'posts_per_page' => -1,
-			'fields' => 'ids',
-			'no_found_rows' => true,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
 		);
 		$query = new \WP_Query( $args );
 
 		$total_posts = $query->post_count;
 
 		// Count the number of posts older than 1 year
-		$one_year_ago = date('Y-m-d H:i:s', strtotime('-1 year'));
+		$one_year_ago       = gmdate( 'Y-m-d H:i:s', strtotime( '-1 year' ) );
 		$args['date_query'] = array(
 			array(
-				'before' => $one_year_ago,
+				'before'    => $one_year_ago,
 				'inclusive' => true,
 			),
 		);
-		$query = new \WP_Query( $args );
-		$old_posts = $query->post_count;
+		$query              = new \WP_Query( $args );
+		$old_posts          = $query->post_count;
 
 		// Check if there are more than 100 posts and more than 10 old posts
 		return $total_posts > 100 && $old_posts > 10;
