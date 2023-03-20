@@ -266,3 +266,13 @@
     }
   }
 }
+
+.ti-sdk-rop-notice {
+  position: relative;
+  padding: 10px;
+
+  .rop-notice-actions {
+    display: flex;
+    gap: 10px;
+  }
+}
