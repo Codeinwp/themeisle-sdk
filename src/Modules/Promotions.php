@@ -667,8 +667,8 @@ class Promotions extends Abstract_Module {
 		);
 
 		if ( false === $posts_count ) {
-			$query           = new \WP_Query( $args );
-			$total_posts     = $query->post_count;
+			$query       = new \WP_Query( $args );
+			$total_posts = $query->post_count;
 			wp_reset_postdata();
 
 			// Count the number of posts older than 1 year
@@ -680,8 +680,8 @@ class Promotions extends Abstract_Module {
 				),
 			);
 
-			$query           = new \WP_Query( $args );
-			$old_posts       = $query->post_count;
+			$query     = new \WP_Query( $args );
+			$old_posts = $query->post_count;
 			wp_reset_postdata();
 
 			$posts_count = array(
