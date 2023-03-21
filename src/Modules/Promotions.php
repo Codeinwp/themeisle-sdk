@@ -656,26 +656,21 @@ class Promotions extends Abstract_Module {
 			return true;
 		}
 
-		$total_posts = get_transient( 'tsk_posts_count' );
-		$old_posts   = get_transient( 'tsk_old_posts_count' );
+		$posts_count = get_transient( 'tsk_posts_count' );
 
 		// Create a new WP_Query object to get all posts
 		$args = array(
 			'post_type'      => 'post',
-			'posts_per_page' => 101,
+			'posts_per_page' => 101, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
 		);
 
-		if ( false === $total_posts ) {
-			$query       = new \WP_Query( $args );
-			$total_posts = $query->post_count;
+		if ( false === $posts_count ) {
+			$query           = new \WP_Query( $args );
+			$total_posts     = $query->post_count;
 			wp_reset_postdata();
 
-			set_transient( 'tsk_posts_count', $total_posts, DAY_IN_SECONDS );
-		}
-
-		if ( false === $old_posts ) {
 			// Count the number of posts older than 1 year
 			$one_year_ago       = gmdate( 'Y-m-d H:i:s', strtotime( '-1 year' ) );
 			$args['date_query'] = array(
@@ -684,14 +679,20 @@ class Promotions extends Abstract_Module {
 					'inclusive' => true,
 				),
 			);
-			$query              = new \WP_Query( $args );
-			$old_posts          = $query->post_count;
+
+			$query           = new \WP_Query( $args );
+			$old_posts       = $query->post_count;
 			wp_reset_postdata();
 
-			set_transient( 'tsk_old_posts_count', $old_posts, DAY_IN_SECONDS );
+			$posts_count = array(
+				'total_posts' => $total_posts,
+				'old_posts'   => $old_posts,
+			);
+
+			set_transient( 'tsk_posts_count', $posts_count, DAY_IN_SECONDS );
 		}
 
 		// Check if there are more than 100 posts and more than 10 old posts
-		return $total_posts > 100 && $old_posts > 10;
+		return $posts_count['total_posts'] > 100 && $posts_count['old_posts'] > 10;
 	}
 }
