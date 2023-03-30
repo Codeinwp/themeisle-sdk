@@ -1,3 +1,7 @@
+##### [Version 3.2.39](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.38...v3.2.39) (2023-03-17)
+
+* Adds direct utility function for a direct support link.
+
 ##### [Version 3.2.38](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.37...v3.2.38) (2023-03-10)
 
 Fix promotions path-breaking

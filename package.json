@@ -1,7 +1,7 @@
 {
   "name": "themeisle-sdk",
   "description": "Themeisle SDK",
-  "version": "3.2.38",
+  "version": "3.2.39",
   "scripts": {
     "dev": "npm run start",
     "start": "wp-scripts start assets/js/src/index.js --output-path=assets/js/build",
