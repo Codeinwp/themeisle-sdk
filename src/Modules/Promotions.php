@@ -647,7 +647,7 @@ class Promotions extends Abstract_Module {
 	}
 
 	/**
-	 * Check if the website has more than 100 posts and over 10 are over one year old.
+	 * Check if the website has more than 100 posts and over 10 are over a year old.
 	 *
 	 * @return bool
 	 */
