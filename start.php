@@ -33,6 +33,7 @@ $files_to_load          = [
 	$themeisle_library_path . '/src/Modules/Review.php',
 	$themeisle_library_path . '/src/Modules/Recommendation.php',
 	$themeisle_library_path . '/src/Modules/Promotions.php',
+	$themeisle_library_path . '/src/Modules/Welcome.php',
 	$themeisle_library_path . '/src/Modules/Compatibilities.php',
 ];
 
