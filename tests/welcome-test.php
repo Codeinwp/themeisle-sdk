@@ -55,12 +55,15 @@ class Welcome_Test extends WP_UnitTestCase {
 	}
 
 	private function add_filter( $slug, $enabled = true ) {
-		add_filter(  $slug .'_welcome_metadata', function () use ( $enabled ) {
-			return [
-				'is_enabled' => $enabled,
-				'cta_link' => tsdk_utmify( 'https://link_to_upgrade.with/?discount=discunt30', 'test', 'unit_test' ),
-			];
-		} );
+		add_filter(
+			$slug . '_welcome_metadata',
+			function () use ( $enabled ) {
+				return [
+					'is_enabled' => $enabled,
+					'cta_link'   => tsdk_utmify( 'https://link_to_upgrade.with/?discount=discunt30', 'test', 'unit_test' ),
+				];
+			} 
+		);
 	}
 
 	private function cycle_module_load( $products_array ) {
@@ -153,8 +156,8 @@ class Welcome_Test extends WP_UnitTestCase {
 	public function test_welcome_random_notification() {
 		wp_set_current_user( self::$admin_id );
 
-		$theme =  dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
-		$plugin =  dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
+		$theme  = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+		$plugin = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
 
 		update_option( 'sample_theme_install', ( time() - DAY_IN_SECONDS * 7 ) );
 		$theme_product = new \ThemeisleSDK\Product( $theme );
@@ -181,13 +184,13 @@ class Welcome_Test extends WP_UnitTestCase {
 			remove_all_filters( 'themeisle_sdk_registered_notifications' );
 			$this->cycle_module_load( [ $theme_product, $plugin_product ] );
 
-			$registered_notifications = apply_filters( 'themeisle_sdk_registered_notifications', [] );
-			$id = $registered_notifications[0]['id'];
+			$registered_notifications       = apply_filters( 'themeisle_sdk_registered_notifications', [] );
+			$id                             = $registered_notifications[0]['id'];
 			$displayed_notifications[ $id ] = true;
 		}
 
 		$this->assertTrue( count( $displayed_notifications ) === 2 );
-		$this->assertTrue( array_key_exists('sample_plugin_welcome_upsell_flag', $displayed_notifications ) );
-		$this->assertTrue( array_key_exists('sample_theme_welcome_upsell_flag', $displayed_notifications ) );
+		$this->assertTrue( array_key_exists( 'sample_plugin_welcome_upsell_flag', $displayed_notifications ) );
+		$this->assertTrue( array_key_exists( 'sample_theme_welcome_upsell_flag', $displayed_notifications ) );
 	}
 }
