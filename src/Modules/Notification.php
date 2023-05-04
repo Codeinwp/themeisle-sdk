@@ -399,6 +399,7 @@ class Notification extends Abstract_Module {
 		if ( empty( $id ) ) {
 			wp_send_json( [] );
 		}
+        self::setup_notifications();
 		$ids = wp_list_pluck( self::$notifications, 'id' );
 		if ( ! in_array( $id, $ids, true ) ) {
 			wp_send_json( [] );
