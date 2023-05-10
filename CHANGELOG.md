@@ -1,3 +1,7 @@
+##### [Version 3.2.40](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.39...v3.2.40) (2023-03-30)
+
+- Add ROP upsell to all products
+
 ##### [Version 3.2.39](https://github.com/Codeinwp/themeisle-sdk/compare/v3.2.38...v3.2.39) (2023-03-17)
 
 * Adds direct utility function for a direct support link.
