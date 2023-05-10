@@ -365,7 +365,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @param string $key The upsell key. If empty will return all dismiss times.
 	 *
-	 * @return false | string
+	 * @return false | string | array
 	 */
 	private function get_upsells_dismiss_time( $key = '' ) {
 		$old  = get_option( 'themeisle_sdk_promotions_otter', '{}' );
@@ -383,18 +383,18 @@ class Promotions extends Abstract_Module {
 	/**
 	 * Get the last dismiss time of a promotion.
 	 *
-	 * @return false
+	 * @return int The timestamp of last dismiss, or install time - 4 days.
 	 */
 	private function get_last_dismiss_time() {
 		$dismissed = $this->get_upsells_dismiss_time();
 
 		if ( empty( $dismissed ) ) {
-			return false;
+			// we return the product install time - 4 days because we want to show the upsell after 3 days,
+			// and we move the product install time 4 days in the past.
+			return $this->product->get_install_time() - 4 * DAY_IN_SECONDS;
 		}
 
-		$last_dismiss = max( array_values( $dismissed ) );
-
-		return $last_dismiss;
+		return max( array_values( $dismissed ) );
 	}
 
 	/**
