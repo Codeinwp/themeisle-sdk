@@ -442,7 +442,7 @@ class Promotions extends Abstract_Module {
 		$is_media         = isset( $current_screen->id ) && $current_screen->id === 'upload';
 		$is_posts         = isset( $current_screen->id ) && $current_screen->id === 'edit-post';
 		$is_editor        = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
-		$is_theme_install = isset( $current_screen->id ) && $current_screen->id === 'theme-install';
+		$is_theme_install = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' || $current_screen->id === 'themes' );
 
 		$return = [];
 
