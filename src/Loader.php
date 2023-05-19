@@ -58,6 +58,7 @@ final class Loader {
 		'promotions',
 		'welcome',
 		'compatibilities',
+		'about_us',
 	];
 
 	/**
