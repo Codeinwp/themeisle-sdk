@@ -966,8 +966,8 @@ class Promotions extends Abstract_Module {
 			wp_die();
 		}
 
-		$nonce = esc_attr( $_POST['nonce'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
-		$value = esc_attr( $_POST['value'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+		$nonce = sanitize_text_field( $_POST['nonce'] );
+		$value = sanitize_text_field( $_POST['value'] );
 
 		if ( ! wp_verify_nonce( $nonce, 'tisdk_update_option' ) ) {
 			$response = array(
