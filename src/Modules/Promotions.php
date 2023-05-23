@@ -69,6 +69,13 @@ class Promotions extends Abstract_Module {
 	private $loaded_promo;
 
 	/**
+	 * Woo promotions.
+	 *
+	 * @var array
+	 */
+	private $woo_promos = array();
+
+	/**
 	 * Debug mode.
 	 *
 	 * @var bool
@@ -740,42 +747,7 @@ class Promotions extends Abstract_Module {
 	 * @return bool
 	 */
 	private function load_woo_promos() {
-		$woo_promos = array(
-			'ppom',
-			'sparks-wishlist',
-			'sparks-announcement',
-			'sparks-product-review',
-		);
-
-		// Check if $this-promotions isn't empty and has one of the items to load.
-		$can_load = ! empty( $this->promotions ) && count( array_intersect( $this->promotions, $woo_promos ) ) > 0;
-
-		if ( ! $can_load && ! $this->debug ) {
-			return;
-		}
-
-		add_action(
-			'woocommerce_product_data_tabs',
-			function( $tabs ) {
-				$tabs['tisdk-suggestions'] = array(
-					'label'    => 'More extensions from Themeisle',
-					'target'   => 'tisdk_suggestions',
-					'class'    => array(),
-					'priority' => 1000,
-				);
-
-				return $tabs;
-			} 
-		);
-
-		add_action( 'woocommerce_product_data_panels', array( $this, 'woocommerce_tab_content' ) );
-	}
-
-	/**
-	 * WooCommerce Tab Content.
-	 */
-	public function woocommerce_tab_content() {
-		$content = array(
+		$this->woo_promos = array(
 			'ppom'                  => array(
 				'title'       => 'Product Add-Ons',
 				'description' => 'Add extra custom fields & add-ons on your product pages, like sizes, colors & more.',
@@ -811,15 +783,80 @@ class Promotions extends Abstract_Module {
 			),
 		);
 
+		// Check if $this-promotions isn't empty and has one of the items to load.
+		$can_load = ! empty( $this->promotions ) && count( array_intersect( $this->promotions, array_keys( $this->woo_promos ) ) ) > 0;
+
+		if ( ! $can_load && ! $this->debug ) {
+			return;
+		}
+
+		add_action(
+			'woocommerce_product_data_tabs',
+			function( $tabs ) {
+				$tabs['tisdk-suggestions'] = array(
+					'label'    => 'More extensions from Themeisle',
+					'target'   => 'tisdk_suggestions',
+					'class'    => array(),
+					'priority' => 1000,
+				);
+
+				return $tabs;
+			} 
+		);
+
+		add_action( 'woocommerce_product_data_panels', array( $this, 'woocommerce_tab_content' ) );
+	}
+
+	/**
+	 * WooCommerce Tab Content.
+	 */
+	public function woocommerce_tab_content() {
 		// Filter content based on if the key exists in $this->promotions array.
 		$content = array_filter(
-			$content,
+			$this->woo_promos,
 			function( $key ) {
 				return in_array( $key, $this->promotions, true );
 			},
 			ARRAY_FILTER_USE_KEY 
 		);
 
+		// Display CSS
+		self::render_woo_tabs_css();
+
+		self::render_notice_dismiss_ajax();
+		?>
+
+		<div id="tisdk_suggestions" class="panel woocommerce_options_panel hidden">
+			<div class="tisdk-suggestions-header">
+				<h4>Recommended extensions</h4>
+			</div>
+			<div class="tisdk-suggestions-content">
+				<?php foreach ( $content as $key => $item ) : ?>
+					<div class="tisdk-suggestion" id="<?php echo esc_attr( $key ); ?>">
+						<?php if ( isset( $item['icon'] ) ) : ?>
+							<div class="tisdk-suggestion-icon">
+								<?php echo $item['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							</div>
+						<?php endif; ?>
+						<div class="tisdk-suggestion-content">
+							<h4><?php echo esc_html( $item['title'] ); ?></h4>
+							<p><?php echo esc_html( $item['description'] ); ?></p>
+						</div>
+						<div class="tisdk-suggestion-cta">
+							<a href="<?php echo esc_url( $item['link'] ); ?>" target="blank" class="button">Learn More</a>
+							<a class="suggestion-dismiss" title="Dismiss this suggestion" href="#"></a>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * CSS for WooCommerce Tabs
+	 */
+	public static function render_woo_tabs_css() {
 		?>
 		<style>
 			.tisdk-suggestions_options a {
@@ -893,7 +930,14 @@ class Promotions extends Abstract_Module {
 				text-decoration: none;
 			}
 		</style>
+		<?php
+	}
 
+	/**
+	 * JS for Dismissing Notice
+	 */
+	public static function render_notice_dismiss_ajax() {
+		?>
 		<script>
 			jQuery(document).ready(function($) {
 				// AJAX request to update the option value
@@ -915,8 +959,8 @@ class Promotions extends Abstract_Module {
 						complete() {
 							suggestion.remove();
 
-							// If element with .tisdk-suggestions-content has no children, hide the whole panel.
-							if ( ! $( '.tisdk-suggestions-content' ).children().length ) {
+							// If element with .tisdk-suggestions-content has no children, hide the whole panel. Skip if the selector doesn't exist.
+							if ( $( '.tisdk-suggestions-content' ).length && ! $( '.tisdk-suggestions-content' ).children().length ) {
 								$( '.tisdk-suggestions_options' ).remove();
 								$( '#tisdk_suggestions' ).remove();
 								$( '.general_options' ).addClass( 'active' );
@@ -927,31 +971,6 @@ class Promotions extends Abstract_Module {
 				});
 			});
 		</script>
-
-		<div id="tisdk_suggestions" class="panel woocommerce_options_panel hidden">
-			<div class="tisdk-suggestions-header">
-				<h4>Recommended extensions</h4>
-			</div>
-			<div class="tisdk-suggestions-content">
-				<?php foreach ( $content as $key => $item ) : ?>
-					<div class="tisdk-suggestion" id="<?php echo esc_attr( $key ); ?>">
-						<?php if ( isset( $item['icon'] ) ) : ?>
-							<div class="tisdk-suggestion-icon">
-								<?php echo $item['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							</div>
-						<?php endif; ?>
-						<div class="tisdk-suggestion-content">
-							<h4><?php echo esc_html( $item['title'] ); ?></h4>
-							<p><?php echo esc_html( $item['description'] ); ?></p>
-						</div>
-						<div class="tisdk-suggestion-cta">
-							<a href="<?php echo esc_url( $item['link'] ); ?>" target="blank" class="button">Learn More</a>
-							<a class="suggestion-dismiss" title="Dismiss this suggestion" href="#"></a>
-						</div>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		</div>
 		<?php
 	}
 
