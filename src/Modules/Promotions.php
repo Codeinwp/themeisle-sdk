@@ -138,7 +138,7 @@ class Promotions extends Abstract_Module {
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
-		add_action( 'wp_ajax_tisdk_update_option', array( $this, 'update_option' ) );
+		add_action( 'wp_ajax_tisdk_update_option', array( $this, 'dismiss_promotion' ) );
 		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
 	}
 
@@ -977,7 +977,7 @@ class Promotions extends Abstract_Module {
 	/**
 	 * Update the option value using AJAX
 	 */
-	public function update_option() {
+	public function dismiss_promotion() {
 		if ( ! isset( $_POST['nonce'] ) || ! isset( $_POST['value'] ) ) {
 			$response = array(
 				'success' => false,
