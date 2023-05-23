@@ -234,31 +234,6 @@ class Promotions extends Abstract_Module {
 	}
 
 	/**
-	 * Get the Otter Blocks plugin status.
-	 *
-	 * @param string $plugin Plugin slug.
-	 *
-	 * @return bool
-	 */
-	private function is_plugin_installed( $plugin ) {
-		static $allowed_keys = [
-			'otter-blocks'   => 'otter-blocks/otter-blocks.php',
-			'optimole-wp'    => 'optimole-wp/optimole-wp.php',
-			'tweet-old-post' => 'tweet-old-post/tweet-old-post.php',
-		];
-
-		if ( ! isset( $allowed_keys[ $plugin ] ) ) {
-			return false;
-		}
-
-		if ( file_exists( WP_CONTENT_DIR . '/plugins/' . $allowed_keys[ $plugin ] ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Get promotions.
 	 *
 	 * @return array
@@ -571,31 +546,6 @@ class Promotions extends Abstract_Module {
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Get plugin activation link.
-	 *
-	 * @param string $slug The plugin slug.
-	 *
-	 * @return string
-	 */
-	private function get_plugin_activation_link( $slug ) {
-		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
-
-		return esc_url(
-			add_query_arg(
-				array(
-					'plugin_status' => 'all',
-					'paged'         => '1',
-					'action'        => 'activate',
-					$reference_key  => $this->product->get_key(),
-					'plugin'        => rawurlencode( $slug . '/' . $slug . '.php' ),
-					'_wpnonce'      => wp_create_nonce( 'activate-plugin_' . $slug . '/' . $slug . '.php' ),
-				),
-				admin_url( 'plugins.php' )
-			)
-		);
 	}
 
 	/**

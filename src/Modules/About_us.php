@@ -39,7 +39,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class About_Us extends Abstract_Module {
 	/**
-	 * @var array $about_data
+	 * About data.
+	 *
+	 * @var array $about_data About page data, received from the filter.
+	 *
 	 * Shape of the $about_data property array:
 	 * [
 	 *     'location' => 'top level page',
@@ -51,12 +54,6 @@ class About_Us extends Abstract_Module {
 	 * ]
 	 */
 	private $about_data = array();
-	/**
-	 * @var string
-	 */
-	private $product_slug;
-
-	private static $generic_admin_enqueued = false;
 
 	/**
 	 * Should we load this module.
@@ -87,6 +84,11 @@ class About_Us extends Abstract_Module {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_about_page_script' ] );
 	}
 
+	/**
+	 * Adds submenu pages.
+	 *
+	 * @return void
+	 */
 	public function add_submenu_pages() {
 		if ( ! isset( $this->about_data['location'] ) ) {
 			return;
@@ -129,10 +131,20 @@ class About_Us extends Abstract_Module {
 		);
 	}
 
+	/**
+	 * Render page content.
+	 *
+	 * @return void
+	 */
 	public function render_about_us_page() {
 		echo '<div id="ti-sdk-about"></div>';
 	}
 
+	/**
+	 * Enqueue scripts & styles.
+	 *
+	 * @return void
+	 */
 	public function enqueue_about_page_script() {
 		$current_screen = get_current_screen();
 
@@ -144,7 +156,7 @@ class About_Us extends Abstract_Module {
 			return;
 		}
 		global $themeisle_sdk_max_path;
-		$handle     = 'ti-sdk-about';
+		$handle     = 'ti-sdk-about-' . $this->product->get_key();
 		$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/about/about.asset.php';
 		$deps       = array_merge( $asset_file['dependencies'], [ 'updates' ] );
 
@@ -155,84 +167,156 @@ class About_Us extends Abstract_Module {
 		wp_enqueue_style( $handle, $this->get_sdk_uri() . 'assets/js/build/about/about.css', [ 'wp-components' ], $asset_file['version'] );
 	}
 
+	/**
+	 * Get localized data.
+	 *
+	 * @return array
+	 */
 	private function get_about_localization_data() {
 		$links = isset( $this->about_data['page_menu'] ) ? $this->about_data['page_menu'] : [];
 
 		return [
-			'links'   => $links,
-			'logoUrl' => $this->about_data['logo'],
-			'products' => $this->get_other_products_data(),
-			'currentProduct' =>[
+			'links'          => $links,
+			'logoUrl'        => $this->about_data['logo'],
+			'products'       => $this->get_other_products_data(),
+			'homeUrl'        => esc_url( home_url() ),
+			'pageSlug'       => $this->get_about_page_slug(),
+			'currentProduct' => [
 				'slug' => $this->product->get_key(),
-				'name' => $this->product->get_name()
+				'name' => $this->product->get_name(),
+			],
+			'teamImage'      => $this->get_sdk_uri() . 'assets/images/team.jpg',
+			'strings'        => [
+				'aboutUs'          => __( 'About us', 'textdomain' ),
+				'heroHeader'       => __( 'Our Story', 'textdomain' ),
+				'heroTextFirst'    => __( 'Themeisle was founded in 2012 by a group of passionate developers who wanted to create beautiful and functional WordPress themes and plugins. Since then, we have grown into a team of over 20 dedicated professionals who are committed to delivering the best possible products to our customers.', 'textdomain' ),
+				'heroTextSecond'   => __( 'At Themeisle, we offer a wide range of WordPress themes and plugins that are designed to meet the needs of both beginners and advanced users. Our products are feature-rich, easy to use, and are designed to help you create beautiful and functional websites.', 'textdomain' ),
+				'teamImageCaption' => __( 'Our team in WCEU2022 in Portugal', 'textdomain' ),
+				'newsHeading'      => __( 'Stay connected for news & updates!', 'textdomain' ),
+				'emailPlaceholder' => __( 'Your email address', 'textdomain' ),
+				'signMeUp'         => __( 'Sign me up', 'textdomain' ),
+				'installNow'       => __( 'Install Now', 'textdomain' ),
+				'activate'         => __( 'Activate', 'textdomain' ),
+				'learnMore'        => __( 'Learn More', 'textdomain' ),
+				'installed'        => __( 'Installed', 'textdomain' ),
+				'notInstalled'     => __( 'Not Installed', 'textdomain' ),
+				'active'           => __( 'Active', 'textdomain' ),
 			],
 		];
 	}
 
+	/**
+	 * Get products data.
+	 *
+	 * @return array
+	 */
 	private function get_other_products_data() {
 		$products = [
-			'optimole-wp' => [
+			'optimole-wp'                         => [
 				'name'        => 'Optimole',
 				'description' => 'Optimole is an image optimization service that automatically optimizes your images and serves them to your visitors via a global CDN, making your website lighter, faster and helping you reduce your bandwidth usage.',
 			],
-			'neve' => [
-				'skip_api' => true,
-				'name' => 'Neve',
-				'description' => __('A fast, lightweight, customizable WordPress theme offering responsive design, speed, and flexibility for various website types.', 'textdomain'),
+			'neve'                                => [
+				'skip_api'    => true,
+				'name'        => 'Neve',
+				'description' => __( 'A fast, lightweight, customizable WordPress theme offering responsive design, speed, and flexibility for various website types.', 'textdomain' ),
+				'icon'        => $this->get_sdk_uri() . 'assets/images/neve.png',
 			],
-			'otter-blocks' => [
-				'name'        => 'Otter',
+			'otter-blocks'                        => [
+				'name' => 'Otter',
 			],
-			'tweet-old-post' => [
-				'name'        => 'Revive Old Post',
+			'tweet-old-post'                      => [
+				'name' => 'Revive Old Post',
 			],
-			'feedzy-rss-feeds' => [
-				'name'        => 'Feedzy',
+			'feedzy-rss-feeds'                    => [
+				'name' => 'Feedzy',
 			],
-			'woocommerce-product-addon' => [
-				'name'        => 'PPOM',
+			'woocommerce-product-addon'           => [
+				'name'      => 'PPOM',
+				'condition' => class_exists( 'WooCommerce', false ),
 			],
-			'visualizer' => [
-				'name'        => 'Visualizer',
+			'visualizer'                          => [
+				'name' => 'Visualizer',
 			],
-			'wp-landing-kit' => [
-				'skip_api' => true,
-				'name' => 'WP Landing Kit',
-				'description' => __('Turn WordPress into a landing page powerhouse with Landing Kit, map domains to pages or any other published resource.', 'textdomain'),
+			'wp-landing-kit'                      => [
+				'skip_api'    => true,
+				'premiumUrl'  => tsdk_utmify( 'https://themeisle.com/plugins/wp-landing-kit', $this->get_about_page_slug() ),
+				'name'        => 'WP Landing Kit',
+				'description' => __( 'Turn WordPress into a landing page powerhouse with Landing Kit, map domains to pages or any other published resource.', 'textdomain' ),
+				'icon'        => $this->get_sdk_uri() . 'assets/images/wplk.png',
 			],
 			'multiple-pages-generator-by-porthas' => [
-				'name'        => 'MPG',
+				'name' => 'MPG',
 			],
-			'sparks' => [
-				'skip_api' => true,
-				'name' => 'Sparks',
-				'description' => __('Extend your store functionality with 8 ultra-performant features like product comparisons, variation swatches, wishlist, and more.', 'textdomain'),
+			'sparks-for-woocommerce'              => [
+				'skip_api'    => true,
+				'premiumUrl'  => tsdk_utmify( 'https://themeisle.com/plugins/sparks-for-woocommerce', $this->get_about_page_slug() ),
+				'name'        => 'Sparks',
+				'description' => __( 'Extend your store functionality with 8 ultra-performant features like product comparisons, variation swatches, wishlist, and more.', 'textdomain' ),
+				'icon'        => $this->get_sdk_uri() . 'assets/images/sparks.png',
+				'condition'   => class_exists( 'WooCommerce', false ),
 			],
-			'templates-patterns-collection' => [
-				'name' => 'Template Cloud',
-				'description' => __('Ultimate Free Templates Cloud for WordPress, for blocks, patters of full pages.', 'textdomain'),
+			'templates-patterns-collection'       => [
+				'name'        => 'Template Cloud',
+				'description' => __( 'Ultimate Free Templates Cloud for WordPress, for blocks, patters of full pages.', 'textdomain' ),
 			],
 		];
 
 		foreach ( $products as $slug => $product ) {
-			if( isset($product['skip_api']) ) {
+			if ( isset( $product['condition'] ) && ! $product['condition'] ) {
+				unset( $products[ $slug ] );
+				continue;
+			}
+
+			if ( $slug === 'neve' ) {
+				$theme  = get_template();
+				$themes = wp_get_themes();
+
+				$products[ $slug ]['status'] = isset( $themes['neve'] ) ? 'installed' : 'not-installed';
+				$products[ $slug ]['status'] = $theme === 'neve' ? 'active' : $products[ $slug ]['status'];
+
+				$products[ $slug ]['activationLink'] = add_query_arg(
+					[
+						'stylesheet' => 'neve',
+						'action'     => 'activate',
+						'_wpnonce'   => wp_create_nonce( 'switch-theme_neve' ),
+					],
+					admin_url( 'themes.php' )
+				);
+
+				continue;
+			}
+
+			$products[ $slug ]['status']         = $this->is_plugin_installed( $slug ) ? 'installed' : 'not-installed';
+			$products[ $slug ]['status']         = $this->is_plugin_active( $slug ) ? 'active' : $products[ $slug ]['status'];
+			$products[ $slug ]['activationLink'] = $this->get_plugin_activation_link( $slug );
+
+
+			if ( isset( $product['skip_api'] ) ) {
 				continue;
 			}
 
 			$api_data = $this->call_plugin_api( $slug );
 
-			$products[$slug]['icon'] = isset( $api_data->icons['2x'] ) ? $api_data->icons['2x'] : $api_data->icons['1x'];
-			$products[$slug]['description'] = $api_data->short_description;
+			if ( ! isset( $product['icon'] ) ) {
+				$products[ $slug ]['icon'] = isset( $api_data->icons['2x'] ) ? $api_data->icons['2x'] : $api_data->icons['1x'];
+			}
+			if ( ! isset( $product['description'] ) ) {
+				$products[ $slug ]['description'] = $api_data->short_description;
+			}
 			if ( ! isset( $product['name'] ) ) {
 				$products[ $slug ]['name'] = $api_data->name;
 			}
 		}
 
-
 		return $products;
 	}
 
-
+	/**
+	 * Get the page slug.
+	 *
+	 * @return string
+	 */
 	private function get_about_page_slug() {
 		return 'ti-about-' . $this->product->get_key();
 	}
