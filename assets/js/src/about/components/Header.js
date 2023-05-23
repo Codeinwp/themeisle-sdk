@@ -9,7 +9,7 @@ export default function Header() {
                     <p>by <a href="https://themeisle.com">Themeisle</a></p>
                 </div>
             </div>
-            <div className="container">
+            {links.length > 0 && <div className="container">
                 <ul className="nav">
                     <li>
                         <a href={window.location}>{strings.aboutUs}</a>
@@ -23,7 +23,7 @@ export default function Header() {
                         </li>
                     ))}
                 </ul>
-            </div>
+            </div>}
         </div>
     );
 }
