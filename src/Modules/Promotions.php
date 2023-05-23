@@ -131,7 +131,7 @@ class Promotions extends Abstract_Module {
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
-		add_action( 'wp_ajax_tisdk_update_option', array( $this, 'update_tisdk_option' ) );
+		add_action( 'wp_ajax_tisdk_update_option', array( $this, 'update_option' ) );
 		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
 	}
 
@@ -295,6 +295,8 @@ class Promotions extends Abstract_Module {
 		$has_rop                 = defined( 'ROP_LITE_VERSION' ) || $this->is_plugin_installed( 'tweet-old-post' );
 		$had_rop_from_promo      = get_option( $this->option_rop, false );
 		$has_woocommerce         = class_exists( 'WooCommerce' );
+		$has_sparks              = defined( 'SPARKS_WC_VERSION' ) || $this->is_plugin_installed( 'sparks-for-woocommerce' );
+		$has_ppom                = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
 		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$has_enough_attachments  = $this->has_min_media_attachments();
 		$has_enough_old_posts    = $this->has_old_posts();
@@ -344,19 +346,19 @@ class Promotions extends Abstract_Module {
 			],
 			'woo_plugins' => [
 				'ppom'                  => [
-					'env'    => ! $this->is_plugin_installed( 'woocommerce-product-addon' ) && $has_woocommerce,
+					'env'    => ! $has_ppom && $has_woocommerce,
 					'screen' => 'edit-product',
 				],
 				'sparks-wishlist'       => [
-					'env'    => ! $this->is_plugin_installed( 'sparks-for-woocommerce' ) && $has_woocommerce,
+					'env'    => ! $has_sparks && $has_woocommerce,
 					'screen' => 'edit-product',
 				],
 				'sparks-announcement'   => [
-					'env'    => ! $this->is_plugin_installed( 'sparks-for-woocommerce' ) && $has_woocommerce,
+					'env'    => ! $has_sparks && $has_woocommerce,
 					'screen' => 'edit-product',
 				],
 				'sparks-product-review' => [
-					'env'    => ! $this->is_plugin_installed( 'sparks-for-woocommerce' ) && $has_woocommerce,
+					'env'    => ! $has_sparks && $has_woocommerce,
 					'screen' => 'edit-product',
 				],
 			],
@@ -956,7 +958,7 @@ class Promotions extends Abstract_Module {
 	/**
 	 * Update the option value using AJAX
 	 */
-	public function update_tisdk_option() {
+	public function update_option() {
 		if ( ! isset( $_POST['nonce'] ) || ! isset( $_POST['value'] ) ) {
 			$response = array(
 				'success' => false,
