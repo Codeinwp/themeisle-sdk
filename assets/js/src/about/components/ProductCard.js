@@ -1,7 +1,7 @@
 import {useState} from '@wordpress/element';
 import {Button} from '@wordpress/components';
 
-import {activatePlugin, installPlugin} from "../../common/utils";
+import {activatePlugin, installPluginOrTheme} from "../../common/utils";
 
 export default function ProductCard({product, slug}) {
     const {icon, name, description, status, premiumUrl, activationLink} = product;
@@ -21,7 +21,7 @@ export default function ProductCard({product, slug}) {
 
     const runInstall = async () => {
         setLoading(true);
-        await installPlugin(slug, slug === 'neve').then((res) => {
+        await installPluginOrTheme(slug, slug === 'neve').then((res) => {
             if (res.success) {
                 setProductStatus('installed');
             }

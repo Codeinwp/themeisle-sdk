@@ -1,4 +1,4 @@
-const installPlugin = ( slug, theme = false ) => {
+const installPluginOrTheme = ( slug, theme = false ) => {
 	return new Promise( ( resolve ) => {
 		wp.updates.ajax( theme === true ? 'install-theme' : 'install-plugin', {
 			slug,
@@ -54,5 +54,5 @@ const flatRecursively = ( r, a ) => {
 const getBlocksByType = ( blocks, type ) =>
 	blocks.reduce( flatRecursively, [] ).filter( ( a ) => type === a.name );
 
-export { installPlugin, activatePlugin, getBlocksByType };
+export { installPluginOrTheme, activatePlugin, getBlocksByType };
 

@@ -2,7 +2,7 @@ import {useState} from '@wordpress/element';
 import {Button} from '@wordpress/components';
 
 import './style.scss';
-import {activatePlugin, installPlugin} from "../common/utils";
+import {activatePlugin, installPluginOrTheme} from "../common/utils";
 import useSettings from "../common/useSettings";
 
 export default function OptimoleNotice({stacked = false, noImage = false, type, onDismiss, onSuccess, initialStatus = null }) {
@@ -45,7 +45,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const submitForm = async (e) => {
         e.preventDefault();
         setProgress('installing');
-        await installPlugin('optimole-wp');
+        await installPluginOrTheme('optimole-wp');
 
         setProgress('activating');
         await activatePlugin(optimoleActivationUrl);
