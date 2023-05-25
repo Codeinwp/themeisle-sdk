@@ -22,10 +22,7 @@ const NeveFSENotice = ({ onDismiss = () => {} }) => {
 		<Fragment>
 			<Button
 				onClick={ dismissNotice }
-				variant="link"
-				className="om-notice-dismiss"
-			>
-				<span className="dashicons-no-alt dashicons"/>
+				className="notice-dismiss">
 				<span className="screen-reader-text">Dismiss this notice.</span>
 			</Button>
 
