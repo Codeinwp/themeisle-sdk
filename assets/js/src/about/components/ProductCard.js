@@ -31,12 +31,7 @@ export default function ProductCard({product, slug}) {
 
     const runActivate = async () => {
         setLoading(true);
-        await activatePlugin(activationLink).then((res) => {
-            if (res.success) {
-                setProductStatus('active');
-            }
-        });
-        setLoading(false);
+        window.location.href = activationLink;
     }
 
     return (<div className="product-card">
