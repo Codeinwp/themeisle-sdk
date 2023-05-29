@@ -242,26 +242,6 @@ class Promotions extends Abstract_Module {
 	}
 
 	/**
-	 * Get the SDK base url.
-	 *
-	 * @return string
-	 */
-	private function get_sdk_uri() {
-		global $themeisle_sdk_max_path;
-
-		/**
-		 * $themeisle_sdk_max_path can point to the theme when the theme version is higher.
-		 * hence we also need to check that the path does not point to the theme else this will break the URL.
-		 * References: https://github.com/Codeinwp/neve-pro-addon/issues/2403
-		 */
-		if ( $this->product->is_plugin() && false === strpos( $themeisle_sdk_max_path, get_template_directory() ) ) {
-			return plugins_url( '/', $themeisle_sdk_max_path . '/themeisle-sdk/' );
-		};
-
-		return get_template_directory_uri() . '/vendor/codeinwp/themeisle-sdk/';
-	}
-
-	/**
 	 * Check if the path is writable.
 	 *
 	 * @return boolean
@@ -273,31 +253,6 @@ class Promotions extends Abstract_Module {
 		$filesystem_method = get_filesystem_method();
 
 		if ( 'direct' === $filesystem_method ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get the Otter Blocks plugin status.
-	 *
-	 * @param string $plugin Plugin slug.
-	 *
-	 * @return bool
-	 */
-	private function is_plugin_installed( $plugin ) {
-		static $allowed_keys = [
-			'otter-blocks'   => 'otter-blocks/otter-blocks.php',
-			'optimole-wp'    => 'optimole-wp/optimole-wp.php',
-			'tweet-old-post' => 'tweet-old-post/tweet-old-post.php',
-		];
-
-		if ( ! isset( $allowed_keys[ $plugin ] ) ) {
-			return false;
-		}
-
-		if ( file_exists( WP_CONTENT_DIR . '/plugins/' . $allowed_keys[ $plugin ] ) ) {
 			return true;
 		}
 
@@ -560,10 +515,10 @@ class Promotions extends Abstract_Module {
 		$saved             = $this->get_upsells_dismiss_time();
 		$themeisle_sdk_src = $this->get_sdk_uri();
 		$user              = wp_get_current_user();
-		$asset_file        = require $themeisle_sdk_max_path . '/assets/js/build/index.asset.php';
+		$asset_file        = require $themeisle_sdk_max_path . '/assets/js/build/promos/index.asset.php';
 		$deps              = array_merge( $asset_file['dependencies'], [ 'updates' ] );
 
-		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/index.js', $deps, $asset_file['version'], true );
+		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/promos/index.js', $deps, $asset_file['version'], true );
 		wp_localize_script(
 			$handle,
 			'themeisleSDKPromotions',
@@ -588,7 +543,7 @@ class Promotions extends Abstract_Module {
 			]
 		);
 		wp_enqueue_script( $handle );
-		wp_enqueue_style( $handle, $themeisle_sdk_src . 'assets/js/build/style-index.css', [ 'wp-components' ], $asset_file['version'] );
+		wp_enqueue_style( $handle, $themeisle_sdk_src . 'assets/js/build/promos/style-index.css', [ 'wp-components' ], $asset_file['version'] );
 	}
 
 	/**
@@ -645,31 +600,6 @@ class Promotions extends Abstract_Module {
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Get plugin activation link.
-	 *
-	 * @param string $slug The plugin slug.
-	 *
-	 * @return string
-	 */
-	private function get_plugin_activation_link( $slug ) {
-		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
-
-		return esc_url(
-			add_query_arg(
-				array(
-					'plugin_status' => 'all',
-					'paged'         => '1',
-					'action'        => 'activate',
-					$reference_key  => $this->product->get_key(),
-					'plugin'        => rawurlencode( $slug . '/' . $slug . '.php' ),
-					'_wpnonce'      => wp_create_nonce( 'activate-plugin_' . $slug . '/' . $slug . '.php' ),
-				),
-				admin_url( 'plugins.php' )
-			)
-		);
 	}
 
 	/**

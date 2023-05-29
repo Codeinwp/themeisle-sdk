@@ -1,6 +1,6 @@
 import { Fragment, render, useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
-import { activatePlugin, installPlugin } from "./common/utils";
+import { activatePlugin, installPluginOrTheme } from "./common/utils";
 import useSettings from './common/useSettings';
 
 const ROPNotice = ({ onDismiss = () => {} }) => {
@@ -39,7 +39,7 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 						isBusy={ 'installing' === status }
 						onClick={ async() => {
 							setStatus( 'installing' );
-							await installPlugin('tweet-old-post');
+							await installPluginOrTheme('tweet-old-post');
 							await activatePlugin( window.themeisleSDKPromotions.ropActivationUrl );
 							updateOption('themeisle_sdk_promotions_rop_installed', !Boolean(getOption('themeisle_sdk_promotions_rop_installed')));
 							setStatus( 'installed' );

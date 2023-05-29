@@ -6,7 +6,7 @@ import {Fragment, useEffect, useState} from '@wordpress/element';
 import {addFilter} from '@wordpress/hooks';
 
 import useSettings from './common/useSettings.js';
-import {installPlugin, activatePlugin} from './common/utils.js';
+import {installPluginOrTheme, activatePlugin} from './common/utils.js';
 
 const style = {
     button: {
@@ -78,7 +78,7 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
 
             const install = async () => {
                 setLoading(true);
-                await installPlugin('otter-blocks');
+                await installPluginOrTheme('otter-blocks');
                 updateOption('themeisle_sdk_promotions_otter_installed', !Boolean(getOption('themeisle_sdk_promotions_otter_installed')));
                 await activatePlugin(window.themeisleSDKPromotions.otterActivationUrl);
                 setLoading(false);
