@@ -27,3 +27,27 @@ add_filter( 'themeisle_sdk_load_promotions', function ( $promos ) {
 
 	return $promos;
 } );
+
+// Add dummy root page in dashboard for the sdk:
+add_action( 'admin_menu', function () {
+	add_menu_page( 'Themeisle SDK', 'Themeisle SDK', 'manage_options', 'themeisle-sdk', function () {
+		echo '<div class="wrap">';
+		echo '<h1>Themeisle SDK</h1>';
+		echo '<p>Dummy Page.</p>';
+		echo '</div>';
+	} );
+} );
+
+add_filter( 'themeisle_sdk_about_us_metadata', function ( $config ) {
+	return [
+		'location'         => 'themeisle-sdk',
+		'logo'             => 'https://placehold.co/200x50.jpg',
+		'page_menu'        => [
+			[ 'text' => 'SDK GitHub Issues', 'url' => esc_url( 'https://github.com/codeinwp/themeisle-sdk/issues' ) ],
+			[ 'text' => 'Themeisle', 'url' => esc_url( 'https://themeisle.com' ) ]
+		], // Optional
+		'has_upgrade_menu' => true,
+		'upgrade_link'     => esc_url( 'https://themeisle.com/themes/neve/pricing/' ),
+		'upgrade_text'     => 'Get Pro Version',
+	];
+} );
