@@ -280,3 +280,24 @@
     padding: 0 10px 0 0;
   }
 }
+.ti-sdk-neve-fse-notice {
+  position: relative;
+  padding: 10px;
+
+  .neve-fse-notice-actions {
+    display: flex;
+    gap: 10px;
+
+    a {
+      text-decoration: none;
+      span:not(.dashicons) {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  p {
+    padding: 0 10px 0 0;
+    font-size: 14px;
+  }
+}
