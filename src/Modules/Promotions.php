@@ -62,6 +62,13 @@ class Promotions extends Abstract_Module {
 	private $option_rop = 'themeisle_sdk_promotions_rop_installed';
 
 	/**
+	 * Option key for Neve FSE promos.
+	 *
+	 * @var string
+	 */
+	private $option_neve_fse = 'themeisle_sdk_promotions_neve_fse_installed';
+
+	/**
 	 * Loaded promotion.
 	 *
 	 * @var string
@@ -94,6 +101,7 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load   = apply_filters( $product->get_key() . '_load_promotions', array() );
 		$promotions_to_load[] = 'optimole';
 		$promotions_to_load[] = 'rop';
+		$promotions_to_load[] = 'neve-fse';
 
 		$this->promotions = $this->get_promotions();
 
@@ -131,6 +139,10 @@ class Promotions extends Abstract_Module {
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
 		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
+
+		if ( get_option( $this->option_neve_fse, false ) !== true ) {
+			add_action( 'wp_ajax_themeisle_sdk_dismiss_notice', 'ThemeisleSDK\Modules\Notification::regular_dismiss' );
+		}
 	}
 
 	/**
@@ -163,6 +175,10 @@ class Promotions extends Abstract_Module {
 
 		if ( isset( $_GET['rop_reference_key'] ) ) {
 			update_option( 'rop_reference_key', sanitize_key( $_GET['rop_reference_key'] ) );
+		}
+
+		if ( isset( $_GET['neve_fse_reference_key'] ) ) {
+			update_option( 'neve_fse_reference_key', sanitize_key( $_GET['neve_fse_reference_key'] ) );
 		}
 	}
 
@@ -213,6 +229,16 @@ class Promotions extends Abstract_Module {
 				'default'           => false,
 			)
 		);
+		register_setting(
+			'themeisle_sdk_settings',
+			$this->option_neve_fse,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
 	}
 
 	/**
@@ -246,6 +272,7 @@ class Promotions extends Abstract_Module {
 		$has_rop                 = defined( 'ROP_LITE_VERSION' ) || $this->is_plugin_installed( 'tweet-old-post' );
 		$had_rop_from_promo      = get_option( $this->option_rop, false );
 		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
+		$is_min_fse_v            = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
 		$has_enough_attachments  = $this->has_min_media_attachments();
 		$has_enough_old_posts    = $this->has_old_posts();
 
@@ -290,6 +317,12 @@ class Promotions extends Abstract_Module {
 				'rop-posts' => [
 					'env'    => ! $has_rop && ! $had_rop_from_promo && $has_enough_old_posts,
 					'screen' => 'edit-post',
+				],
+			],
+			'neve-fse' => [
+				'neve-fse-themes-popular' => [
+					'env'    => $is_min_fse_v,
+					'screen' => 'themes-install-popular',
 				],
 			],
 		];
@@ -360,10 +393,11 @@ class Promotions extends Abstract_Module {
 	private function filter_by_screen_and_merge() {
 		$current_screen = get_current_screen();
 
-		$is_elementor = isset( $_GET['action'] ) && $_GET['action'] === 'elementor';
-		$is_media     = isset( $current_screen->id ) && $current_screen->id === 'upload';
-		$is_posts     = isset( $current_screen->id ) && $current_screen->id === 'edit-post';
-		$is_editor    = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
+		$is_elementor     = isset( $_GET['action'] ) && $_GET['action'] === 'elementor';
+		$is_media         = isset( $current_screen->id ) && $current_screen->id === 'upload';
+		$is_posts         = isset( $current_screen->id ) && $current_screen->id === 'edit-post';
+		$is_editor        = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
+		$is_theme_install = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' || $current_screen->id === 'themes' );
 
 		$return = [];
 
@@ -395,6 +429,11 @@ class Promotions extends Abstract_Module {
 							unset( $this->promotions[ $slug ][ $key ] );
 						}
 						break;
+					case 'themes-install-popular':
+						if ( ! $is_theme_install ) {
+							unset( $this->promotions[ $slug ][ $key ] );
+						}
+						break;
 				}
 			}
 
@@ -421,6 +460,9 @@ class Promotions extends Abstract_Module {
 			if ( $this->get_upsells_dismiss_time( 'rop-posts' ) === false ) {
 				add_action( 'admin_notices', [ $this, 'render_rop_dash_notice' ] );
 			}
+			if ( $this->get_upsells_dismiss_time( 'neve-fse-themes-popular' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_neve_fse_themes_notice' ] );
+			}
 
 			return;
 		}
@@ -443,6 +485,10 @@ class Promotions extends Abstract_Module {
 			case 'rop-posts':
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_rop_dash_notice' ] );
+				break;
+			case 'neve-fse-themes-popular':
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
+				add_action( 'admin_notices', [ $this, 'render_neve_fse_themes_notice' ] );
 				break;
 		}
 	}
@@ -491,6 +537,7 @@ class Promotions extends Abstract_Module {
 				'ropActivationUrl'      => $this->get_plugin_activation_link( 'tweet-old-post' ),
 				'optimoleDash'          => esc_url( add_query_arg( [ 'page' => 'optimole' ], admin_url( 'upload.php' ) ) ),
 				'ropDash'               => esc_url( add_query_arg( [ 'page' => 'TweetOldPost' ], admin_url( 'admin.php' ) ) ),
+				'neveFSEMoreUrl'        => tsdk_utmify( 'https://themeisle.com/themes/neve-fse/', 'neve-fse-themes-popular', 'theme-install' ),
 				// translators: %s is the product name.
 				'title'                 => esc_html( sprintf( __( 'Recommended by %s', 'textdomain' ), $this->product->get_name() ) ),
 			]
@@ -510,6 +557,13 @@ class Promotions extends Abstract_Module {
 		}
 
 		echo '<div id="ti-rop-notice" class="notice notice-info ti-sdk-rop-notice"></div>';
+	}
+
+	/**
+	 * Render Neve FSE Themes notice.
+	 */
+	public function render_neve_fse_themes_notice() {
+		echo '<div id="ti-neve-fse-notice" class="notice notice-info ti-sdk-neve-fse-notice"></div>';
 	}
 
 	/**
