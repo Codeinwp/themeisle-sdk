@@ -26,7 +26,7 @@ const NeveFSENotice = ({ onDismiss = () => {} }) => {
 				<span className="screen-reader-text">Dismiss this notice.</span>
 			</Button>
 
-			<p>Meet <b>Neve FSE</b> from the makes of { window.themeisleSDKPromotions.product }. A theme that makes full site editing on WordPress straightforward and user-friendly.</p>
+			<p>Meet <b>Neve FSE</b> from the makers of { window.themeisleSDKPromotions.product }. A theme that makes full site editing on WordPress straightforward and user-friendly.</p>
 
 			<div className="neve-fse-notice-actions">
 				<Button
