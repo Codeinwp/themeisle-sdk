@@ -1,5 +1,11 @@
-export default function Header() {
-    const {currentProduct, logoUrl, strings, links} = window.tiSDKAboutData;
+export default function Header( { pages = [], selected = '' } ) {
+    const {currentProduct, logoUrl, strings, links } = window.tiSDKAboutData;
+
+    console.log({selected});
+
+    const hasActiveClass = (hash = '') => {
+      return  hash === selected ? 'active' : '';
+    };
 
     return (
         <div>
@@ -9,11 +15,19 @@ export default function Header() {
                     <p>by <a href="https://themeisle.com">Themeisle</a></p>
                 </div>
             </div>
-            {links.length > 0 && <div className="container">
+            {( links.length > 0 || pages.length > 0 ) && <div className="container">
                 <ul className="nav">
-                    <li>
+                    <li className={hasActiveClass()}>
                         <a href={window.location}>{strings.aboutUs}</a>
                     </li>
+
+                    {pages.map((page, index) => (
+                        <li className={hasActiveClass(page.hash)} key={index}>
+                            <a href={page.hash}>
+                                {page.name}
+                            </a>
+                        </li>
+                    ))}
 
                     {links.map((link, index) => (
                         <li key={index}>
