@@ -35,9 +35,6 @@ function About() {
         setHash( hash );
     };
 
-    console.log(hash);
-    console.log(pages);
-
     useEffect(() => {
         setTabToCurrentHash();
         window.addEventListener('hashchange', setTabToCurrentHash);
@@ -50,8 +47,6 @@ function About() {
     const isHashInPages = pages.filter( ( page ) => {
         return page.hash === hash;
     } );
-
-    console.log(isHashInPages);
 
     if ( isHashInPages.length > 0 ) {
         return (

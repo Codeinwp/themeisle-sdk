@@ -26,9 +26,6 @@ function Header(_ref) {
     strings,
     links
   } = window.tiSDKAboutData;
-  console.log({
-    selected
-  });
 
   const hasActiveClass = function () {
     let hash = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -729,8 +726,6 @@ function About() {
     setHash(hash);
   };
 
-  console.log(hash);
-  console.log(pages);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     setTabToCurrentHash();
     window.addEventListener('hashchange', setTabToCurrentHash);
@@ -741,7 +736,6 @@ function About() {
   const isHashInPages = pages.filter(page => {
     return page.hash === hash;
   });
-  console.log(isHashInPages);
 
   if (isHashInPages.length > 0) {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {

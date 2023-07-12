@@ -1,8 +1,6 @@
 export default function Header( { pages = [], selected = '' } ) {
     const {currentProduct, logoUrl, strings, links } = window.tiSDKAboutData;
 
-    console.log({selected});
-
     const hasActiveClass = (hash = '') => {
       return  hash === selected ? 'active' : '';
     };

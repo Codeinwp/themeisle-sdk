@@ -173,7 +173,7 @@ class About_Us extends Abstract_Module {
 	 * @return array
 	 */
 	private function get_about_localization_data() {
-		$links = isset( $this->about_data['page_menu'] ) ? $this->about_data['page_menu'] : [];
+		$links         = isset( $this->about_data['page_menu'] ) ? $this->about_data['page_menu'] : [];
 		$product_pages = isset( $this->about_data['product_pages'] ) ? $this->about_data['product_pages'] : [ 'otter-page' ];
 
 		return [
@@ -207,10 +207,17 @@ class About_Us extends Abstract_Module {
 		];
 	}
 
+	/**
+	 * Get product pages data.
+	 *
+	 * @param array $product_pages Product pages.
+	 *
+	 * @return array
+	 */
 	private function get_product_pages_data( $product_pages ) {
 
-		$otter_slug = 'otter-blocks';
-		$otter_plugin = [
+		$otter_slug                     = 'otter-blocks';
+		$otter_plugin                   = [
 			'status' => 'not-installed',
 		];
 		$otter_plugin['status']         = $this->is_plugin_installed( $otter_slug ) ? 'installed' : 'not-installed';
@@ -224,14 +231,14 @@ class About_Us extends Abstract_Module {
 				'product' => $otter_slug,
 				'plugin'  => $otter_plugin,
 				'strings' => [
-					'heading' => __( 'Build innovative layouts with Otter Blocks and Gutenberg', 'textdomain' ),
-					'text'    => __( 'Otter is a lightweight, dynamic collection of page building blocks and templates for the WordPress block editor.', 'textdomain' ),
-					'buttons' => [
+					'heading'      => __( 'Build innovative layouts with Otter Blocks and Gutenberg', 'textdomain' ),
+					'text'         => __( 'Otter is a lightweight, dynamic collection of page building blocks and templates for the WordPress block editor.', 'textdomain' ),
+					'buttons'      => [
 						'install_otter_free' => __( "Install Otter - It's free!", 'textdomain' ),
-						'install_now' => __( 'Install Now', 'textdomain' ),
-						'learn_more'  => __( 'Learn More', 'textdomain' ),
+						'install_now'        => __( 'Install Now', 'textdomain' ),
+						'learn_more'         => __( 'Learn More', 'textdomain' ),
 					],
-					'features' => [
+					'features'     => [
 						'advancedTitle' => __( 'Advanced Features', 'textdomain' ),
 						'advancedDesc'  => __( 'Add features such as Custom CSS, Animations & Visibility Conditions to all blocks.', 'textdomain' ),
 						'fastTitle'     => __( 'Lightweight and Fast', 'textdomain' ),
@@ -239,7 +246,7 @@ class About_Us extends Abstract_Module {
 						'mobileTitle'   => __( 'Mobile-Friendly', 'textdomain' ),
 						'mobileDesc'    => __( 'Each block can be tweaked to provide a consistent experience across all devices.', 'textdomain' ),
 					],
-					'details' => [
+					'details'      => [
 						's1Image' => $this->get_sdk_uri() . 'assets/images/otter/otter-builder.png',
 						's1Title' => __( 'A Better Page Building Experience', 'textdomain' ),
 						's1Text'  => __( 'Otter can be used to build everything from a personal blog to an e-commerce site without losing the personal touch. Otter’s ease of use transforms basic blocks into expressive layouts in seconds.', 'textdomain' ),
@@ -252,31 +259,35 @@ class About_Us extends Abstract_Module {
 					],
 					'testimonials' => [
 						'heading' => __( 'Trusted by more than 300K website owners', 'textdomain' ),
-						'users' => [
+						'users'   => [
 							[
-								'avatar'    => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2021/05/avatar-03.png',
-								'name'      => 'Michael Burry',
-								'text'      => 'Loved the collection of blocks. If you want to create nice Gutenberg Pages, this plugin will be very handy and useful.'
+								'avatar' => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2021/05/avatar-03.png',
+								'name'   => 'Michael Burry',
+								'text'   => 'Loved the collection of blocks. If you want to create nice Gutenberg Pages, this plugin will be very handy and useful.',
 							],
 							[
-								'avatar'    => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2022/04/avatar-04.png',
-								'name'      => 'Maria Gonzales',
-								'text'      => 'I am very satisfied with Otter – a fantastic collection of blocks. And the plugin is perfectly integrated with Gutenberg and complete enough for my needs. '
+								'avatar' => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2022/04/avatar-04.png',
+								'name'   => 'Maria Gonzales',
+								'text'   => 'I am very satisfied with Otter – a fantastic collection of blocks. And the plugin is perfectly integrated with Gutenberg and complete enough for my needs. ',
 							],
 							[
-								'avatar'    => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2022/04/avatar-05.png',
-								'name'      => 'Florian Henckel',
-								'text'      => 'Otter Blocks work really well and I like the customization options. Easy to use and format to fit in with my site theme – and I’ve not encountered any compatibility or speed issues.'
-							]
-						]
-					]
+								'avatar' => 'https://mllj2j8xvfl0.i.optimole.com/cb:3970~373ad/w:80/h:80/q:mauto/https://themeisle.com/wp-content/uploads/2022/04/avatar-05.png',
+								'name'   => 'Florian Henckel',
+								'text'   => 'Otter Blocks work really well and I like the customization options. Easy to use and format to fit in with my site theme – and I’ve not encountered any compatibility or speed issues.',
+							],
+						],
+					],
 				],
 			],
 		];
 
-		return array_filter( $pages, function ( $page_key ) use ( $product_pages ) {
-			return in_array( $page_key, $product_pages, true );
-		}, ARRAY_FILTER_USE_KEY );
+		return array_filter(
+			$pages,
+			function ( $page_key ) use ( $product_pages ) {
+				return in_array( $page_key, $product_pages, true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
 	}
 
 	/**
