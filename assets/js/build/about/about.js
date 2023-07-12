@@ -324,7 +324,7 @@ function ProductPage(_ref) {
     page = {}
   } = _ref;
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "product-page"
+    className: 'product-page' + (page && page.product ? ' ' + page.product : '')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Page, {
     id: page.id,
     page: page
@@ -368,15 +368,16 @@ function Otter(_ref) {
   const [testimonial, setTestimonial] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(strings.testimonials.users[0]);
   const [productStatus, setProductStatus] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(plugin.status);
   const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const loadingText = 'In Progress';
 
   const runInstall = async () => {
     setLoading(true);
-    await (0,_common_utils__WEBPACK_IMPORTED_MODULE_2__.installPluginOrTheme)(slug, slug === 'neve').then(res => {
+    await (0,_common_utils__WEBPACK_IMPORTED_MODULE_2__.installPluginOrTheme)(product, false).then(res => {
       if (res.success) {
         setProductStatus('installed');
+        runActivate();
       }
     });
-    setLoading(false);
   };
 
   const runActivate = async () => {
@@ -401,15 +402,14 @@ function Otter(_ref) {
     alt: page.name || ''
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "label"
-  }, "Neve + Otter = New Possibilities \uD83E\uDD1D"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, strings.heading), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, strings.text), productStatus === 'not-installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+  }, "Neve + Otter = New Possibilities \uD83E\uDD1D"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, strings.heading), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, strings.text), (productStatus === 'not-installed' || productStatus === 'installed') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "primary",
-    className: "otter-button",
-    onClick: runInstall
-  }, strings.buttons.install_otter_free), productStatus === 'installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    variant: "primary",
-    className: "otter-button",
-    onClick: runActivate
-  }, strings.buttons.install_otter_free)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    disabled: loading,
+    className: 'otter-button' + (loading ? ' is-loading' : ''),
+    onClick: productStatus === 'not-installed' ? runInstall : runActivate
+  }, loading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "dashicons dashicons-update spin"
+  }), loadingText) : strings.buttons.install_otter_free)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "col-3-highlights"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "col"
@@ -456,15 +456,14 @@ function Otter(_ref) {
     className: "col"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, strings.testimonials.heading), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "button-row"
-  }, productStatus === 'not-installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+  }, (productStatus === 'not-installed' || productStatus === 'installed') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "primary",
-    className: "otter-button",
-    onClick: runInstall
-  }, strings.buttons.install_now), productStatus === 'installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    variant: "primary",
-    className: "otter-button",
-    onClick: runActivate
-  }, strings.buttons.install_now), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+    disabled: loading,
+    className: 'otter-button' + (loading ? ' is-loading' : ''),
+    onClick: productStatus === 'not-installed' ? runInstall : runActivate
+  }, loading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "dashicons dashicons-update spin"
+  }), loadingText) : strings.buttons.install_now), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "secondary",
     className: "otter-button"
   }, strings.buttons.learn_more))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {

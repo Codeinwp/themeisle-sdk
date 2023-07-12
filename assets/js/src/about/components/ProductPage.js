@@ -9,7 +9,7 @@ function Page( props ) {
     return <CurrentPage page={ props.page } />;
 }
 export default function ProductPage({page= {}}) {
-    return (<div className="product-page">
+    return (<div className={'product-page' + ( page && page.product ? ' ' + page.product : '' ) }>
         <Page id={ page.id } page={page}/>
     </div>);
 }

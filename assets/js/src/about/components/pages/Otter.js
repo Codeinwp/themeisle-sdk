@@ -10,15 +10,16 @@ export default function Otter( { page = {} } ) {
 
     const [productStatus, setProductStatus] = useState(plugin.status);
     const [loading, setLoading] = useState(false);
+    const loadingText = 'In Progress';
 
     const runInstall = async () => {
         setLoading(true);
-        await installPluginOrTheme(slug, slug === 'neve').then((res) => {
+        await installPluginOrTheme(product, false).then((res) => {
             if (res.success) {
                 setProductStatus('installed');
+                runActivate();
             }
         });
-        setLoading(false);
     }
 
     const runActivate = async () => {
@@ -40,10 +41,16 @@ export default function Otter( { page = {} } ) {
               <span className="label">Neve + Otter = New Possibilities 🤝</span>
               <h1>{ strings.heading }</h1>
               <p>{ strings.text }</p>
-              {productStatus === 'not-installed' &&
-                  <Button variant="primary" className="otter-button" onClick={runInstall}>{strings.buttons.install_otter_free}</Button>}
-              {productStatus === 'installed' &&
-                  <Button variant="primary" className="otter-button" onClick={runActivate}>{strings.buttons.install_otter_free}</Button>}
+              { ( productStatus === 'not-installed' || productStatus === 'installed') &&
+                  <Button
+                      variant="primary"
+                      disabled={loading}
+                      className={'otter-button' + ( loading ? ' is-loading' : '' )}
+                      onClick={ productStatus === 'not-installed' ? runInstall : runActivate}>
+                      {loading ? (<span><span className="dashicons dashicons-update spin"/>{loadingText}</span>) :  strings.buttons.install_otter_free }
+
+                  </Button>
+              }
           </div>
           <div className="col-3-highlights">
               <div className="col">
@@ -90,10 +97,15 @@ export default function Otter( { page = {} } ) {
               <div className="col">
                   <h2>{strings.testimonials.heading}</h2>
                   <div className="button-row">
-                      {productStatus === 'not-installed' &&
-                          <Button variant="primary" className="otter-button" onClick={runInstall}>{strings.buttons.install_now}</Button>}
-                      {productStatus === 'installed' &&
-                          <Button variant="primary" className="otter-button" onClick={runActivate}>{strings.buttons.install_now}</Button>}
+                      {(productStatus === 'not-installed' || productStatus === 'installed' ) &&
+                          <Button
+                              variant="primary"
+                              disabled={loading}
+                              className={'otter-button' + ( loading ? ' is-loading' : '' )}
+                              onClick={ productStatus === 'not-installed' ? runInstall : runActivate}>
+                              {loading ? (<span><span className="dashicons dashicons-update spin"/>{loadingText}</span>) :  strings.buttons.install_now }
+                          </Button>
+                      }
                       <Button variant="secondary" className="otter-button">{strings.buttons.learn_more}</Button>
                   </div>
               </div>

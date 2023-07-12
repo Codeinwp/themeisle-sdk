@@ -174,7 +174,7 @@ class About_Us extends Abstract_Module {
 	 */
 	private function get_about_localization_data() {
 		$links         = isset( $this->about_data['page_menu'] ) ? $this->about_data['page_menu'] : [];
-		$product_pages = isset( $this->about_data['product_pages'] ) ? $this->about_data['product_pages'] : [ 'otter-page' ];
+		$product_pages = isset( $this->about_data['product_pages'] ) ? $this->about_data['product_pages'] : [];
 
 		return [
 			'links'          => $links,
