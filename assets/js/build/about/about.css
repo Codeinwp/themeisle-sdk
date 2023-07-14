@@ -240,13 +240,15 @@
 }
 .ti-about .product-page .col-3-highlights {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-evenly;
-  padding: 64px 0;
+  padding: 24px 0;
   border-bottom: 1px solid #CCCCCC;
+  align-items: center;
+  text-align: center;
 }
 .ti-about .product-page .col-3-highlights .col {
-  max-width: 220px;
+  max-width: 360px;
 }
 .ti-about .product-page .col-3-highlights .col h3 {
   font-size: 21px;
@@ -259,17 +261,18 @@
 }
 .ti-about .product-page .col-2-highlights {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  padding: 64px 0;
+  padding: 24px 0;
   border-bottom: 1px solid #CCCCCC;
 }
 .ti-about .product-page .col-2-highlights .col {
-  width: 45%;
+  width: 90%;
 }
 .ti-about .product-page .col-2-highlights .col img {
   max-width: 450px;
+  width: 100%;
 }
 .ti-about .product-page .col-2-highlights .col h2 {
   font-size: 24px;
@@ -351,6 +354,19 @@
 @media (min-width: 660px) {
   .ti-about .product-cards {
     grid-template-columns: 1fr 1fr;
+  }
+  .ti-about .product-page .col-3-highlights, .ti-about .product-page .col-2-highlights {
+    flex-direction: row;
+    padding: 64px 0;
+  }
+  .ti-about .product-page .col-3-highlights {
+    text-align: left;
+  }
+  .ti-about .product-page .col-3-highlights .col {
+    max-width: 200px;
+  }
+  .ti-about .product-page .col-2-highlights .col {
+    width: 45%;
   }
 }
 @media (min-width: 992px) {

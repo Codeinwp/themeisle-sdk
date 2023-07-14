@@ -237,6 +237,7 @@ class About_Us extends Abstract_Module {
 						'install_otter_free' => __( "Install Otter - It's free!", 'textdomain' ),
 						'install_now'        => __( 'Install Now', 'textdomain' ),
 						'learn_more'         => __( 'Learn More', 'textdomain' ),
+						'learn_more_link'    => tsdk_utmify( 'https://themeisle.com/plugins/otter-blocks/', 'otter-page', 'about-us' ),
 					],
 					'features'     => [
 						'advancedTitle' => __( 'Advanced Features', 'textdomain' ),

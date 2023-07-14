@@ -463,9 +463,11 @@ function Otter(_ref) {
     onClick: productStatus === 'not-installed' ? runInstall : runActivate
   }, loading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "dashicons dashicons-update spin"
-  }), loadingText) : strings.buttons.install_now), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    variant: "secondary",
-    className: "otter-button"
+  }), loadingText) : strings.buttons.install_now), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    className: "components-button otter-button is-secondary",
+    href: strings.buttons.learn_more_link,
+    target: "_blank",
+    rel: "external noreferrer noopener"
   }, strings.buttons.learn_more))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "col"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {

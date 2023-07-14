@@ -106,7 +106,13 @@ export default function Otter( { page = {} } ) {
                               {loading ? (<span><span className="dashicons dashicons-update spin"/>{loadingText}</span>) :  strings.buttons.install_now }
                           </Button>
                       }
-                      <Button variant="secondary" className="otter-button">{strings.buttons.learn_more}</Button>
+                      <a
+                          className="components-button otter-button is-secondary"
+                          href={strings.buttons.learn_more_link}
+                          target="_blank"
+                          rel="external noreferrer noopener">
+                            {strings.buttons.learn_more}
+                      </a>
                   </div>
               </div>
               <div className="col">
