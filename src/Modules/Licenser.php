@@ -773,16 +773,19 @@ class Licenser extends Abstract_Module {
 	 * @return bool|mixed Update api response.
 	 */
 	private function get_version_data() {
+		$allow_if_beta = $this->product->is_beta();
+		$version_url   = sprintf(
+			'%slicense/version/%s/%s/%s/%s%s',
+			Product::API_URL,
+			rawurlencode( $this->product->get_name() ),
+			( empty( $this->license_key ) ? 'free' : $this->license_key ),
+			$this->product->get_version(),
+			rawurlencode( home_url() ),
+			$allow_if_beta ? '/use_beta' : ''
+		);
 
 		$response = $this->safe_get(
-			sprintf(
-				'%slicense/version/%s/%s/%s/%s',
-				Product::API_URL,
-				rawurlencode( $this->product->get_name() ),
-				( empty( $this->license_key ) ? 'free' : $this->license_key ),
-				$this->product->get_version(),
-				rawurlencode( home_url() )
-			),
+			$version_url,
 			array(
 				'timeout'   => 15, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout, Inherited by wp_remote_get only, for vip environment we use defaults.
 				'sslverify' => false,
@@ -979,7 +982,7 @@ class Licenser extends Abstract_Module {
 						$new_actions['renew_link'] = '<a style="color:#d63638" href="' . esc_url( $this->renew_url() ) . '" target="_blank" rel="external noopener noreferrer">Renew license to update</a>';
 
 						return $new_actions;
-					} 
+					}
 				);
 			}
 
