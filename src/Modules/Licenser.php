@@ -774,15 +774,13 @@ class Licenser extends Abstract_Module {
 	 */
 	private function get_version_data() {
 		$allow_if_beta = $this->product->is_beta();
-
 		$version_url   = sprintf(
-			'%slicense/version/%s/%s/%s/%s/%s%s',
+			'%slicense/version/%s/%s/%s/%s%s',
 			Product::API_URL,
 			rawurlencode( $this->product->get_name() ),
 			( empty( $this->license_key ) ? 'free' : $this->license_key ),
 			$this->product->get_version(),
 			rawurlencode( home_url() ),
-			time(),
 			$allow_if_beta ? '/use_beta' : ''
 		);
 
