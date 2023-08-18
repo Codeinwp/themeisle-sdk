@@ -286,8 +286,8 @@ class About_Us extends Abstract_Module {
 			$pages,
 			function ( $page_data, $page_key ) use ( $product_pages ) {
 				return in_array( $page_key, $product_pages, true ) &&
-				       isset( $page_data['plugin']['status'] ) &&
-				       $page_data['plugin']['status'] === 'not-installed';
+					   isset( $page_data['plugin']['status'] ) &&
+					   $page_data['plugin']['status'] === 'not-installed';
 			},
 			ARRAY_FILTER_USE_BOTH
 		);
