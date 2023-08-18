@@ -175,20 +175,19 @@ class About_Us extends Abstract_Module {
 	private function get_about_localization_data() {
 		$links         = isset( $this->about_data['page_menu'] ) ? $this->about_data['page_menu'] : [];
 		$product_pages = isset( $this->about_data['product_pages'] ) ? $this->about_data['product_pages'] : [];
-
 		return [
-			'links'          => $links,
-			'logoUrl'        => $this->about_data['logo'],
-			'productPages'   => $this->get_product_pages_data( $product_pages ),
-			'products'       => $this->get_other_products_data(),
-			'homeUrl'        => esc_url( home_url() ),
-			'pageSlug'       => $this->get_about_page_slug(),
-			'currentProduct' => [
+			'links'             => $links,
+			'logoUrl'           => $this->about_data['logo'],
+			'productPages'      => $this->get_product_pages_data( $product_pages ),
+			'products'          => $this->get_other_products_data(),
+			'homeUrl'           => esc_url( home_url() ),
+			'pageSlug'          => $this->get_about_page_slug(),
+			'currentProduct'    => [
 				'slug' => $this->product->get_key(),
 				'name' => $this->product->get_name(),
 			],
-			'teamImage'      => $this->get_sdk_uri() . 'assets/images/team.jpg',
-			'strings'        => [
+			'teamImage'         => $this->get_sdk_uri() . 'assets/images/team.jpg',
+			'strings'           => [
 				'aboutUs'          => __( 'About us', 'textdomain' ),
 				'heroHeader'       => __( 'Our Story', 'textdomain' ),
 				'heroTextFirst'    => __( 'Themeisle was founded in 2012 by a group of passionate developers who wanted to create beautiful and functional WordPress themes and plugins. Since then, we have grown into a team of over 20 dedicated professionals who are committed to delivering the best possible products to our customers.', 'textdomain' ),
@@ -204,6 +203,7 @@ class About_Us extends Abstract_Module {
 				'notInstalled'     => __( 'Not Installed', 'textdomain' ),
 				'active'           => __( 'Active', 'textdomain' ),
 			],
+			'canInstallPlugins' => current_user_can( 'install_plugins' ),
 		];
 	}
 
@@ -286,8 +286,8 @@ class About_Us extends Abstract_Module {
 			$pages,
 			function ( $page_data, $page_key ) use ( $product_pages ) {
 				return in_array( $page_key, $product_pages, true ) &&
-					isset( $page_data['plugin']['status'] ) &&
-					$page_data['plugin']['status'] === 'not-installed';
+				       isset( $page_data['plugin']['status'] ) &&
+				       $page_data['plugin']['status'] === 'not-installed';
 			},
 			ARRAY_FILTER_USE_BOTH
 		);

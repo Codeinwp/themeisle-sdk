@@ -197,7 +197,8 @@ function ProductCard(_ref) {
     activationLink
   } = product;
   const {
-    strings
+    strings,
+    canInstallPlugins
   } = window.tiSDKAboutData;
   const {
     installNow,
@@ -212,6 +213,10 @@ function ProductCard(_ref) {
   const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
 
   const runInstall = async () => {
+    if (!canInstallPlugins) {
+      return;
+    }
+
     setLoading(true);
     await (0,_common_utils__WEBPACK_IMPORTED_MODULE_2__.installPluginOrTheme)(slug, slug === 'neve').then(res => {
       if (res.success) {
@@ -222,10 +227,47 @@ function ProductCard(_ref) {
   };
 
   const runActivate = async () => {
+    if (!canInstallPlugins) {
+      return;
+    }
+
     setLoading(true);
     window.location.href = activationLink;
   };
 
+  const buttonContent = () => {
+    if (productStatus === 'not-installed' && isPremium) {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        isLink: true,
+        icon: 'external',
+        href: premiumUrl,
+        target: "_blank"
+      }, learnMore);
+    }
+
+    if (productStatus === 'not-installed' && !isPremium) {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        isPrimary: true,
+        onClick: runInstall,
+        disabled: loading || !canInstallPlugins
+      }, installNow);
+    }
+
+    if (productStatus === 'installed') {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        isSecondary: true,
+        onClick: runActivate,
+        disabled: loading || !canInstallPlugins
+      }, activate);
+    }
+
+    return null;
+  };
+
+  const wrappedButtonContent = !canInstallPlugins ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Tooltip, {
+    text: `Ask your admin to enable ${name} on your site`,
+    position: "top center"
+  }, buttonContent()) : buttonContent;
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "product-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -243,18 +285,7 @@ function ProductCard(_ref) {
     className: "footer"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Status:", " ", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: productStatus
-  }, productStatus === 'installed' && installed, productStatus === 'not-installed' && notInstalled, productStatus === 'active' && active)), productStatus !== 'active' && !loading && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, productStatus === 'not-installed' && isPremium && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    isLink: true,
-    icon: 'external',
-    href: premiumUrl,
-    target: "_blank"
-  }, learnMore), productStatus === 'not-installed' && !isPremium && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    isPrimary: true,
-    onClick: runInstall
-  }, installNow), productStatus === 'installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    isSecondary: true,
-    onClick: runActivate
-  }, activate)), loading && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+  }, productStatus === 'installed' && installed, productStatus === 'not-installed' && notInstalled, productStatus === 'active' && active)), productStatus !== 'active' && !loading && wrappedButtonContent, loading && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "dashicons dashicons-update spin"
   })));
 }
