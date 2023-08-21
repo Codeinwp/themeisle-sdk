@@ -267,7 +267,7 @@ function ProductCard(_ref) {
   const wrappedButtonContent = !canInstallPlugins ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Tooltip, {
     text: `Ask your admin to enable ${name} on your site`,
     position: "top center"
-  }, buttonContent()) : buttonContent;
+  }, buttonContent()) : buttonContent();
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "product-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {

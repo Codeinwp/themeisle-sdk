@@ -71,7 +71,7 @@ export default function ProductCard({product, slug}) {
 	const wrappedButtonContent = ! canInstallPlugins ? (
 		<Tooltip text={`Ask your admin to enable ${name} on your site`} position="top center">{buttonContent()}</Tooltip>
 	) : (
-		buttonContent
+		buttonContent()
 	);
 
 	return (<div className="product-card">
