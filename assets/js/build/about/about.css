@@ -181,6 +181,7 @@
   align-items: center;
   padding: 15px;
   align-self: flex-end;
+  justify-content: space-between;
 }
 .ti-about .product-card .footer p {
   margin: 8px 0;
