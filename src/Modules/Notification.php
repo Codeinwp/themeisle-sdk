@@ -48,10 +48,10 @@ class Notification extends Abstract_Module {
 	 * Show notification data.
 	 */
 	public static function show_notification() {
-		global $pagenow;
 		$current_promotion = apply_filters( 'themeisle_sdk_current_promotion', '' );
-        $current_theme     = get_template();
-		if ( 'neve-fse' === $current_theme && 'neve-fse-themes-popular' === $current_promotion && 'themes.php' === $pagenow ) {
+		$current_theme     = get_template();
+		$screen            = get_current_screen();
+		if ( 'neve-fse' === $current_theme && 'neve-fse-themes-popular' === $current_promotion && 'themes' === $screen->id ) {
 			return;
 		}
 
