@@ -285,6 +285,7 @@ class Promotions extends Abstract_Module {
 		$has_ppom                = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
 		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$is_min_fse_v            = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
+		$has_neve_fse            = get_template() === 'neve-fse';
 		$has_enough_attachments  = $this->has_min_media_attachments();
 		$has_enough_old_posts    = $this->has_old_posts();
 
@@ -351,7 +352,7 @@ class Promotions extends Abstract_Module {
 			],
 			'neve-fse'    => [
 				'neve-fse-themes-popular' => [
-					'env'    => $is_min_fse_v,
+					'env'    => ! $has_neve_fse && $is_min_fse_v,
 					'screen' => 'themes-install-popular',
 				],
 			],
@@ -486,7 +487,12 @@ class Promotions extends Abstract_Module {
 	 */
 	private function load_promotion( $slug ) {
 		$this->loaded_promo = $slug;
-
+		add_filter(
+			'themeisle_sdk_current_promotion',
+			function() use ( $slug ) {
+				return $slug;
+			}
+		);
 		if ( $this->debug ) {
 			add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue' ] );
 			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
@@ -784,7 +790,7 @@ class Promotions extends Abstract_Module {
 				);
 
 				return $tabs;
-			} 
+			}
 		);
 
 		add_action( 'woocommerce_product_data_panels', array( $this, 'woocommerce_tab_content' ) );
@@ -800,7 +806,7 @@ class Promotions extends Abstract_Module {
 			function( $key ) {
 				return in_array( $key, $this->promotions, true );
 			},
-			ARRAY_FILTER_USE_KEY 
+			ARRAY_FILTER_USE_KEY
 		);
 
 		// Display CSS

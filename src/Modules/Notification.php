@@ -48,6 +48,12 @@ class Notification extends Abstract_Module {
 	 * Show notification data.
 	 */
 	public static function show_notification() {
+		global $pagenow;
+		$current_promotion = apply_filters( 'themeisle_sdk_current_promotion', '' );
+        $current_theme     = get_template();
+		if ( 'neve-fse' === $current_theme && 'neve-fse-themes-popular' === $current_promotion && 'themes.php' === $pagenow ) {
+			return;
+		}
 
 		$current_notification = self::get_last_notification();
 
@@ -443,7 +449,6 @@ class Notification extends Abstract_Module {
 	 * @return bool Should we load this?
 	 */
 	public function can_load( $product ) {
-
 		if ( $this->is_from_partner( $product ) ) {
 			return false;
 		}
