@@ -203,7 +203,8 @@ class About_Us extends Abstract_Module {
 				'notInstalled'     => __( 'Not Installed', 'textdomain' ),
 				'active'           => __( 'Active', 'textdomain' ),
 			],
-			'canInstallPlugins' => current_user_can( 'install_plugins' ),
+			'canInstallPlugins'  => current_user_can( 'install_plugins' ),
+			'canActivatePlugins' => current_user_can( 'activate_plugins' ),
 		];
 	}
 
