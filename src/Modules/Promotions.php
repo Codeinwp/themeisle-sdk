@@ -285,7 +285,8 @@ class Promotions extends Abstract_Module {
 		$has_ppom                = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
 		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$is_min_fse_v            = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
-		$has_neve_fse            = get_template() === 'neve-fse';
+		$current_theme           = wp_get_theme();
+		$has_neve_fse            = $current_theme->template === 'neve-fse' || $current_theme->parent() === 'neve-fse';
 		$has_enough_attachments  = $this->has_min_media_attachments();
 		$has_enough_old_posts    = $this->has_old_posts();
 
