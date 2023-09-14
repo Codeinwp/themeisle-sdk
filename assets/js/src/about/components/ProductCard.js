@@ -68,7 +68,7 @@ export default function ProductCard({product, slug}) {
 		false;
 
 	const wrappedButtonContent = actionsAreDisabled ? (
-		<Tooltip text={`Ask your admin to enable ${name} on your site ${productStatus}`} position="top center">{buttonContent()}</Tooltip>
+		<Tooltip text={`Ask your admin to enable ${name} on your site`} position="top center">{buttonContent()}</Tooltip>
 	) : (
 		buttonContent()
 	);
