@@ -5,7 +5,7 @@ import {installPluginOrTheme} from "../../common/utils";
 
 export default function ProductCard({product, slug}) {
 	const {icon, name, description, status, premiumUrl, activationLink} = product;
-	const {strings, canInstallPlugins} = window.tiSDKAboutData;
+	const {strings, canInstallPlugins, canActivatePlugins } = window.tiSDKAboutData;
 	const {
 		installNow,
 		installed,
@@ -20,9 +20,6 @@ export default function ProductCard({product, slug}) {
 	const [loading, setLoading] = useState(false);
 
 	const runInstall = async () => {
-		if ( ! canInstallPlugins ) {
-			return;
-		}
 		setLoading(true);
 		await installPluginOrTheme(slug, slug === 'neve').then((res) => {
 			if (res.success) {
@@ -33,9 +30,6 @@ export default function ProductCard({product, slug}) {
 	}
 
 	const runActivate = async () => {
-		if ( ! canInstallPlugins ) {
-			return;
-		}
 		setLoading(true);
 		window.location.href = activationLink;
 	}
@@ -59,7 +53,7 @@ export default function ProductCard({product, slug}) {
 
 		if ( productStatus === 'installed' ) {
 			return (
-				<Button isSecondary onClick={runActivate} disabled={loading || ! canInstallPlugins}>
+				<Button isSecondary onClick={runActivate} disabled={loading || ! canActivatePlugins}>
 					{activate}
 				</Button>
 			)
@@ -68,7 +62,12 @@ export default function ProductCard({product, slug}) {
 		return null;
 	});
 
-	const wrappedButtonContent = ! canInstallPlugins ? (
+	const actionsAreDisabled =
+		(!canInstallPlugins && productStatus === 'not-installed') ||
+		(!canActivatePlugins && productStatus === 'installed' ) ||
+		false;
+
+	const wrappedButtonContent = actionsAreDisabled ? (
 		<Tooltip text={`Ask your admin to enable ${name} on your site`} position="top center">{buttonContent()}</Tooltip>
 	) : (
 		buttonContent()
