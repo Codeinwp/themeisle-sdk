@@ -269,6 +269,22 @@ class Promotions extends Abstract_Module {
 	}
 
 	/**
+	 * Third-party compatibility.
+	 * 
+	 * @return boolean
+	 */
+	private function has_conflicts() {
+		global $pagenow;
+	
+		// Editor notices aren't compatible with Enfold theme.
+		if ( defined( 'AV_FRAMEWORK_VERSION' ) && in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get promotions.
 	 *
 	 * @return array
@@ -359,7 +375,7 @@ class Promotions extends Abstract_Module {
 
 		foreach ( $all as $slug => $data ) {
 			foreach ( $data as $key => $conditions ) {
-				if ( ! $conditions['env'] ) {
+				if ( ! $conditions['env'] || $this->has_conflicts() ) {
 					unset( $all[ $slug ][ $key ] );
 
 					continue;
