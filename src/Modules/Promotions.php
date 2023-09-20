@@ -352,7 +352,7 @@ class Promotions extends Abstract_Module {
 			],
 			'neve-fse'    => [
 				'neve-fse-themes-popular' => [
-					'env' => ! $has_neve_fse && $is_min_fse_v,
+					'env'    => ! $has_neve_fse && $is_min_fse_v,
 					'screen' => 'themes-install-popular',
 				],
 			],
@@ -531,12 +531,12 @@ class Promotions extends Abstract_Module {
 				$this->load_woo_promos();
 				break;
 			case 'neve-fse-themes-popular':
-                // Remove any other notifications if Neve FSE promotion is showing
+				// Remove any other notifications if Neve FSE promotion is showing
 				remove_action( 'admin_notices', array( 'ThemeisleSDK\Modules\Notification', 'show_notification' ) );
 				remove_action( 'wp_ajax_themeisle_sdk_dismiss_notice', array( 'ThemeisleSDK\Modules\Notification', 'dismiss' ) );
 				remove_action( 'admin_head', array( 'ThemeisleSDK\Modules\Notification', 'dismiss_get' ) );
 				remove_action( 'admin_head', array( 'ThemeisleSDK\Modules\Notification', 'setup_notifications' ) );
-                // Add required actions to display this notification
+				// Add required actions to display this notification
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_neve_fse_themes_notice' ] );
 				break;
