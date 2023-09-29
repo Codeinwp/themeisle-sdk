@@ -1,3 +1,7 @@
+##### [Version 3.3.4](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.3...v3.3.4) (2023-09-18)
+
+- Allow users to activate plugins from the About page
+
 ##### [Version 3.3.3](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.2...v3.3.3) (2023-08-22)
 
 - Disable install buttons on the About page if users can not install plugins
