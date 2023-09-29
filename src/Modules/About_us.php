@@ -347,7 +347,7 @@ class About_Us extends Abstract_Module {
 			],
 			'templates-patterns-collection'       => [
 				'name'        => 'Template Cloud',
-				'description' => __( 'Ultimate Free Templates Cloud for WordPress, for blocks, patters of full pages.', 'textdomain' ),
+				'description' => __( 'Store and reuse those templates across all your websites.', 'textdomain' ),
 			],
 		];
 
