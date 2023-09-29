@@ -346,8 +346,8 @@ class About_Us extends Abstract_Module {
 				'condition'   => class_exists( 'WooCommerce', false ),
 			],
 			'templates-patterns-collection'       => [
-				'name'        => 'Template Cloud',
-				'description' => __( 'Store and reuse those templates across all your websites.', 'textdomain' ),
+				'name'        => 'Templates Cloud',
+				'description' => __( 'Design, save, and revisit your templates anytime with your personal vault on Templates Cloud.', 'textdomain' ),
 			],
 		];
 
