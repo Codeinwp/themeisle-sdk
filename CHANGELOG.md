@@ -1,3 +1,8 @@
+##### [Version 3.3.5](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.4...v3.3.5) (2023-09-29)
+
+Fix TPC message.
+Fix TPC typo.
+
 ##### [Version 3.3.4](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.3...v3.3.4) (2023-09-18)
 
 - Allow users to activate plugins from the About page
