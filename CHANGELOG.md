@@ -1,3 +1,8 @@
+##### [Version 3.3.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.5...v3.3.6) (2023-10-05)
+
+- Fix duplicate notification in Neve FSE
+- Fix SDK breaking Enfold theme builder
+
 ##### [Version 3.3.5](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.4...v3.3.5) (2023-09-29)
 
 Fix TPC message.
