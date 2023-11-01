@@ -29,6 +29,11 @@ class Logger extends Abstract_Module {
 	 */
 	const TRACKING_ENDPOINT = 'https://api.themeisle.com/tracking/log';
 
+	/**
+	 * Endpoint where to collect telemetry.
+	 */
+	const TELEMETRY_ENDPOINT = 'http://localhost:3000/bulk-tracking'; // TODO: Add telemetry endpoint.
+
 
 	/**
 	 * Check if we should load the module for this product.
@@ -73,6 +78,8 @@ class Logger extends Abstract_Module {
 	 * Setup tracking actions.
 	 */
 	public function setup_actions() {
+		$this->load_telemetry();
+
 		if ( ! $this->is_logger_active() ) {
 			return;
 		}
@@ -81,7 +88,6 @@ class Logger extends Abstract_Module {
 			wp_schedule_single_event( time() + ( wp_rand( 1, 24 ) * 3600 ), $action_key );
 		}
 		add_action( $action_key, array( $this, 'send_log' ) );
-
 	}
 
 	/**
@@ -175,5 +181,49 @@ class Logger extends Abstract_Module {
 				),
 			)
 		);
+	}
+
+	public function load_telemetry() {
+		add_filter( 'themeisle_sdk_telemetry_endpoint', function() { return self::TELEMETRY_ENDPOINT; } );
+		wp_enqueue_script( 'themeisle_sdk_telemetry_script', $this->get_sdk_uri() . 'assets/js/build/tracking/tracking.js', array(), null, true );
+
+		// See which products have telemetry enabled.
+		$products_with_telemetry = apply_filters( 'themeisle_sdk_telemetry_products', array() );
+		$all_products = Loader::get_products();
+
+		foreach ( $all_products as $product_slug => $product ) {
+
+			$default = 'no';
+
+			if ( ! $product->is_wordpress_available() ) {
+				$default = 'yes';
+			} else {
+				$pro_slug = $product->get_pro_slug();
+
+				if ( ! empty( $pro_slug ) && isset( $all_products[ $pro_slug ] ) ) {
+					$default = 'yes';
+				}
+			}
+
+			if ( 'yes' === get_option( $product->get_key() . '_logger_flag', $default ) ) {
+				$products_with_telemetry[] = array(
+					'slug'      => $product_slug,
+					'trackHash' => 'free',
+				);
+			}
+		}
+
+		foreach ( $products_with_telemetry as &$product ) {
+			$license = Licenser::create_license_hash( str_replace( '-', '_', $product['slug'] ) );
+
+			if ( ! empty( $license ) ) {
+				$product['trackHash'] = $license;
+			}
+		}
+
+		wp_localize_script( 'themeisle_sdk_telemetry_script', 'tiTelemetry', array(
+			'products'  => $products_with_telemetry,
+			'endpoint'  => apply_filters( 'themeisle_sdk_telemetry_endpoint', self::TELEMETRY_ENDPOINT ),
+		) );
 	}
 }
