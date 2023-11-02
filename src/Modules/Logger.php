@@ -216,6 +216,7 @@ class Logger extends Abstract_Module {
 				if ( ! empty( $pro_slug ) && isset( $all_products[ $pro_slug ] ) ) {
 					$default = 'yes';
 				}
+			}
 
 			if ( 'yes' === get_option( $product->get_key() . '_logger_flag', $default ) ) {
 
