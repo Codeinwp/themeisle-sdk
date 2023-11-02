@@ -84,7 +84,7 @@ class Logger extends Abstract_Module {
 
 		$can_load_telemetry = apply_filters( 'themeisle_sdk_enable_telemetry', false );
 
-		if( $can_load_telemetry ) {
+		if ( $can_load_telemetry ) {
 			$this->load_telemetry();
 		}
 
@@ -188,10 +188,15 @@ class Logger extends Abstract_Module {
 		);
 	}
 
+	/**
+	 * Load telemetry.
+	 * 
+	 * @return void
+	 */
 	public function load_telemetry() {
 		// See which products have telemetry enabled.
-		$products_with_telemetry = array();
-		$all_products = Loader::get_products();
+		$products_with_telemetry                  = array();
+		$all_products                             = Loader::get_products();
 		$all_products[$this->product->get_slug()] = $this->product; // Add current product to the list of products to check for telemetry.
 
 		foreach ( $all_products as $product_slug => $product ) {
@@ -211,7 +216,6 @@ class Logger extends Abstract_Module {
 				if ( ! empty( $pro_slug ) && isset( $all_products[ $pro_slug ] ) ) {
 					$default = 'yes';
 				}
-			}
 
 			if ( 'yes' === get_option( $product->get_key() . '_logger_flag', $default ) ) {
 
@@ -221,7 +225,7 @@ class Logger extends Abstract_Module {
 				// Check if product was already tracked.
 				$active_telemetry = false;
 				foreach ( $products_with_telemetry as $product_with_telemetry ) {
-					if ( $product_with_telemetry['slug'] === $main_slug ) {
+					if ( $product_with_telemetry[ 'slug' ] === $main_slug ) {
 						$active_telemetry = true;
 						break;
 					}
@@ -242,19 +246,32 @@ class Logger extends Abstract_Module {
 
 		$products_with_telemetry = apply_filters( 'themeisle_sdk_telemetry_products', $products_with_telemetry );
 
-		if( 0 === count( $products_with_telemetry ) ) {
+		if ( 0 === count( $products_with_telemetry ) ) {
 			return;
 		}
 
-		add_filter( 'themeisle_sdk_telemetry_endpoint', function() { return self::TELEMETRY_ENDPOINT; } );
+		add_filter( 'themeisle_sdk_telemetry_endpoint', function() {
+			return self::TELEMETRY_ENDPOINT;
+		} );
 		
 		global $themeisle_sdk_max_path;
 		$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/tracking/tracking.asset.php';
-		wp_enqueue_script( 'themeisle_sdk_telemetry_script', $this->get_sdk_uri() . 'assets/js/build/tracking/tracking.js', $asset_file['dependencies'], $asset_file['version'], true );
+
+		wp_enqueue_script(
+			'themeisle_sdk_telemetry_script',
+			$this->get_sdk_uri() . 'assets/js/build/tracking/tracking.js',
+			$asset_file['dependencies'],
+			$asset_file['version'],
+			true
+		);
 		
-		wp_localize_script( 'themeisle_sdk_telemetry_script', 'tiTelemetry', array(
-			'products'  => $products_with_telemetry,
-			'endpoint'  => apply_filters( 'themeisle_sdk_telemetry_endpoint', self::TELEMETRY_ENDPOINT ),
-		) );
+		wp_localize_script(
+			'themeisle_sdk_telemetry_script',
+			'tiTelemetry',
+			array(
+				'products' => $products_with_telemetry,
+				'endpoint' => apply_filters( 'themeisle_sdk_telemetry_endpoint', self::TELEMETRY_ENDPOINT ),
+			)
+		);
 	}
 }
