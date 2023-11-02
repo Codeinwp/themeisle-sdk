@@ -78,11 +78,16 @@ class Logger extends Abstract_Module {
 	 * Setup tracking actions.
 	 */
 	public function setup_actions() {
-		$this->load_telemetry();
-
 		if ( ! $this->is_logger_active() ) {
 			return;
 		}
+
+		$can_load_telemetry = apply_filters( 'themeisle_sdk_enable_telemetry', false );
+
+		if( $can_load_telemetry ) {
+			$this->load_telemetry();
+		}
+
 		$action_key = $this->product->get_key() . '_log_activity';
 		if ( ! wp_next_scheduled( $action_key ) ) {
 			wp_schedule_single_event( time() + ( wp_rand( 1, 24 ) * 3600 ), $action_key );
@@ -184,12 +189,10 @@ class Logger extends Abstract_Module {
 	}
 
 	public function load_telemetry() {
-		add_filter( 'themeisle_sdk_telemetry_endpoint', function() { return self::TELEMETRY_ENDPOINT; } );
-		wp_enqueue_script( 'themeisle_sdk_telemetry_script', $this->get_sdk_uri() . 'assets/js/build/tracking/tracking.js', array(), null, true );
-
 		// See which products have telemetry enabled.
-		$products_with_telemetry = apply_filters( 'themeisle_sdk_telemetry_products', array() );
+		$products_with_telemetry = array();
 		$all_products = Loader::get_products();
+		$all_products[$this->product->get_slug()] = $this->product; // Add current product to the list of products to check for telemetry.
 
 		foreach ( $all_products as $product_slug => $product ) {
 
@@ -206,21 +209,44 @@ class Logger extends Abstract_Module {
 			}
 
 			if ( 'yes' === get_option( $product->get_key() . '_logger_flag', $default ) ) {
+
+				$main_slug = explode( '-', $product_slug );
+				$main_slug = $main_slug[0];
+
+				// Check if product was already tracked.
+				$active_telemetry = false;
+				foreach ( $products_with_telemetry as $product_with_telemetry ) {
+					if ( $product_with_telemetry['slug'] === $main_slug ) {
+						$active_telemetry = true;
+						break;
+					}
+				}
+
+				if ( $active_telemetry ) {
+					continue;
+				}
+
+				$track_hash = Licenser::create_license_hash( str_replace( '-', '_', $product_slug ) );
 				$products_with_telemetry[] = array(
-					'slug'      => $product_slug,
-					'trackHash' => 'free',
+					'slug'      => $main_slug,
+					'trackHash' => $track_hash ? $track_hash : 'free',
+					'consent'   => true,
 				);
 			}
 		}
 
-		foreach ( $products_with_telemetry as &$product ) {
-			$license = Licenser::create_license_hash( str_replace( '-', '_', $product['slug'] ) );
+		$products_with_telemetry = apply_filters( 'themeisle_sdk_telemetry_products', $products_with_telemetry );
 
-			if ( ! empty( $license ) ) {
-				$product['trackHash'] = $license;
-			}
+		if( 0 === count( $products_with_telemetry ) ) {
+			return;
 		}
 
+		add_filter( 'themeisle_sdk_telemetry_endpoint', function() { return self::TELEMETRY_ENDPOINT; } );
+		
+		global $themeisle_sdk_max_path;
+		$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/tracking/tracking.asset.php';
+		wp_enqueue_script( 'themeisle_sdk_telemetry_script', $this->get_sdk_uri() . 'assets/js/build/tracking/tracking.js', $asset_file['dependencies'], $asset_file['version'], true );
+		
 		wp_localize_script( 'themeisle_sdk_telemetry_script', 'tiTelemetry', array(
 			'products'  => $products_with_telemetry,
 			'endpoint'  => apply_filters( 'themeisle_sdk_telemetry_endpoint', self::TELEMETRY_ENDPOINT ),

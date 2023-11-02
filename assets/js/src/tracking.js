@@ -94,15 +94,10 @@ class EventTrackingAccumulator {
 		this.endpoint = tiTelemetry?.endpoint;
 
         /**
-         * @type {{slug: string, trackHash: string}[]} - The products to send the events.
+         * @type {{slug: string, trackHash: string, consent: bool}[]} - The products to send the events.
          */
         this.products = tiTelemetry?.products;
-
-        /**
-         * @type {Object.<string, string>} - The products to send the events, where the key is the slug and the value is the trackHash.
-         */
-        this.trackedProducts = Object.fromEntries(this.products.map(product => [product.slug, product.trackHash]));
-
+     
 		/**
 		 * @type {number} - The interval to send the events automatically.
 		 */
@@ -117,13 +112,13 @@ class EventTrackingAccumulator {
 	 * @param {EventOptions} [options] - Options to be passed to the accumulator.
 	 */
 	_set = ( key, data, options ) => {
-
+		
 		// Check the slug is it can tracked.
-        if ( ! this.trackedProducts[data.slug] ) {
+        if ( ! this.hasProduct( data.slug ) ) {
             return;
         }
 
-		if ( ! ( options?.consent || this.hasConsent() ) ) {
+		if ( ! ( options?.consent || this.getProductConsent( data.slug ) ) ) {
 			return;
 		}
 
@@ -208,6 +203,7 @@ class EventTrackingAccumulator {
 
 	/**
 	 * Automatically send all the events if the limit is reached.
+	 * 
 	 * @returns - Promise that resolves when all the events are sent.
 	 */
 	sendIfLimitReached = () => {
@@ -266,12 +262,43 @@ class EventTrackingAccumulator {
 				[ window.location.href.includes( 'customize.php' ), 'customizer' ],
 				[ window.location.href.includes( 'site-editor.php' ), 'site-editor' ],
 				[ window.location.href.includes( 'widgets.php' ), 'widgets' ],
+				[ window.location.href.includes( 'admin.php' ), 'admin' ],
 				[ 'post-editor' ]
 			]),
-            license: this.trackedProducts[data.slug],
+            license: this.getProductTackHash( data.slug ),
 			...( data ?? {})
 		};
 	};
+
+	/**
+	 * Check if the product is tracked.
+	 * 
+	 * @param {string} slug Product slug
+	 * @returns {boolean} True if the product is tracked.
+	 */
+	hasProduct = ( slug ) => {
+		return this.products.some( product => product?.slug?.includes( slug ) );
+	}
+
+	/**
+	 * Get the track hash of the product.
+	 * 
+	 * @param {string} slug Product slug
+	 * @returns {string} The track hash of the product.
+	 */
+	getProductTackHash = ( slug ) => {
+		return this.products.find( product => product?.slug?.includes(slug) )?.trackHash;
+	};
+
+	/**
+	 * Get the consent of the product.
+	 * 
+	 * @param {string} slug Product slug
+	 * @returns {boolean} The consent of the product.
+	 */
+	getProductConsent = ( slug ) => {
+		return this.products.find( product => product?.slug?.includes( slug ) )?.consent;
+	}
 
 	/**
 	 * Start the interval to send the events automatically.
