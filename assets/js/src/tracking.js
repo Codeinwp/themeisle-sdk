@@ -185,6 +185,11 @@ class EventTrackingAccumulator {
 	 * Send all the events in the accumulator. Clears the accumulator after sending. All the listeners will be notified.
 	 */
 	uploadEvents = async() => {
+
+		if ( 0 === this.events.size ) {
+			return;
+		}
+
 		try {
 			const events = Array.from( this.events.values() );
 			this.events.clear();
