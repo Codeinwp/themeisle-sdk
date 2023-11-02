@@ -195,6 +195,11 @@ class Logger extends Abstract_Module {
 		$all_products[$this->product->get_slug()] = $this->product; // Add current product to the list of products to check for telemetry.
 
 		foreach ( $all_products as $product_slug => $product ) {
+			
+			// Ignore pro products.
+			if ( false !== strstr( $product_slug, 'pro' ) ) {
+				continue;
+			}
 
 			$default = 'no';
 
