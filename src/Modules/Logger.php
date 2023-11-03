@@ -59,6 +59,8 @@ class Logger extends Abstract_Module {
 		$this->setup_notification();
 		$this->setup_actions();
 
+		add_action( 'themeisle_sdk_load_telemetry', array( $this, 'load_telemetry' ) );
+
 		return $this;
 	}
 
@@ -85,7 +87,7 @@ class Logger extends Abstract_Module {
 		$can_load_telemetry = apply_filters( 'themeisle_sdk_enable_telemetry', false );
 
 		if ( $can_load_telemetry ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'load_telemetry' ));
+			add_action( 'admin_enqueue_scripts', array( $this, 'load_telemetry' ) );
 		}
 
 		$action_key = $this->product->get_key() . '_log_activity';
