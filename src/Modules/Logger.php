@@ -223,14 +223,21 @@ class Logger extends Abstract_Module {
 
 				if ( 'yes' === get_option( $product->get_key() . '_logger_flag', $default ) ) {
 
-					$main_slug = explode( '-', $product_slug );
-					$main_slug = $main_slug[0];
+					$main_slug  = explode( '-', $product_slug );
+					$main_slug  = $main_slug[0];
+					$track_hash = Licenser::create_license_hash( str_replace( '-', '_', $product_slug ) );
 
 					// Check if product was already tracked.
 					$active_telemetry = false;
-					foreach ( $products_with_telemetry as $product_with_telemetry ) {
+					foreach ( $products_with_telemetry as &$product_with_telemetry ) {
 						if ( $product_with_telemetry[ 'slug' ] === $main_slug ) {
 							$active_telemetry = true;
+
+							// If it targets the same product, use the one that has a license.
+							if ( 'free' === $product_with_telemetry[ 'trackHash' ] && ! empty( $track_hash ) ) {
+								$product_with_telemetry[ 'trackHash' ] = $track_hash;
+							}
+
 							break;
 						}
 					}
@@ -239,7 +246,7 @@ class Logger extends Abstract_Module {
 						continue;
 					}
 
-					$track_hash = Licenser::create_license_hash( str_replace( '-', '_', $product_slug ) );
+					
 					$products_with_telemetry[] = array(
 						'slug'      => $main_slug,
 						'trackHash' => $track_hash ? $track_hash : 'free',
@@ -283,10 +290,6 @@ class Logger extends Abstract_Module {
 			}
 		} catch ( \Error $e ) {
 			if ( defined('WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG) {
-				error_log( $e->getMessage() );
-			}
-		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
 				error_log( $e->getMessage() );
 			}
 		} finally {
