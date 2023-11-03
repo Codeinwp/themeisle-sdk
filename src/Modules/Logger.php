@@ -225,19 +225,14 @@ class Logger extends Abstract_Module {
 
 					$main_slug  = explode( '-', $product_slug );
 					$main_slug  = $main_slug[0];
-					$track_hash = Licenser::create_license_hash( str_replace( '-', '_', $product_slug ) );
+					$pro_slug   = $product->get_pro_slug();
+					$track_hash = Licenser::create_license_hash( str_replace( '-', '_', ! empty( $pro_slug ) ? $pro_slug : $product_slug ) );
 
 					// Check if product was already tracked.
 					$active_telemetry = false;
 					foreach ( $products_with_telemetry as &$product_with_telemetry ) {
 						if ( $product_with_telemetry[ 'slug' ] === $main_slug ) {
 							$active_telemetry = true;
-
-							// If it targets the same product, use the one that has a license.
-							if ( 'free' === $product_with_telemetry[ 'trackHash' ] && ! empty( $track_hash ) ) {
-								$product_with_telemetry[ 'trackHash' ] = $track_hash;
-							}
-
 							break;
 						}
 					}
@@ -245,7 +240,6 @@ class Logger extends Abstract_Module {
 					if ( $active_telemetry ) {
 						continue;
 					}
-
 					
 					$products_with_telemetry[] = array(
 						'slug'      => $main_slug,
