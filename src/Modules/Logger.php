@@ -32,7 +32,7 @@ class Logger extends Abstract_Module {
 	/**
 	 * Endpoint where to collect telemetry.
 	 */
-	const TELEMETRY_ENDPOINT = 'http://localhost:3000/bulk-tracking'; // TODO: Add telemetry endpoint.
+	const TELEMETRY_ENDPOINT = 'https://gentle-cove-mrsmydq0zy5o.ymirsites.com/wp-json/track/events/'; // TODO: Add telemetry endpoint.
 
 
 	/**

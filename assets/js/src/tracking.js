@@ -370,7 +370,10 @@ class EventTrackingAccumulator {
 	};
 }
 
-// TODO: do this from SDK.
 // Initialize the accumulator.
 window.tiTrk = new EventTrackingAccumulator();
 
+// Send the events on save for the customizer.
+window?.wp?.customize?.bind( 'save', () => {
+	window?.tiTrk?.uploadEvents();
+} );
