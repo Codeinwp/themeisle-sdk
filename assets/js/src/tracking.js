@@ -78,11 +78,6 @@ class EventTrackingAccumulator {
 		 */
 		this.interval = null;
 
-		// When tab is closed, send all events.
-		window.addEventListener( 'beforeunload', async() => {
-			await this.uploadEvents();
-		});
-
 		/**
          * @type {boolean} - Indicates whether the user has given consent to send the events.
          */
@@ -377,3 +372,8 @@ window.tiTrk = new EventTrackingAccumulator();
 window?.wp?.customize?.bind( 'save', () => {
 	window?.tiTrk?.uploadEvents();
 } );
+
+// When tab is closed, send all events.
+window.addEventListener( 'beforeunload', async() => {
+	window?.tiTrk?.uploadEvents();
+});
