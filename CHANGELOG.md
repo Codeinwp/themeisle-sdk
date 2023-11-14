@@ -1,3 +1,7 @@
+##### [Version 3.3.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.6...v3.3.7) (2023-10-31)
+
+- fix: deprecating notice in Dashboard Widget
+
 ##### [Version 3.3.6](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.5...v3.3.6) (2023-10-05)
 
 - Fix duplicate notification in Neve FSE
