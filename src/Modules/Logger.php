@@ -32,7 +32,7 @@ class Logger extends Abstract_Module {
 	/**
 	 * Endpoint where to collect telemetry.
 	 */
-	const TELEMETRY_ENDPOINT = 'https://gentle-cove-mrsmydq0zy5o.ymirsites.com/wp-json/track/events/'; // TODO: Add telemetry endpoint.
+	const TELEMETRY_ENDPOINT = 'https://api.themeisle.com/tracking/events';
 
 
 	/**
@@ -198,9 +198,9 @@ class Logger extends Abstract_Module {
 	public function load_telemetry() {
 		// See which products have telemetry enabled.
 		try {
-			$products_with_telemetry                  = array();
-			$all_products                             = Loader::get_products();
-			$all_products[$this->product->get_slug()] = $this->product; // Add current product to the list of products to check for telemetry.
+			$products_with_telemetry                    = array();
+			$all_products                               = Loader::get_products();
+			$all_products[ $this->product->get_slug() ] = $this->product; // Add current product to the list of products to check for telemetry.
 
 			foreach ( $all_products as $product_slug => $product ) {
 				
@@ -231,7 +231,7 @@ class Logger extends Abstract_Module {
 					// Check if product was already tracked.
 					$active_telemetry = false;
 					foreach ( $products_with_telemetry as &$product_with_telemetry ) {
-						if ( $product_with_telemetry[ 'slug' ] === $main_slug ) {
+						if ( $product_with_telemetry['slug'] === $main_slug ) {
 							$active_telemetry = true;
 							break;
 						}
@@ -255,9 +255,12 @@ class Logger extends Abstract_Module {
 				return;
 			}
 
-			add_filter( 'themeisle_sdk_telemetry_endpoint', function() {
-				return self::TELEMETRY_ENDPOINT;
-			} );
+			add_filter(
+				'themeisle_sdk_telemetry_endpoint',
+				function() {
+					return self::TELEMETRY_ENDPOINT;
+				} 
+			);
 			
 			global $themeisle_sdk_max_path;
 			$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/tracking/tracking.asset.php';
@@ -279,15 +282,7 @@ class Logger extends Abstract_Module {
 				)
 			);
 		} catch ( \Exception $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-				error_log( $e->getMessage() );
-			}
-		} catch ( \Error $e ) {
-			if ( defined('WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG) {
-				error_log( $e->getMessage() );
-			}
-		} finally {
-			return;
+			// Do nothing.
 		}
 	}
 }
