@@ -251,13 +251,6 @@ class Logger extends Abstract_Module {
 				return;
 			}
 
-			add_filter(
-				'themeisle_sdk_telemetry_endpoint',
-				function() {
-					return self::TELEMETRY_ENDPOINT;
-				} 
-			);
-			
 			global $themeisle_sdk_max_path;
 			$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/tracking/tracking.asset.php';
 
@@ -274,7 +267,7 @@ class Logger extends Abstract_Module {
 				'tiTelemetry',
 				array(
 					'products' => $products_with_telemetry,
-					'endpoint' => apply_filters( 'themeisle_sdk_telemetry_endpoint', self::TELEMETRY_ENDPOINT ),
+					'endpoint' => self::TELEMETRY_ENDPOINT,
 				)
 			);
 		} catch ( \Exception $e ) {
