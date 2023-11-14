@@ -102,21 +102,24 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 						'/upgrade',
 					],
 					'',
-					$url 
+					$url
 				),
-				'/' 
-			) 
+				'/'
+			)
 		);
+		$filter_key = sanitize_key( $content );
+		$url_args   = [
+			'utm_source'   => 'wpadmin',
+			'utm_medium'   => $location,
+			'utm_campaign' => $area,
+			'utm_content'  => $content,
+		];
+		$query_arguments = apply_filters('tsdk_utmify_' . $filter_key, $url_args,$url );
 		return esc_url_raw(
 			add_query_arg(
-				[
-					'utm_source'   => 'wpadmin',
-					'utm_medium'   => $location,
-					'utm_campaign' => $area,
-					'utm_content'  => $content,
-				],
-				$url 
-			) 
+				$query_arguments,
+				$url
+			)
 		);
 	}
 
