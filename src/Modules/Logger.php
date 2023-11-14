@@ -43,7 +43,6 @@ class Logger extends Abstract_Module {
 	 * @return bool Should we load ?
 	 */
 	public function can_load( $product ) {
-
 		return apply_filters( $product->get_slug() . '_sdk_enable_logger', true );
 	}
 
@@ -58,9 +57,6 @@ class Logger extends Abstract_Module {
 		$this->product = $product;
 		$this->setup_notification();
 		$this->setup_actions();
-
-		add_action( 'themeisle_sdk_load_telemetry', array( $this, 'load_telemetry' ) );
-
 		return $this;
 	}
 
