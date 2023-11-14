@@ -282,7 +282,15 @@ class Logger extends Abstract_Module {
 				)
 			);
 		} catch ( \Exception $e ) {
-			// Do nothing.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( $e->getMessage() ); // phpcs:ignore
+			}
+		} catch ( \Error $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( $e->getMessage() ); // phpcs:ignore
+			}
+		} finally {
+			return;
 		}
 	}
 }
