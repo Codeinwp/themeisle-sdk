@@ -90,8 +90,8 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 			$current_page = isset( $screen->id ) ? $screen->id : ( ( $screen === null ) ? 'non-admin' : $screen );
 			$current_page = sanitize_key( str_replace( '.php', '', $current_page ) );
 		}
-		$location = $location === null ? $current_page : $location;
-		$content  = sanitize_key(
+		$location        = $location === null ? $current_page : $location;
+		$content         = sanitize_key(
 			trim(
 				str_replace(
 					[
@@ -107,14 +107,14 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 				'/'
 			)
 		);
-		$filter_key = sanitize_key( $content );
-		$url_args   = [
+		$filter_key      = sanitize_key( $content );
+		$url_args        = [
 			'utm_source'   => 'wpadmin',
 			'utm_medium'   => $location,
 			'utm_campaign' => $area,
 			'utm_content'  => $content,
 		];
-		$query_arguments = apply_filters('tsdk_utmify_' . $filter_key, $url_args,$url );
+		$query_arguments = apply_filters( 'tsdk_utmify_' . $filter_key, $url_args, $url );
 		return esc_url_raw(
 			add_query_arg(
 				$query_arguments,
