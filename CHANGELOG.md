@@ -1,3 +1,7 @@
+##### [Version 3.3.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.7...v3.3.8) (2023-11-14)
+
+- Add Product Telemetry
+
 ##### [Version 3.3.7](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.6...v3.3.7) (2023-10-31)
 
 - fix: deprecating notice in Dashboard Widget
