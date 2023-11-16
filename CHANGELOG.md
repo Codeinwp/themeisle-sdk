@@ -1,3 +1,7 @@
+##### [Version 3.3.9](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.8...v3.3.9) (2023-11-16)
+
+- Fix: a debugging error when you activate Neve Pro after installing Otter & Otter Pro without the license.
+
 ##### [Version 3.3.8](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.7...v3.3.8) (2023-11-14)
 
 - Add Product Telemetry
