@@ -274,7 +274,11 @@ class Licenser extends Abstract_Module {
 	public static function create_license_hash( $key ) {
 		$data = self::get_license_data( $key );
 
-		return isset( $data->license ) ? wp_hash( $data->key ) : false;
+		if ( ! $data ) {
+			return false;
+		}
+
+		return isset( $data->key ) ? wp_hash( $data->key ) : false;
 	}
 
 	/**
