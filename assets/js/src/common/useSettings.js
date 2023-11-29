@@ -3,10 +3,12 @@
  */
 import api from '@wordpress/api';
 
-import { dispatch } from '@wordpress/data';
+import {
+	dispatch,
+	useSelect
+} from '@wordpress/data';
 
 import {
-	useEffect,
 	useState
 } from '@wordpress/element';
 
@@ -32,27 +34,23 @@ const useSettings = () => {
 	const [ settings, setSettings ] = useState({});
 	const [ status, setStatus ] = useState( 'loading' );
 
-	const getSettings = () => {
-		api.loadPromise.then( async() => {
-			try {
-				const settings = new api.models.Settings();
-				const response = await settings.fetch();
-				setSettings( response );
-			} catch ( error ) {
-				setStatus( 'error' );
-			} finally {
-				setStatus( 'loaded' );
-			}
-		});
-	};
+	useSelect( select => {
+		
+		// Bail out if settings are already loaded.
+		if ( Object.keys( settings ).length ) {
+			return;
+		}
+		
+		const { getEntityRecord } = select( 'core' );
+		const request = getEntityRecord( 'root', 'site' );
 
-	useEffect( () => {
-		getSettings();
+		if ( request ) {
+			setStatus( 'loaded' );
+			setSettings( request );
+		}
 	}, []);
 
-	const getOption = option => {
-		return settings?.[option];
-	};
+	const getOption = option => settings?.[option];
 
 	const updateOption = ( option, value, success = 'Settings saved.' ) => {
 		setStatus( 'saving' );
@@ -85,8 +83,8 @@ const useSettings = () => {
 					}
 				);
 			}
-
-			getSettings();
+			
+			setSettings( response );
 		});
 
 		save.error( ( response ) => {
