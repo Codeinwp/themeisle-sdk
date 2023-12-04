@@ -115,12 +115,13 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 			'utm_content'  => $content,
 		];
 		$query_arguments = apply_filters( 'tsdk_utmify_' . $filter_key, $url_args, $url );
-		return esc_url_raw(
+		$utmify_url      = esc_url_raw(
 			add_query_arg(
 				$query_arguments,
 				$url
 			)
 		);
+		return apply_filters('tsdk_utmify_url_' . $filter_key, $utmify_url, $url  );
 	}
 
 	add_filter( 'tsdk_utmify', 'tsdk_utmify', 10, 3 );
