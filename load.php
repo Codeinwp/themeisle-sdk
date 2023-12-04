@@ -121,7 +121,7 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 				$url
 			)
 		);
-		return apply_filters('tsdk_utmify_url_' . $filter_key, $utmify_url, $url  );
+		return apply_filters( 'tsdk_utmify_url_' . $filter_key, $utmify_url, $url );
 	}
 
 	add_filter( 'tsdk_utmify', 'tsdk_utmify', 10, 3 );

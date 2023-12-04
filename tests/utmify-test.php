@@ -14,17 +14,27 @@ class Utmify_Test extends WP_UnitTestCase {
 
 
 	private function register_filter() {
-		add_filter( 'tsdk_utmify_examplecomlink', function ( $arguments, $url ) {
-			$arguments['new_arg'] = '_affiliate_id_';
-			return $arguments;
-		}, 11, 2 );
+		add_filter(
+			'tsdk_utmify_examplecomlink',
+			function ( $arguments, $url ) {
+				$arguments['new_arg'] = '_affiliate_id_';
+				return $arguments;
+			},
+			11,
+			2 
+		);
 	}
 
 
 	private function register_filter_url() {
-		add_filter( 'tsdk_utmify_url_examplecomlink', function ( $utmify_url, $url ) {
-			return self::AFFILIATE_URL;
-		}, 11, 2 );
+		add_filter(
+			'tsdk_utmify_url_examplecomlink',
+			function ( $utmify_url, $url ) {
+				return self::AFFILIATE_URL;
+			},
+			11,
+			2 
+		);
 	}
 
 
