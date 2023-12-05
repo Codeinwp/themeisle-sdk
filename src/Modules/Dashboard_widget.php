@@ -317,26 +317,25 @@ class Dashboard_Widget extends Abstract_Module {
 			// this prevents showing notices if another plugin will force all SimplePie feeds to load, instead it will
 			// use the regular SimplePie validation and abort early if the feed is not valid.
 			$sdk_feeds = $this->feeds;
-			add_filter(
+			add_action(
 				'wp_feed_options',
 				function ( $feed, $url ) use ( $sdk_feeds ) {
 					if ( defined( 'TI_SDK_PHPUNIT' ) && true === TI_SDK_PHPUNIT ) {
-						return true;
+						return;
 					}
 
 					if ( ! is_string( $url ) && in_array( $url, $sdk_feeds, true ) ) {
 						$feed->force_feed( false );
-						return true;
+						return;
 					}
 					if ( is_array( $url ) ) {
 						foreach ( $url as $feed_url ) {
 							if ( in_array( $feed_url, $sdk_feeds, true ) ) {
 								$feed->force_feed( false );
-								return true;
+								return;
 							}
 						}
 					}
-					return true;
 				},
 				PHP_INT_MAX,
 				2
