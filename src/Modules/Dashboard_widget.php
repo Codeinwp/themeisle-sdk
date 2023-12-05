@@ -313,8 +313,36 @@ class Dashboard_Widget extends Abstract_Module {
 	 */
 	private function setup_feeds() {
 		if ( false === ( $items_normalized = get_transient( 'themeisle_sdk_feed_items' ) ) ) { //phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+			// Do not force the feed for the items in the sdk feeds list.
+			// this prevents showing notices if another plugin will force all SimplePie feeds to load, instead it will
+			// use the regular SimplePie validation and abort early if the feed is not valid.
+			$sdk_feeds = $this->feeds;
+			add_filter(
+				'wp_feed_options',
+				function ( $feed, $url ) use ( $sdk_feeds ) {
+					if ( defined( 'TI_SDK_PHPUNIT' ) && true === TI_SDK_PHPUNIT ) {
+						return true;
+					}
+
+					if ( ! is_string( $url ) && in_array( $url, $sdk_feeds, true ) ) {
+						$feed->force_feed( false );
+						return true;
+					}
+					if ( is_array( $url ) ) {
+						foreach ( $url as $feed_url ) {
+							if ( in_array( $feed_url, $sdk_feeds, true ) ) {
+								$feed->force_feed( false );
+								return true;
+							}
+						}
+					}
+					return true;
+				},
+				PHP_INT_MAX,
+				2
+			);
 			// Load SimplePie Instance.
-			$feed = fetch_feed( $this->feeds );
+			$feed = fetch_feed( $sdk_feeds );
 			// TODO report error when is an error loading the feed.
 			if ( is_wp_error( $feed ) ) {
 				return;
