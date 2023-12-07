@@ -1,8 +1,6 @@
 /**
  * WordPress dependencies.
  */
-import api from '@wordpress/api';
-
 import {
 	dispatch,
 	useSelect
@@ -52,56 +50,50 @@ const useSettings = () => {
 
 	const getOption = option => settings?.[option];
 
-	const updateOption = ( option, value, success = 'Settings saved.' ) => {
-		setStatus( 'saving' );
+	const updateWPOption = async (optionName, optionValue, success = 'Settings saved.') => {
+		const data = { [optionName]: optionValue };
+		
+		try {
+			const response = await fetch( '/wp-json/wp/v2/settings', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': wpApiSettings.nonce,
+				},
+				body: JSON.stringify(data),
+			});
 
-		const save = new api.models.Settings({ [option]: value }).save();
-
-		save.success( ( response, status ) => {
-			if ( 'success' === status ) {
-				setStatus( 'loaded' );
-
-				createNotice(
-					'success',
-					success,
-					{
-						isDismissible: true,
-						type: 'snackbar'
-					}
-				);
-			}
-
-			if ( 'error' === status ) {
+			if (!response.ok) {
 				setStatus( 'error' );
-
 				createNotice(
 					'error',
-					'An unknown error occurred.',
+					'Could not save the settings.',
 					{
 						isDismissible: true,
 						type: 'snackbar'
 					}
 				);
 			}
+
+			const settings = await response.json();
 			
-			setSettings( response );
-		});
-
-		save.error( ( response ) => {
-			setStatus( 'error' );
-
+			setStatus( 'loaded' );
 			createNotice(
-				'error',
-				response.responseJSON.message ? response.responseJSON.message : 'An unknown error occurred.',
+				'success',
+				success,
 				{
 					isDismissible: true,
 					type: 'snackbar'
 				}
 			);
-		});
+			
+			setSettings( settings );
+		} catch (error) {
+			console.error('Error updating option:', error);
+		}
 	};
 
-	return [ getOption, updateOption, status ];
+	return [ getOption, updateWPOption, status ];
 };
 
 export default useSettings;
