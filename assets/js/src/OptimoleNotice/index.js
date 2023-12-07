@@ -74,6 +74,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
             setProgress('done');
         }
 
+        onDismiss?.();
     }
 
     if (dismissed) {
