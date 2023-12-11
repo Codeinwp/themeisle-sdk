@@ -14,7 +14,7 @@
       "homepage": "https://themeisle.com"
     }
   ],
-  "version": "3.3.8",
+  "version": "3.3.9",
   "require-dev": {
     "codeinwp/phpcs-ruleset": "dev-main"
   },
