@@ -23,3 +23,4 @@ dist
 artifact
 .git
 composer.json
+docs

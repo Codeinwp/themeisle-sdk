@@ -17,6 +17,7 @@ README.md                export-ignore
 .github                  export-ignore
 .eslintrc                export-ignore
 assets/js/src            export-ignore
+docs                     export-ignore
 # Set the default behavior for all files.
 * text=auto
 
