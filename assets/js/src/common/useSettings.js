@@ -1,12 +1,12 @@
 /**
  * WordPress dependencies.
  */
-import api from '@wordpress/api';
-
-import { dispatch } from '@wordpress/data';
+import {
+	dispatch,
+	useSelect
+} from '@wordpress/data';
 
 import {
-	useEffect,
 	useState
 } from '@wordpress/element';
 
@@ -32,53 +32,42 @@ const useSettings = () => {
 	const [ settings, setSettings ] = useState({});
 	const [ status, setStatus ] = useState( 'loading' );
 
-	const getSettings = () => {
-		api.loadPromise.then( async() => {
-			try {
-				const settings = new api.models.Settings();
-				const response = await settings.fetch();
-				setSettings( response );
-			} catch ( error ) {
-				setStatus( 'error' );
-			} finally {
-				setStatus( 'loaded' );
-			}
-		});
-	};
+	useSelect( select => {
+		
+		// Bail out if settings are already loaded.
+		if ( Object.keys( settings ).length ) {
+			return;
+		}
+		
+		const { getEntityRecord } = select( 'core' );
+		const request = getEntityRecord( 'root', 'site' );
 
-	useEffect( () => {
-		getSettings();
+		if ( request ) {
+			setStatus( 'loaded' );
+			setSettings( request );
+		}
 	}, []);
 
-	const getOption = option => {
-		return settings?.[option];
-	};
+	const getOption = option => settings?.[option];
 
-	const updateOption = ( option, value, success = 'Settings saved.' ) => {
-		setStatus( 'saving' );
+	const updateWPOption = async (optionName, optionValue, success = 'Settings saved.') => {
+		const data = { [optionName]: optionValue };
+		
+		try {
+			const response = await fetch( '/wp-json/wp/v2/settings', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': wpApiSettings.nonce,
+				},
+				body: JSON.stringify(data),
+			});
 
-		const save = new api.models.Settings({ [option]: value }).save();
-
-		save.success( ( response, status ) => {
-			if ( 'success' === status ) {
-				setStatus( 'loaded' );
-
-				createNotice(
-					'success',
-					success,
-					{
-						isDismissible: true,
-						type: 'snackbar'
-					}
-				);
-			}
-
-			if ( 'error' === status ) {
+			if (!response.ok) {
 				setStatus( 'error' );
-
 				createNotice(
 					'error',
-					'An unknown error occurred.',
+					'Could not save the settings.',
 					{
 						isDismissible: true,
 						type: 'snackbar'
@@ -86,24 +75,25 @@ const useSettings = () => {
 				);
 			}
 
-			getSettings();
-		});
-
-		save.error( ( response ) => {
-			setStatus( 'error' );
-
+			const settings = await response.json();
+			
+			setStatus( 'loaded' );
 			createNotice(
-				'error',
-				response.responseJSON.message ? response.responseJSON.message : 'An unknown error occurred.',
+				'success',
+				success,
 				{
 					isDismissible: true,
 					type: 'snackbar'
 				}
 			);
-		});
+			
+			setSettings( settings );
+		} catch (error) {
+			console.error('Error updating option:', error);
+		}
 	};
 
-	return [ getOption, updateOption, status ];
+	return [ getOption, updateWPOption, status ];
 };
 
 export default useSettings;
