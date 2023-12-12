@@ -1,3 +1,8 @@
+##### [Version 3.3.11](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.10...v3.3.11) (2023-12-12)
+
+- fix: cached requests for wp options
+- fix: php notice on failed xml feed
+
 ##### [Version 3.3.10](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.9...v3.3.10) (2023-12-11)
 
 feat: add new filter for tsdk_utmify query arguments
