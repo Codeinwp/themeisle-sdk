@@ -1,0 +1,272 @@
+<?php
+/**
+ * File responsible for announcements.
+ * 
+ * This is used to display information about limited events, such as Black Friday.
+ *
+ * @package     ThemeIsleSDK
+ * @subpackage  Modules
+ * @copyright   Copyright (c) 2017, Marius Cristea
+ * @license     http://opensource.org/licenses/gpl-3.0.php GNU Public License
+ * @since       3.3.0
+ */
+namespace ThemeisleSDK\Modules;
+
+use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Loader;
+use ThemeisleSDK\Product;
+
+/**
+ * Announcement module for the ThemeIsle SDK.
+ */
+class Announcements extends Abstract_Module {
+
+	/**
+	 * Holds the timeline for the announcements.
+	 * 
+	 * @var array
+	 */
+	private static $timeline = array(
+		'black_friday' => array(
+			'start'    => '2017-11-24',
+			'end'      => '2024-11-27',
+			'rendered' => false,
+		),
+	);
+  
+	/**
+	 * Holds the option prefix for the announcements.
+	 * 
+	 * This is used to store the dismiss date for each announcement.
+	 * 
+	 * @var string
+	 */
+	public $option_prefix = 'themeisle_sdk_announcement_';
+
+	/**
+	 * Check if the module can be loaded.
+	 * 
+	 * @param Product $product Product data.
+	 * 
+	 * @return bool
+	 */
+	public function can_load( $product ) {
+		if ( $this->is_from_partner( $product ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Load the module for the selected product.
+	 * 
+	 * @param Product $product Product data.
+	 * 
+	 * @return void
+	 */
+	public function load( $product ) {
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			return;
+		}
+
+		$this->product = $product;
+	   
+		add_action( 'admin_init', array( $this, 'load_announcements' ) );
+	}
+
+	/**
+	 * Load all valid announcements.
+	 * 
+	 * @return void
+	 */
+	public function load_announcements() {
+		$active = $this->get_active_announcements();
+
+		if ( empty( $active ) ) {
+			return;
+		}
+
+		foreach ( $active as $announcement ) {
+
+			$method = $announcement . '_notice_render';
+
+			if ( method_exists( $this, $method ) ) {
+				add_action( 'admin_notices', array( $this, $method ) );
+			}
+		}
+
+		// Load the ajax handler.
+		add_action( 'wp_ajax_themeisle_sdk_dismiss_announcement', array( $this, 'disable_notification_ajax' ) );
+	}
+
+	/**
+	 * Get all active announcements.
+	 * 
+	 * @return array List of active announcements.
+	 */
+	public function get_active_announcements() {
+		$active = array();
+
+		foreach ( self::$timeline as $announcement => $dates ) {
+			if ( $this->is_active( $announcement ) && $this->can_show( $announcement ) ) {
+				$active[] = $announcement;
+			}
+		}
+
+		return $active;
+	}
+
+	/**
+	 * Check if the announcement has an active timeline.
+	 * 
+	 * @param string $announcement The announcement to check.
+	 * 
+	 * @return bool
+	 */
+	public function is_active( $announcement ) {
+		$now = gmdate( 'Y-m-d' );
+
+		$start = isset( self::$timeline[ $announcement ]['start'] ) ? self::$timeline[ $announcement ]['start'] : null;
+		$end   = isset( self::$timeline[ $announcement ]['end'] ) ? self::$timeline[ $announcement ]['end'] : null;
+
+		if ( $start && $end ) {
+			return $start <= $now && $now <= $end;
+		} elseif ( $start ) {
+			return $now >= $start;
+		} elseif ( $end ) {
+			return $now <= $end;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the announcement can be shown.
+	 * 
+	 * @param string $announcement The announcement to check.
+	 * 
+	 * @return bool
+	 */
+	public function can_show( $announcement ) {
+		$dismiss_date = get_option( $this->option_prefix . $announcement, false );
+	  
+		if ( false === $dismiss_date ) {
+			return true;
+		}
+
+		// If the start date is after the dismiss date, show the notice.
+		$start = isset( $this->timeline[ $announcement ]['start'] ) ? $this->timeline[ $announcement ]['start'] : null;
+		if ( $start && $dismiss_date < $start ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Disable the notification via ajax.
+	 *
+	 * @return void
+	 */
+	public function disable_notification_ajax() {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'dismiss_themeisle_event_notice' ) ) {
+			wp_die( 'Invalid nonce! Refresh the page and try again.' );
+		}
+
+		if ( ! isset( $_POST['announcement'] ) || ! is_string( $_POST['announcement'] ) ) {
+			wp_die( 'Invalid announcement! Refresh the page and try again.' );
+		}
+
+		$announcement = sanitize_key( $_POST['announcement'] );
+		
+		update_option( $this->option_prefix . $announcement, current_time( 'Y-m-d' ) );
+		wp_die( 'success' );
+	}
+
+	/**
+	 * Render the Black Friday notice.
+	 * 
+	 * @return void
+	 */
+	public function black_friday_notice_render() {
+
+		// Prevent the notice from being rendered twice.
+		if ( self::$timeline['black_friday']['rendered'] ) {
+			return;
+		}
+		self::$timeline['black_friday']['rendered'] = true;
+
+		$product_names = array();
+
+		foreach ( Loader::get_products() as $product ) {
+			$slug = $product->get_slug();
+
+			// Do not add if the contains the string 'pro'.
+			if ( strpos( $slug, 'pro' ) !== false ) {
+				continue;
+			}
+
+			$product_names[] = $product->get_name();
+		}
+
+		// Randomize the products and get only 4.
+		shuffle( $product_names );
+		$product_names = array_slice( $product_names, 0, 4 );
+	   
+		?>
+		<style>
+			.themeisle-sale {
+				display: flex;
+			}
+		</style>
+		<div id="themeisle-sale-black-friday" class="themeisle-sale notice notice-info is-dismissible">
+			<img src="<?php echo esc_url_raw( $this->get_sdk_uri() . 'assets/images/themeisle-logo.svg' ); ?>" />
+			<p>
+				<strong>Themeisle Black Friday Sale is Live!</strong> - Enjoy Maximum Savings on <?php echo esc_html( implode( ', ', $product_names ) ); ?>.
+				<a href="<?php echo esc_url_raw( tsdk_utmify( 'https://themeisle.com/blackfriday/', 'bfcm24', 'globalnotice' ) ); ?>" target="_blank">Learn more</a>
+				<span class="themeisle-sale-error"></span>
+			</p>
+		</div>
+		<script id="themeisle-sdk-announcement" type="text/javascript">
+			window.document.addEventListener( 'DOMContentLoaded', () => {
+				setTimeout( () => {
+					const button = document.querySelector( '.themeisle-sale.notice button' );
+					button?.addEventListener( 'click', e => {
+						e.preventDefault();
+						fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/x-www-form-urlencoded'
+							},
+							body: new URLSearchParams({
+								action: 'themeisle_sdk_dismiss_announcement',
+								nonce: '<?php echo esc_attr( wp_create_nonce( 'dismiss_themeisle_event_notice' ) ); ?>',
+								announcement: 'black_friday'
+							})
+						})
+							.then(response => response.text())
+							.then(response => {
+								if ( ! response?.includes( 'success' ) ) {
+									document.querySelector( '.themeisle-sale-error' ).innerHTML = response;
+									return;
+								}
+	
+								document.querySelectorAll( '.themeisle-sale.notice' ).forEach( el => {
+									el.classList.add( 'hidden' );
+									setTimeout( () => {
+										el.remove();
+									}, 800 );
+								});
+							})
+							.catch(error => {
+								console.error( 'Error:', error );
+								document.querySelector( '.themeisle-sale-error' ).innerHTML = error;
+							});
+					});
+				}, 100 );
+			});
+		</script>
+		<?php
+	}
+}
