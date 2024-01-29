@@ -28,8 +28,8 @@ class Announcements extends Abstract_Module {
 	 */
 	private static $timeline = array(
 		'black_friday' => array(
-			'start'    => '2017-11-24',
-			'end'      => '2024-11-27',
+			'start'    => '2024-11-25 00:00:00',
+			'end'      => '2024-12-3 23:59:59',
 			'rendered' => false,
 		),
 	);
