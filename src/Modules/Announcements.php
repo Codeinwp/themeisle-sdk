@@ -28,7 +28,7 @@ class Announcements extends Abstract_Module {
 	 */
 	private static $timeline = array(
 		'black_friday' => array(
-			'start'    => '2024-11-25 00:00:00',
+			'start'    => '2023-11-25 00:00:00',
 			'end'      => '2024-12-3 23:59:59',
 			'rendered' => false,
 		),
@@ -74,6 +74,7 @@ class Announcements extends Abstract_Module {
 	   
 		add_action( 'admin_init', array( $this, 'load_announcements' ) );
 		add_filter( 'themeisle_sdk_active_announcements', array( $this, 'get_active_announcements' ) );
+		add_filter( 'themeisle_sdk_announcements', array( $this, 'get_announcements_for_plugins' ) );
 	}
 
 	/**
@@ -119,6 +120,51 @@ class Announcements extends Abstract_Module {
 	}
 
 	/**
+	 * Get all announcements along with plugin specific data.
+	 * 
+	 * @return array List of announcements.
+	 */
+	public function get_announcements_for_plugins() {
+
+		$announcements = array();
+
+		foreach ( self::$timeline as $announcement => $dates ) {
+			$announcements[ $announcement ] = $dates;
+
+			if ( false !== strpos( $announcement, 'black_friday' ) ) {
+				$announcements[ $announcement ]['active'] = $this->is_active( $announcement );
+
+				// Dashboard banners URLs.
+				$announcements[ $announcement ]['feedzy_dashboard_url'] = tsdk_utmify( 'https://themeisle.com/plugins/feedzy-rss-feeds/blackfriday/', 'bfcm24', 'dashboard' );
+				$announcements[ $announcement ]['neve_dashboard_url']   = tsdk_utmify( 'https://themeisle.com/themes/neve/blackfriday/', 'bfcm24', 'feedzycustomizer' );
+				$announcements[ $announcement ]['otter_dashboard_url']  = tsdk_utmify( 'https://themeisle.com/plugins/otter-blocks/blackfriday/', 'bfcm24', 'dashboard' );
+
+				// Customizer banners URLs.
+				$announcements[ $announcement ]['hestia_customizer_url'] = tsdk_utmify( 'https://themeisle.com/black-friday/', 'bfcm24', 'hestiacustomizer' );    
+				$announcements[ $announcement ]['neve_customizer_url']   = tsdk_utmify( 'https://themeisle.com/black-friday/', 'bfcm24', 'nevecustomizer' );
+					
+				// Banners urgency text.	
+				$remaining_time                                   = $this->get_remaining_time_for_event( $dates['end'] );
+				$announcements[ $announcement ]['remaining_time'] = $remaining_time;
+				$announcements[ $announcement ]['urgency_text']   = ! empty( $remaining_time ) ? 'Hurry up! Only ' . $remaining_time . ' left.' : '';
+			}
+		}
+
+		return $announcements;
+	}
+
+	/**
+	 * Get the announcement data.
+	 * 
+	 * @param string $announcement The announcement to get the data for.
+	 * 
+	 * @return array
+	 */
+	public function get_announcement_data( $announcement ) {
+		return ! empty( $announcement ) && is_string( $announcement ) && isset( self::$timeline[ $announcement ] ) ? self::$timeline[ $announcement ] : array();
+	}
+
+	/**
 	 * Check if the announcement has an active timeline.
 	 * 
 	 * @param string $announcement The announcement to check.
@@ -128,8 +174,9 @@ class Announcements extends Abstract_Module {
 	public function is_active( $announcement ) {
 		$now = gmdate( 'Y-m-d' );
 
-		$start = isset( self::$timeline[ $announcement ]['start'] ) ? self::$timeline[ $announcement ]['start'] : null;
-		$end   = isset( self::$timeline[ $announcement ]['end'] ) ? self::$timeline[ $announcement ]['end'] : null;
+		$dates = $this->get_announcement_data( $announcement );
+		$start = isset( $dates['start'] ) ? $dates['start'] : null;
+		$end   = isset( $dates['end'] ) ? $dates['end'] : null;
 
 		if ( $start && $end ) {
 			return $start <= $now && $now <= $end;
@@ -140,6 +187,44 @@ class Announcements extends Abstract_Module {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the remaining time for the event in a human readable format.
+	 *
+	 * @param string $end_date The end date for event.
+	 * @return string Remaining time for the event.
+	 */
+	public function get_remaining_time_for_event( $end_date ) {
+		if ( empty( $end_date ) || ! is_string( $end_date ) ) {
+			return '';
+		}
+	
+		try {
+			$end_date     = new \DateTime( $end_date, new \DateTimeZone( 'GMT' ) );
+			$current_date = new \DateTime( 'now', new \DateTimeZone( 'GMT' ) );
+			$diff         = $end_date->diff( $current_date );
+			
+			if ( $diff->days > 0 ) {
+				return $diff->days === 1 ? $diff->format( '%a day' ) : $diff->format( '%a days' );
+			}
+
+			if ( $diff->h > 0 ) {
+				return $diff->h === 1 ? $diff->format( '%h hour' ) : $diff->format( '%h hours' );
+			}
+
+			if ( $diff->i > 0 ) {
+				return $diff->i === 1 ? $diff->format( '%i minute' ) : $diff->format( '%i minutes' );
+			}
+
+			return $diff->s === 1 ? $diff->format( '%s second' ) : $diff->format( '%s seconds' );
+		} catch ( \Exception $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( $e->getMessage() ); // phpcs:ignore
+			}
+		}
+
+		return '';
 	}
 
 	/**
