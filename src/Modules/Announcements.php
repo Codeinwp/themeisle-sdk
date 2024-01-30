@@ -73,6 +73,7 @@ class Announcements extends Abstract_Module {
 		$this->product = $product;
 	   
 		add_action( 'admin_init', array( $this, 'load_announcements' ) );
+		add_filter( 'themeisle_sdk_active_announcements', array( $this, 'get_active_announcements' ) );
 	}
 
 	/**
