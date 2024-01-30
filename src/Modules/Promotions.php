@@ -173,6 +173,10 @@ class Promotions extends Abstract_Module {
 	 * @return void
 	 */
 	public function register_reference() {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
 		if ( isset( $_GET['reference_key'] ) ) {
 			update_option( 'otter_reference_key', sanitize_key( $_GET['reference_key'] ) );
 		}
@@ -269,12 +273,12 @@ class Promotions extends Abstract_Module {
 
 	/**
 	 * Third-party compatibility.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	private function has_conflicts() {
 		global $pagenow;
-	
+
 		// Editor notices aren't compatible with Enfold theme.
 		if ( defined( 'AV_FRAMEWORK_VERSION' ) && in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
 			return true;
