@@ -177,14 +177,14 @@ class Promotions extends Abstract_Module {
 			return;
 		}
 
-        if ( ! isset( $_GET['plugin'] ) || ! isset( $_GET['_wpnonce'] ) ) {
-            return;
-        }
+		if ( ! isset( $_GET['plugin'] ) || ! isset( $_GET['_wpnonce'] ) ) {
+			return;
+		}
 
-        $plugin = rawurldecode( $_GET['plugin'] );
-        if ( wp_verify_nonce( $_GET['_wpnonce'], 'activate-plugin_' . $plugin ) === false ) {
-            return;
-        }
+		$plugin = rawurldecode( $_GET['plugin'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( wp_verify_nonce( $_GET['_wpnonce'], 'activate-plugin_' . $plugin ) === false ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			return;
+		}
 
 		if ( isset( $_GET['reference_key'] ) ) {
 			update_option( 'otter_reference_key', sanitize_key( $_GET['reference_key'] ) );

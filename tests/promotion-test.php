@@ -66,8 +66,8 @@ class Promotion_Test extends WP_UnitTestCase {
 		$this->assertEmpty( $option );
 
 		// Check capable users with valid nonce can update the option.
-		$plugin = 'otter-blocks/otter-blocks.php';
-		$_GET['plugin'] = rawurlencode( $plugin );
+		$plugin           = 'otter-blocks/otter-blocks.php';
+		$_GET['plugin']   = rawurlencode( $plugin );
 		$_GET['_wpnonce'] = wp_create_nonce( 'activate-plugin_' . $plugin );
 		$promotions->register_reference();
 		$option = get_option( $option_key );
