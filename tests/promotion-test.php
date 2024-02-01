@@ -60,7 +60,15 @@ class Promotion_Test extends WP_UnitTestCase {
 
 		wp_set_current_user( 1 );
 
-		// Check capable users can update the option.
+		// Check capable users with invalid nonce can't update the option.
+		$promotions->register_reference();
+		$option = get_option( $option_key );
+		$this->assertEmpty( $option );
+
+		// Check capable users with valid nonce can update the option.
+		$plugin           = 'otter-blocks/otter-blocks.php';
+		$_GET['plugin']   = rawurlencode( $plugin );
+		$_GET['_wpnonce'] = wp_create_nonce( 'activate-plugin_' . $plugin );
 		$promotions->register_reference();
 		$option = get_option( $option_key );
 		$this->assertEquals( 'test', $option );
