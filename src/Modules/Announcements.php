@@ -28,8 +28,8 @@ class Announcements extends Abstract_Module {
 	 */
 	private static $timeline = array(
 		'black_friday' => array(
-			'start'    => '2023-11-25 00:00:00',
-			'end'      => '2024-12-3 23:59:59',
+			'start'    => '2024-11-25 00:00:00',
+			'end'      => '2024-12-03 23:59:59',
 			'rendered' => false,
 		),
 	);
@@ -42,6 +42,13 @@ class Announcements extends Abstract_Module {
 	 * @var string
 	 */
 	public $option_prefix = 'themeisle_sdk_announcement_';
+
+	/**
+	 * Holds the time for the current request.
+	 * 
+	 * @var string
+	 */
+	public $time = '';
 
 	/**
 	 * Check if the module can be loaded.
@@ -110,9 +117,9 @@ class Announcements extends Abstract_Module {
 	public function get_active_announcements() {
 		$active = array();
 
-		foreach ( self::$timeline as $announcement => $dates ) {
-			if ( $this->is_active( $announcement ) && $this->can_show( $announcement ) ) {
-				$active[] = $announcement;
+		foreach ( self::$timeline as $announcement_slug => $dates ) {
+			if ( $this->is_active( $dates ) && $this->can_show( $announcement_slug, $dates ) ) {
+				$active[] = $announcement_slug;
 			}
 		}
 
@@ -136,7 +143,7 @@ class Announcements extends Abstract_Module {
 
 				// Dashboard banners URLs.
 				$announcements[ $announcement ]['feedzy_dashboard_url'] = tsdk_utmify( 'https://themeisle.com/plugins/feedzy-rss-feeds/blackfriday/', 'bfcm24', 'dashboard' );
-				$announcements[ $announcement ]['neve_dashboard_url']   = tsdk_utmify( 'https://themeisle.com/themes/neve/blackfriday/', 'bfcm24', 'feedzycustomizer' );
+				$announcements[ $announcement ]['neve_dashboard_url']   = tsdk_utmify( 'https://themeisle.com/themes/neve/blackfriday/', 'bfcm24', 'dashboard' );
 				$announcements[ $announcement ]['otter_dashboard_url']  = tsdk_utmify( 'https://themeisle.com/plugins/otter-blocks/blackfriday/', 'bfcm24', 'dashboard' );
 
 				// Customizer banners URLs.
@@ -167,23 +174,25 @@ class Announcements extends Abstract_Module {
 	/**
 	 * Check if the announcement has an active timeline.
 	 * 
-	 * @param string $announcement The announcement to check.
+	 * @param array $dates The announcement to check.
 	 * 
 	 * @return bool
 	 */
-	public function is_active( $announcement ) {
-		$now = gmdate( 'Y-m-d' );
+	public function is_active( $dates ) {
 
-		$dates = $this->get_announcement_data( $announcement );
+		if ( empty( $this->time ) ) {
+			$this->time = current_time( 'Y-m-d' );
+		}
+		
 		$start = isset( $dates['start'] ) ? $dates['start'] : null;
 		$end   = isset( $dates['end'] ) ? $dates['end'] : null;
 
 		if ( $start && $end ) {
-			return $start <= $now && $now <= $end;
+			return $start <= $this->time && $this->time <= $end;
 		} elseif ( $start ) {
-			return $now >= $start;
+			return $this->time >= $start;
 		} elseif ( $end ) {
-			return $now <= $end;
+			return $this->time <= $end;
 		}
 
 		return false;
@@ -230,19 +239,20 @@ class Announcements extends Abstract_Module {
 	/**
 	 * Check if the announcement can be shown.
 	 * 
-	 * @param string $announcement The announcement to check.
+	 * @param string $announcement_slug The announcement to check.
+	 * @param array  $dates The announcement to check.
 	 * 
 	 * @return bool
 	 */
-	public function can_show( $announcement ) {
-		$dismiss_date = get_option( $this->option_prefix . $announcement, false );
+	public function can_show( $announcement_slug, $dates ) {
+		$dismiss_date = get_option( $this->option_prefix . $announcement_slug, false );
 	  
 		if ( false === $dismiss_date ) {
 			return true;
 		}
 
 		// If the start date is after the dismiss date, show the notice.
-		$start = isset( $this->timeline[ $announcement ]['start'] ) ? $this->timeline[ $announcement ]['start'] : null;
+		$start = isset( $dates['start'] ) ? $dates['start'] : null;
 		if ( $start && $dismiss_date < $start ) {
 			return true;
 		}
