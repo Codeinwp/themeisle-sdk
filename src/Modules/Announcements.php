@@ -157,7 +157,7 @@ class Announcements extends Abstract_Module {
 			}
 		}
 
-		return $announcements;
+		return apply_filters( 'themeisle_sdk_announcements_data', $announcements );
 	}
 
 	/**
