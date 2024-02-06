@@ -316,7 +316,7 @@ class Announcements extends Abstract_Module {
 				display: flex;
 			}
 		</style>
-		<div id="themeisle-sale-black-friday" class="themeisle-sale notice notice-info is-dismissible">
+		<div class="themeisle-sale notice notice-info is-dismissible" data-announcement="black_friday">
 			<img src="<?php echo esc_url_raw( $this->get_sdk_uri() . 'assets/images/themeisle-logo.svg' ); ?>" />
 			<p>
 				<strong>Themeisle Black Friday Sale is Live!</strong> - Enjoy Maximum Savings on <?php echo esc_html( implode( ', ', $product_names ) ); ?>.
@@ -324,43 +324,54 @@ class Announcements extends Abstract_Module {
 				<span class="themeisle-sale-error"></span>
 			</p>
 		</div>
-		<script id="themeisle-sdk-announcement" type="text/javascript">
-			window.document.addEventListener( 'DOMContentLoaded', () => {
-				setTimeout( () => {
-					const button = document.querySelector( '.themeisle-sale.notice button' );
-					button?.addEventListener( 'click', e => {
-						e.preventDefault();
-						fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/x-www-form-urlencoded'
-							},
-							body: new URLSearchParams({
-								action: 'themeisle_sdk_dismiss_announcement',
-								nonce: '<?php echo esc_attr( wp_create_nonce( 'dismiss_themeisle_event_notice' ) ); ?>',
-								announcement: 'black_friday'
-							})
-						})
-							.then(response => response.text())
-							.then(response => {
-								if ( ! response?.includes( 'success' ) ) {
-									document.querySelector( '.themeisle-sale-error' ).innerHTML = response;
-									return;
-								}
-	
-								document.querySelectorAll( '.themeisle-sale.notice' ).forEach( el => {
-									el.classList.add( 'hidden' );
-									setTimeout( () => {
-										el.remove();
-									}, 800 );
+		<script type="text/javascript" data-origin="themeisle-sdk">
+			window.document.addEventListener('DOMContentLoaded', () => {
+				const observer = new MutationObserver((mutationsList, observer) => {
+					for(let mutation of mutationsList) {
+						if (mutation.type === 'childList') {
+							const container = document.querySelector('.themeisle-sale.notice');
+							const button = container?.querySelector('button');
+							if ( button ) {
+								button.addEventListener('click', e => {
+									e.preventDefault();
+									fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+										method: 'POST',
+										headers: {
+											'Content-Type': 'application/x-www-form-urlencoded'
+										},
+										body: new URLSearchParams({
+											action: 'themeisle_sdk_dismiss_announcement',
+											nonce: '<?php echo esc_attr( wp_create_nonce( 'dismiss_themeisle_event_notice' ) ); ?>',
+											announcement: container.dataset.announcement
+										})
+									})
+									.then(response => response.text())
+									.then(response => {
+										if (!response?.includes('success')) {
+											document.querySelector('.themeisle-sale-error').innerHTML = response;
+											return;
+										}
+
+										document.querySelectorAll('.themeisle-sale.notice').forEach(el => {
+											el.classList.add('hidden');
+											setTimeout(() => {
+												el.remove();
+											}, 800);
+										});
+									})
+									.catch(error => {
+										console.error('Error:', error);
+										document.querySelector('.themeisle-sale-error').innerHTML = error;
+									});
 								});
-							})
-							.catch(error => {
-								console.error( 'Error:', error );
-								document.querySelector( '.themeisle-sale-error' ).innerHTML = error;
-							});
-					});
-				}, 100 );
+								observer.disconnect();
+								break;
+							}
+						}
+					}
+				});
+
+				observer.observe(document.body, { childList: true, subtree: true });
 			});
 		</script>
 		<?php

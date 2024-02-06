@@ -70,7 +70,7 @@ class Announcements_Test extends WP_UnitTestCase {
 		$module->time = '2024-10-10 00:00:00';
 		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );
 	 
-		// The event should not be active after the event start date.
+		// The event should not be active after the event end date.
 		$module->time = '2024-12-4 00:00:00';
 		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );
 
