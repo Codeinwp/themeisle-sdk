@@ -1,7 +1,7 @@
 <?php
 /**
  * File responsible for announcements.
- * 
+ *
  * This is used to display information about limited events, such as Black Friday.
  *
  * @package     ThemeIsleSDK
@@ -23,7 +23,7 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Holds the timeline for the announcements.
-	 * 
+	 *
 	 * @var array
 	 */
 	private static $timeline = array(
@@ -33,28 +33,28 @@ class Announcements extends Abstract_Module {
 			'rendered' => false,
 		),
 	);
-  
+
 	/**
 	 * Holds the option prefix for the announcements.
-	 * 
+	 *
 	 * This is used to store the dismiss date for each announcement.
-	 * 
+	 *
 	 * @var string
 	 */
 	public $option_prefix = 'themeisle_sdk_announcement_';
 
 	/**
 	 * Holds the time for the current request.
-	 * 
+	 *
 	 * @var string
 	 */
 	public $time = '';
 
 	/**
 	 * Check if the module can be loaded.
-	 * 
+	 *
 	 * @param Product $product Product data.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function can_load( $product ) {
@@ -67,9 +67,9 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Load the module for the selected product.
-	 * 
+	 *
 	 * @param Product $product Product data.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function load( $product ) {
@@ -78,7 +78,7 @@ class Announcements extends Abstract_Module {
 		}
 
 		$this->product = $product;
-	   
+
 		add_action( 'admin_init', array( $this, 'load_announcements' ) );
 		add_filter( 'themeisle_sdk_active_announcements', array( $this, 'get_active_announcements' ) );
 		add_filter( 'themeisle_sdk_announcements', array( $this, 'get_announcements_for_plugins' ) );
@@ -86,7 +86,7 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Load all valid announcements.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function load_announcements() {
@@ -111,7 +111,7 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Get all active announcements.
-	 * 
+	 *
 	 * @return array List of active announcements.
 	 */
 	public function get_active_announcements() {
@@ -128,7 +128,7 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Get all announcements along with plugin specific data.
-	 * 
+	 *
 	 * @return array List of announcements.
 	 */
 	public function get_announcements_for_plugins() {
@@ -139,7 +139,7 @@ class Announcements extends Abstract_Module {
 			$announcements[ $announcement ] = $dates;
 
 			if ( false !== strpos( $announcement, 'black_friday' ) ) {
-				$announcements[ $announcement ]['active'] = $this->is_active( $announcement );
+				$announcements[ $announcement ]['active'] = $this->is_active( $dates );
 
 				// Dashboard banners URLs.
 				$announcements[ $announcement ]['feedzy_dashboard_url'] = tsdk_utmify( 'https://themeisle.com/plugins/feedzy-rss-feeds/blackfriday/', 'bfcm24', 'dashboard' );
@@ -147,10 +147,10 @@ class Announcements extends Abstract_Module {
 				$announcements[ $announcement ]['otter_dashboard_url']  = tsdk_utmify( 'https://themeisle.com/plugins/otter-blocks/blackfriday/', 'bfcm24', 'dashboard' );
 
 				// Customizer banners URLs.
-				$announcements[ $announcement ]['hestia_customizer_url'] = tsdk_utmify( 'https://themeisle.com/black-friday/', 'bfcm24', 'hestiacustomizer' );    
+				$announcements[ $announcement ]['hestia_customizer_url'] = tsdk_utmify( 'https://themeisle.com/black-friday/', 'bfcm24', 'hestiacustomizer' );
 				$announcements[ $announcement ]['neve_customizer_url']   = tsdk_utmify( 'https://themeisle.com/black-friday/', 'bfcm24', 'nevecustomizer' );
-					
-				// Banners urgency text.	
+
+				// Banners urgency text.
 				$remaining_time                                   = $this->get_remaining_time_for_event( $dates['end'] );
 				$announcements[ $announcement ]['remaining_time'] = $remaining_time;
 				$announcements[ $announcement ]['urgency_text']   = ! empty( $remaining_time ) ? 'Hurry up! Only ' . $remaining_time . ' left.' : '';
@@ -162,9 +162,9 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Get the announcement data.
-	 * 
+	 *
 	 * @param string $announcement The announcement to get the data for.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_announcement_data( $announcement ) {
@@ -173,9 +173,9 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Check if the announcement has an active timeline.
-	 * 
+	 *
 	 * @param array $dates The announcement to check.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function is_active( $dates ) {
@@ -183,7 +183,7 @@ class Announcements extends Abstract_Module {
 		if ( empty( $this->time ) ) {
 			$this->time = current_time( 'Y-m-d' );
 		}
-		
+
 		$start = isset( $dates['start'] ) ? $dates['start'] : null;
 		$end   = isset( $dates['end'] ) ? $dates['end'] : null;
 
@@ -208,12 +208,12 @@ class Announcements extends Abstract_Module {
 		if ( empty( $end_date ) || ! is_string( $end_date ) ) {
 			return '';
 		}
-	
+
 		try {
 			$end_date     = new \DateTime( $end_date, new \DateTimeZone( 'GMT' ) );
 			$current_date = new \DateTime( 'now', new \DateTimeZone( 'GMT' ) );
 			$diff         = $end_date->diff( $current_date );
-			
+
 			if ( $diff->days > 0 ) {
 				return $diff->days === 1 ? $diff->format( '%a day' ) : $diff->format( '%a days' );
 			}
@@ -238,15 +238,15 @@ class Announcements extends Abstract_Module {
 
 	/**
 	 * Check if the announcement can be shown.
-	 * 
+	 *
 	 * @param string $announcement_slug The announcement to check.
 	 * @param array  $dates The announcement to check.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function can_show( $announcement_slug, $dates ) {
 		$dismiss_date = get_option( $this->option_prefix . $announcement_slug, false );
-	  
+
 		if ( false === $dismiss_date ) {
 			return true;
 		}
@@ -275,14 +275,14 @@ class Announcements extends Abstract_Module {
 		}
 
 		$announcement = sanitize_key( $_POST['announcement'] );
-		
+
 		update_option( $this->option_prefix . $announcement, current_time( 'Y-m-d' ) );
 		wp_die( 'success' );
 	}
 
 	/**
 	 * Render the Black Friday notice.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function black_friday_notice_render() {
@@ -309,7 +309,7 @@ class Announcements extends Abstract_Module {
 		// Randomize the products and get only 4.
 		shuffle( $product_names );
 		$product_names = array_slice( $product_names, 0, 4 );
-	   
+
 		?>
 		<style>
 			.themeisle-sale {
