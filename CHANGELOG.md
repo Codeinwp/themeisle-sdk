@@ -1,3 +1,7 @@
+##### [Version 3.3.13](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.12...v3.3.13) (2024-02-01)
+
+- Updated nonce check
+
 ##### [Version 3.3.12](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.11...v3.3.12) (2024-01-31)
 
 - fix: prevent reference key set for users with no capability
