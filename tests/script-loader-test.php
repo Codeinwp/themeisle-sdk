@@ -54,15 +54,22 @@ class Script_Loader_Test extends WP_UnitTestCase {
 	}
 
 	public function test_script_loader_load_normal() {
-
 		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 
 		$product = new \ThemeisleSDK\Product( $file );
 
 		$this->assertTrue( ( new \ThemeisleSDK\Modules\Script_Loader() )->can_load( $product ) );
 		$this->assertInstanceOf( 'ThemeisleSDK\\Modules\\Script_Loader', ( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product ) );
-
 	}
 
+	public function test_script_loader_filters_check() {
+		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 
+		$product = new \ThemeisleSDK\Product( $file );
+		
+		$module = ( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		
+		$this->assertEquals( has_filter( 'themeisle_sdk_dependency_script_handler', [ $module, 'get_script_handler' ] ), 10 );
+		$this->assertEquals( has_action( 'themeisle_sdk_dependency_enqueue_script', [ $module, 'enqueue_script' ] ), 10 );
+	}
 }
