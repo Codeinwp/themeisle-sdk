@@ -6,6 +6,5 @@ import formbricks from "@formbricks/js";
  */
 document.addEventListener("DOMContentLoaded", () => {
     window.tsdk_formbricks = formbricks;
-    console.log("formbricks loaded");
     window.dispatchEvent(new Event("themeisle:survey:loaded"));
 });

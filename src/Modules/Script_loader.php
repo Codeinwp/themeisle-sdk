@@ -68,16 +68,18 @@ class Script_Loader extends Abstract_Module {
 	 * 
 	 * @param string $slug The slug of the script.
 	 * 
-	 * @return string The script handler.
+	 * @return string The script handler. Empty if slug is not a string or not implemented.
 	 */
 	public function get_script_handler( $slug ) {
-		if ( 'tracking' === $slug ) {
-			return 'themeisle_sdk_telemetry_script';
-		} elseif ( 'survey' === $slug ) {
-			return 'themeisle_sdk_survey_script';
+		if ( ! is_string( $slug ) ) {
+			return '';
+		}
+		
+		if ( 'tracking' !== $slug && 'survey' !== $slug ) {
+			return '';
 		}
 
-		return '';
+		return apply_filters( 'themeisle_sdk_dependency_script_handler_name', 'themeisle_sdk_' . $slug . '_script', $slug );
 	}
 
 	/**
