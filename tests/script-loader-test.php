@@ -18,9 +18,7 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		\ThemeisleSDK\Loader::add_product( $file );
 
 		$modules = \ThemeisleSDK\Common\Module_Factory::get_modules_map();
-
-		print_r( $modules );
-
+		
 		$this->assertArrayHasKey( 'sample_theme', $modules );
 		$modules['sample_theme'] = array_filter(
 			$modules['sample_theme'],
