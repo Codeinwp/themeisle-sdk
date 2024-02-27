@@ -69,7 +69,53 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		
 		$module = ( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
 		
+		// Check if the hooks are available.
 		$this->assertEquals( has_filter( 'themeisle_sdk_dependency_script_handler', [ $module, 'get_script_handler' ] ), 10 );
 		$this->assertEquals( has_action( 'themeisle_sdk_dependency_enqueue_script', [ $module, 'enqueue_script' ] ), 10 );
+	}
+
+	public function test_script_loader_handler_check() {
+		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+
+		$product = new \ThemeisleSDK\Product( $file );
+		
+		( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		
+		// Existing dependencies should have a handler.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'survey' );
+		$this->assertNotEmpty( $handler );
+
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'tracking' );
+		$this->assertNotEmpty( $handler );
+
+		// Non-existing dependencies should not have a handler.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'test' );
+		$this->assertEmpty( $handler );
+	}
+
+	public function test_script_loader_enqueue_script() {
+		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+
+		$product = new \ThemeisleSDK\Product( $file );
+		
+		( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		
+		// Load survey script.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'survey' );
+		$this->assertNotEmpty( $handler );
+		do_action( 'themeisle_sdk_dependency_enqueue_script', 'survey' );
+		$this->assertTrue( wp_script_is( $handler, 'enqueued' ) );
+
+		// Load tracking script.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'tracking' );
+		$this->assertNotEmpty( $handler );
+		do_action( 'themeisle_sdk_dependency_enqueue_script', 'tracking' );
+		$this->assertTrue( wp_script_is( $handler, 'enqueued' ) );
+
+		// Load test script (it does not exist so it should not be enqueued).
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'test' );
+		$this->assertEmpty( $handler );
+		do_action( 'themeisle_sdk_dependency_enqueue_script', 'test' );
+		$this->assertFalse( wp_script_is( $handler, 'enqueued' ) );
 	}
 }
