@@ -89,6 +89,10 @@ class Script_Loader extends Abstract_Module {
 	 */
 	public function enqueue_script( $slug ) {
 		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', $slug );
+		if ( empty( $handler ) ) {
+			return;
+		}
+		
 		if ( 'tracking' === $slug ) {
 			$this->load_tracking( $handler );
 		} elseif ( 'survey' === $slug ) {
