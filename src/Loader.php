@@ -60,6 +60,7 @@ final class Loader {
 		'welcome',
 		'compatibilities',
 		'about_us',
+		'announcements',
 	];
 
 	/**
@@ -147,5 +148,4 @@ final class Loader {
 	public static function get_version() {
 		return self::$version;
 	}
-
 }
