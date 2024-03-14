@@ -72,4 +72,25 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$this->assertTrue( (bool) has_filter( 'plugins_api_result', [ $module, 'filter_plugin_api_results' ] ) );
 	}
 
+	/**
+	 * Test the filter is not added if already registered.
+	 */
+	public function test_plugins_api_will_not_add_filter_if_marked_as_registered() {
+		wp_set_current_user( self::$admin_id );
+		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_pro_plugin/plugin_file.php';
+		$plugin_product = new \ThemeisleSDK\Product( $plugin );
+
+		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_true' );
+
+		$module = new \ThemeisleSDK\Modules\Featured_Plugins();
+		$module->load( $plugin_product );
+
+		$this->assertFalse( (bool) has_filter( 'plugins_api_result', [ $module, 'filter_plugin_api_results' ] ) );
+
+		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_false' );
+
+		$module->load( $plugin_product );
+		$this->assertTrue( (bool) has_filter( 'plugins_api_result', [ $module, 'filter_plugin_api_results' ] ) );
+	}
+
 }

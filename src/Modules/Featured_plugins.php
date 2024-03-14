@@ -65,6 +65,12 @@ class Featured_Plugins extends Abstract_Module {
 			return;
 		}
 
+		// bail if we already registered a filter for the plugin API.
+		if ( apply_filters( 'themeisle_sdk_plugin_api_filter_registered', false ) ) {
+			return;
+		}
+		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_true' );
+
 		add_filter( 'plugins_api_result', [ $this, 'filter_plugin_api_results' ], 10, 3 );
 	}
 
@@ -106,13 +112,16 @@ class Featured_Plugins extends Abstract_Module {
 	private function query_plugins_by_author( $args ) {
 		$featured = [];
 
-		$optimole_filter_slugs  = apply_filters( 'themeisle_sdk_optimole_filter_slugs', [ 'optimole-wp' ] );
+		$optimole_filter_slugs = apply_filters( 'themeisle_sdk_optimole_filter_slugs', [ 'optimole-wp' ] );
+		error_log( var_export( $optimole_filter_slugs, true ) );
 		$filtered_from_optimole = $this->get_plugins_filtered_from_author( $args, $optimole_filter_slugs, 'Optimole' );
 		$featured               = array_merge( $featured, $filtered_from_optimole );
 
 		$themeisle_filter_slugs  = apply_filters( 'themeisle_sdk_themeisle_filter_slugs', [ 'otter-blocks' ] );
 		$filtered_from_themeisle = $this->get_plugins_filtered_from_author( $args, $themeisle_filter_slugs );
 		$featured                = array_merge( $featured, $filtered_from_themeisle );
+
+		// error_log( var_export( $featured, true ) );
 
 		return $featured;
 	}
