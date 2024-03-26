@@ -223,6 +223,24 @@ class Product {
 		$this->pro_slug            = ! empty( $file_headers['Pro Slug'] ) ? $file_headers['Pro Slug'] : '';
 		$this->version             = $file_headers['Version'];
 
+		// will enable beta releases for the product and for the pro version using just the free slug.
+		$enable_beta_release = apply_filters( $this->get_slug() . '_sdk_enable_beta_release', false );
+		if ( $enable_beta_release === true ) {
+			add_filter( $this->get_slug() . '_sdk_allow_beta', '__return_true' );
+			if ( ! empty( $this->pro_slug ) ) {
+				add_filter( $this->pro_slug . '_sdk_allow_beta', '__return_true' );
+			}
+		}
+		// when the filter is changed, we need to refresh the transient data so that it reflects the changes.
+		$previous_beta_status = get_site_transient( $this->get_slug() . '_sdk_beta_status' );
+		if ( $previous_beta_status !== $enable_beta_release ) {
+			set_site_transient( $this->get_slug() . '_sdk_beta_status', (bool) $enable_beta_release, DAY_IN_SECONDS );
+			if ( ! empty( get_site_transient( $this->get_slug() . '-update-response' ) ) ) {
+				delete_site_transient( $this->get_slug() . '-update-response' );
+			}
+			delete_site_transient( 'update_plugins' );
+		}
+
 	}
 
 	/**
@@ -408,11 +426,20 @@ class Product {
 	 * @return string Changelog url.
 	 */
 	public function get_changelog() {
+		$query_args = array(
+			'name'       => rawurlencode( $this->get_name() ),
+			'edd_action' => 'view_changelog',
+		);
+
+		$api_response = get_transient( $this->get_key() . '-update-response' );
+		if ( ! empty( $api_response ) && isset( $api_response->new_version ) ) {
+			if ( strpos( $api_response->new_version, '-beta.' ) !== false ) {
+				$query_args['beta'] = '1';
+			}
+		}
+
 		return add_query_arg(
-			[
-				'name'       => rawurlencode( $this->get_name() ),
-				'edd_action' => 'view_changelog',
-			],
+			$query_args,
 			$this->get_store_url()
 		);
 	}
@@ -455,6 +482,15 @@ class Product {
 		if ( $this->type ) {
 			return plugins_url( $path, $this->basefile );
 		}
+	}
+
+	/**
+	 * Returns if the product beta is enabled or not.
+	 *
+	 * @return boolean
+	 */
+	public function is_beta() {
+		return apply_filters( $this->get_slug() . '_sdk_allow_beta', false );
 	}
 
 }

@@ -90,7 +90,10 @@ class Module_Factory {
 			 */
 			$module_object = new $class( $product );
 
-			if ( ! $module_object->can_load( $product ) ) {
+			// This will load the module if the product is in beta. This way free licensed products will receive updates via the store.
+			$allow_if_beta = $product->is_beta();
+
+			if ( ! $module_object->can_load( $product ) && $allow_if_beta === false ) {
 				continue;
 			}
 			self::$modules_attached[ $product->get_slug() ][ $module ] = $module_object->load( $product );
