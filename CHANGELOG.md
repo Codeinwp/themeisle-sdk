@@ -1,3 +1,9 @@
+##### [Version 3.3.16](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.15...v3.3.16) (2024-03-29)
+
+### Improvements
+- Formbricks on multiple products.
+- List Pro Products in featured tab.
+
 ##### [Version 3.3.15](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.14...v3.3.15) (2024-03-26)
 
 ### Improvements
