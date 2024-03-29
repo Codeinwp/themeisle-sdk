@@ -74,6 +74,35 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		$this->assertEquals( has_action( 'themeisle_sdk_dependency_enqueue_script', [ $module, 'enqueue_script' ] ), 10 );
 	}
 
+	public function test_multiple_script_loading() {
+		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+
+		$product = new \ThemeisleSDK\Product( $file );
+		
+		/**
+		 * When multiple products are loaded, the script loader hooks registration should not be triggered multiple times.
+		 */
+		( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		( new \ThemeisleSDK\Modules\Script_Loader() )->load( $product );
+		
+		// Load survey script.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'survey' );
+		$this->assertNotEmpty( $handler );
+		$this->assertTrue( 'themeisle_sdk_survey_script' === $handler );
+		do_action( 'themeisle_sdk_dependency_enqueue_script', 'survey' );
+		$this->assertTrue( wp_script_is( $handler, 'enqueued' ) );
+
+		// Load tracking script.
+		$handler = apply_filters( 'themeisle_sdk_dependency_script_handler', 'tracking' );
+		$this->assertNotEmpty( $handler );
+		$this->assertTrue( 'themeisle_sdk_tracking_script' === $handler );
+		do_action( 'themeisle_sdk_dependency_enqueue_script', 'tracking' );
+		$this->assertTrue( wp_script_is( $handler, 'enqueued' ) );
+
+		$this->assertTrue( has_filter( 'themeisle_sdk_script_setup' ) );
+	}
+
 	public function test_script_loader_handler_check() {
 		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
 
