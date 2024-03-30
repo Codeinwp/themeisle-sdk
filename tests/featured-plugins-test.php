@@ -9,8 +9,8 @@
 /**
  * Mock the plugins_api function.
  *
- * @param string        $action The API function being performed.
- * @param array|object  $args   Plugin API arguments.
+ * @param string       $action The API function being performed.
+ * @param array|object $args   Plugin API arguments.
  *
  * @return object
  */
@@ -25,53 +25,53 @@ function plugins_api( $action, $args ) {
  */
 function mock_plugin_api_results() {
 	$featured_plugin = array(
-		'name' => 'Featured Plugin',
-		'slug' => 'featured-plugin',
-		'version' => '7.2.0',
-		'author' => 'PHPUnit Featured Plugin',
-		'author_profile' => 'https://example.com/featured-plugin',
-		'requires' => '6.3',
-		'tested' => '6.5',
-		'requires_php' => '7.0',
-		'requires_plugins' => array(),
-		'rating' => 80,
-		'ratings' => array(
+		'name'                     => 'Featured Plugin',
+		'slug'                     => 'featured-plugin',
+		'version'                  => '7.2.0',
+		'author'                   => 'PHPUnit Featured Plugin',
+		'author_profile'           => 'https://example.com/featured-plugin',
+		'requires'                 => '6.3',
+		'tested'                   => '6.5',
+		'requires_php'             => '7.0',
+		'requires_plugins'         => array(),
+		'rating'                   => 80,
+		'ratings'                  => array(
 			5 => 3,
 			4 => 0,
 			3 => 0,
 			2 => 0,
 			1 => 1,
 		),
-		'num_ratings' => 4,
-		'support_threads' => 1,
+		'num_ratings'              => 4,
+		'support_threads'          => 1,
 		'support_threads_resolved' => 0,
-		'active_installs' => 6000,
-		'downloaded' => 316410,
-		'last_updated' => '2024-03-11 9:17pm GMT',
-		'added' => '2021-02-11',
-		'homepage' => '',
-		'short_description' => 'Short Desc',
-		'description' => 'Long Desc',
-		'download_link' => 'https://example.com/plugin/featured-plugin.7.2.0.zip',
-		'tags' => array(
-			'auto-update' => 'auto-update',
-			'failure' => 'failure',
+		'active_installs'          => 6000,
+		'downloaded'               => 316410,
+		'last_updated'             => '2024-03-11 9:17pm GMT',
+		'added'                    => '2021-02-11',
+		'homepage'                 => '',
+		'short_description'        => 'Short Desc',
+		'description'              => 'Long Desc',
+		'download_link'            => 'https://example.com/plugin/featured-plugin.7.2.0.zip',
+		'tags'                     => array(
+			'auto-update'    => 'auto-update',
+			'failure'        => 'failure',
 			'feature-plugin' => 'feature-plugin',
-			'update' => 'update',
+			'update'         => 'update',
 		),
-		'donate_link' => '',
-		'icons' => array(
-			'1x' => 'https://example.com/featured-plugin/assets/icon.svg?rev=2787335',
+		'donate_link'              => '',
+		'icons'                    => array(
+			'1x'  => 'https://example.com/featured-plugin/assets/icon.svg?rev=2787335',
 			'svg' => 'https://example.com/featured-plugin/assets/icon.svg?rev=2787335',
 		),
 	);
 
 	$results = array( $featured_plugin );
 
-	$api_result                     = new stdClass();
-	$api_result->info               = new stdClass();
-	$api_result->plugins            = $results;
-	$api_result->info               = array( 'results' => 1 );
+	$api_result          = new stdClass();
+	$api_result->info    = new stdClass();
+	$api_result->plugins = $results;
+	$api_result->info    = array( 'results' => 1 );
 
 	return $api_result;
 }
@@ -175,21 +175,26 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$module = new \ThemeisleSDK\Modules\Featured_Plugins();
 		$module->load( $plugin_product );
 
-		$api_result = plugins_api( 'query_plugins', array() );
-		$args               = new stdClass();
-		$args->page         = 1;
-		$args->per_page     = 36;
-		$args->browse       = 'featured';
-		$args->wp_version   = '6.4';
+		$api_result       = plugins_api( 'query_plugins', array() );
+		$args             = new stdClass();
+		$args->page       = 1;
+		$args->per_page   = 36;
+		$args->browse     = 'featured';
+		$args->wp_version = '6.4';
 
 		$filtered_api_result = apply_filters( 'plugins_api_result', $api_result, 'query_plugins', $args );
 		$this->assertEquals( 1, count( $filtered_api_result->plugins ) );
 
 		// Mutate the plugins property to be an object.
-		add_filter( 'plugins_api_result', function( $results, $action, $args ) {
-			$results->plugins = (object) $results->plugins;
-			return $results;
-		}, 9, 3 );
+		add_filter(
+			'plugins_api_result',
+			function( $results, $action, $args ) {
+				$results->plugins = (object) $results->plugins;
+				return $results;
+			},
+			9,
+			3 
+		);
 
 		// This should also pass if the result type properties are mutated.
 		$filtered_api_result = apply_filters( 'plugins_api_result', $api_result, 'query_plugins', $args );
