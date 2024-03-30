@@ -95,7 +95,7 @@ class Featured_Plugins extends Abstract_Module {
 
 		$featured = $this->query_plugins_by_author( $args );
 
-		$plugins      = array_merge( $featured, $res->plugins );
+		$plugins      = array_merge( $featured, (array) $res->plugins );
 		$plugins      = array_slice( $plugins, 0, $res->info['results'] );
 		$res->plugins = $plugins;
 
