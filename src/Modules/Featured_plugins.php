@@ -155,7 +155,8 @@ class Featured_Plugins extends Abstract_Module {
 		$filtered = array_filter(
 			$api->plugins,
 			function( $plugin ) use ( $filter_slugs ) {
-				return in_array( $plugin['slug'], $filter_slugs );
+				$array_plugin = (array) $plugin;
+				return in_array( $array_plugin['slug'], $filter_slugs );
 			}
 		);
 
