@@ -193,13 +193,34 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 				return $results;
 			},
 			9,
-			3 
+			3
 		);
 
 		// This should also pass if the result type properties are mutated.
 		$filtered_api_result = apply_filters( 'plugins_api_result', $api_result, 'query_plugins', $args );
 		$this->assertEquals( 1, count( $filtered_api_result->plugins ) );
 
+
+		// Mutate a plugin from list to be an object.
+		add_filter(
+			'plugins_api_result',
+			function( $results, $action, $args ) {
+				$plugin           = $results->plugins[0];
+				$plugin['name']   = 'Optimole';
+				$plugin['slug']   = 'optimole-wp';
+				$plugins          = $results->plugins;
+				$plugins[]        = (object) $plugin;
+				$results->plugins = $plugins;
+
+				return $results;
+			},
+			11,
+			3
+		);
+
+		// This should also pass if the plugin array contains a object within the list.
+		$filtered_api_result = apply_filters( 'plugins_api_result', $api_result, 'query_plugins', $args );
+		$this->assertEquals( 2, count( $filtered_api_result->plugins ) );
 	}
 
 }
