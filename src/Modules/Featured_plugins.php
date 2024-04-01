@@ -95,7 +95,7 @@ class Featured_Plugins extends Abstract_Module {
 
 		$featured = $this->query_plugins_by_author( $args );
 
-		$plugins      = array_merge( $featured, $res->plugins );
+		$plugins      = array_merge( $featured, (array) $res->plugins );
 		$plugins      = array_slice( $plugins, 0, $res->info['results'] );
 		$res->plugins = $plugins;
 
@@ -155,7 +155,8 @@ class Featured_Plugins extends Abstract_Module {
 		$filtered = array_filter(
 			$api->plugins,
 			function( $plugin ) use ( $filter_slugs ) {
-				return in_array( $plugin['slug'], $filter_slugs );
+				$array_plugin = (array) $plugin;
+				return in_array( $array_plugin['slug'], $filter_slugs );
 			}
 		);
 
