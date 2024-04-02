@@ -261,8 +261,7 @@ class Rollback extends Abstract_Module {
 		add_filter( 'update_theme_complete_actions', array( $this, 'alter_links_theme_upgrade' ) );
 		$rollback   = $this->get_rollback();
 		$transient  = get_site_transient( 'update_themes' );
-		$slug       = $this->product->get_slug();
-		$folder     = $slug;
+		$folder     = $this->product->get_slug();
 		$version    = $rollback['version'];
 		$temp_array = array(
 			'new_version' => $version,
@@ -285,8 +284,23 @@ class Rollback extends Abstract_Module {
 			$nonce = 'upgrade-theme_' . $theme;
 			$url   = 'update.php?action=upgrade-theme&theme=' . urlencode( $theme );
 
+			/**
+			 * The rollback will attach a temporary theme for the rollback to the transient.
+			 * However, when executing the upgrade for the attached theme we need to change the slug to the original theme slug.
+			 * This is because it will use the slug to create a temp folder for the theme used during the upgrade.
+			 */
+			add_filter(
+				'upgrader_package_options',
+				function( $options ) use ( $folder, $theme ) {
+					if ( isset( $options['hook_extra']['theme'] ) && $options['hook_extra']['theme'] === $theme && isset( $options['hook_extra']['temp_backup']['slug'] ) ) {
+						$options['hook_extra']['temp_backup']['slug'] = $folder;
+					}
+					return $options;
+				}
+			);
+
 			$upgrader = new \Theme_Upgrader( new \Theme_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'theme' ) ) );
-			$upgrader->upgrade( $slug );
+			$upgrader->upgrade( $theme );
 			delete_transient( $this->product->get_key() . '_warning_rollback' );
 			wp_die(
 				'',
