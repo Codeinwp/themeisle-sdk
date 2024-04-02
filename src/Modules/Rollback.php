@@ -261,7 +261,8 @@ class Rollback extends Abstract_Module {
 		add_filter( 'update_theme_complete_actions', array( $this, 'alter_links_theme_upgrade' ) );
 		$rollback   = $this->get_rollback();
 		$transient  = get_site_transient( 'update_themes' );
-		$folder     = $this->product->get_slug();
+        $slug       = $this->product->get_slug();
+		$folder     = $slug;
 		$version    = $rollback['version'];
 		$temp_array = array(
 			'new_version' => $version,
@@ -285,7 +286,7 @@ class Rollback extends Abstract_Module {
 			$url   = 'update.php?action=upgrade-theme&theme=' . urlencode( $theme );
 
 			$upgrader = new \Theme_Upgrader( new \Theme_Upgrader_Skin( compact( 'title', 'nonce', 'url', 'theme' ) ) );
-			$upgrader->upgrade( $theme );
+			$upgrader->upgrade( $slug );
 			delete_transient( $this->product->get_key() . '_warning_rollback' );
 			wp_die(
 				'',
