@@ -261,7 +261,7 @@ class Rollback extends Abstract_Module {
 		add_filter( 'update_theme_complete_actions', array( $this, 'alter_links_theme_upgrade' ) );
 		$rollback   = $this->get_rollback();
 		$transient  = get_site_transient( 'update_themes' );
-        $slug       = $this->product->get_slug();
+		$slug       = $this->product->get_slug();
 		$folder     = $slug;
 		$version    = $rollback['version'];
 		$temp_array = array(
