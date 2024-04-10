@@ -209,7 +209,7 @@ if ( ! function_exists( 'tsdk_translate_link' ) ) {
 		$parsed_url = wp_parse_url( $url );
 		// we replace the domain here based on the localized one.
 		if ( $type === 'domain' ) {
-			return $parsed_url['scheme'] . '://' . $code . $parsed_url['path'] . ( isset( $parsed_url['query'] ) ? '?' . $parsed_url['query'] : '' ) . ( isset( $parsed_url['fragment'] ) ? '#' . $parsed_url['fragment'] : '' );
+			return $parsed_url['scheme'] . '://' . $code . ( isset( $parsed_url['path'] ) ? $parsed_url['path'] : '' ) . ( isset( $parsed_url['query'] ) ? '?' . $parsed_url['query'] : '' ) . ( isset( $parsed_url['fragment'] ) ? '#' . $parsed_url['fragment'] : '' );
 		}
 		// default is the path based approach.
 		$new_path = isset( $parsed_url['path'] ) ? "/$code" . $parsed_url['path'] : "/$code";
