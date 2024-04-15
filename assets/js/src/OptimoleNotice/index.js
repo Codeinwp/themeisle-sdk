@@ -12,6 +12,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         email: initialEmail,
         option,
         optionKey,
+        labels,
         optimoleActivationUrl,
         optimoleApi,
         optimoleDash,
@@ -22,7 +23,6 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
     const [dismissed, setDismissed] = useState(false);
     const [progress, setProgress] = useState( initialStatus );
     const [getOption, updateOption] = useSettings();
-
 
     const dismissNotice = async () => {
         setDismissed(true);
@@ -84,9 +84,9 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         if (progress === 'done') {
             return (
                 <div className={"done"}>
-                    <p>Awesome! You are all set!</p>
+                    <p> {labels.optimole.all_set}</p>
                     <Button icon={'external'} isPrimary href={optimoleDash} target="_blank">
-                        Go to Optimole dashboard
+                        {labels.optimole.gotodash}
                     </Button>
                 </div>
             );
@@ -97,9 +97,9 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                 <p className="om-progress">
                     <span className="dashicons dashicons-update spin"/>
                     <span>
-                        {progress === 'installing' && 'Installing'}
-                        {progress === 'activating' && 'Activating'}
-                        {progress === 'connecting' && 'Connecting to API'}
+                        {progress === 'installing' && labels.optimole.installing}
+                        {progress === 'activating' && labels.optimole.activating}
+                        {progress === 'connecting' && labels.optimole.connecting}
                         &hellip;
                     </span>
                 </p>
@@ -114,11 +114,11 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                         defaultValue={email}
                         type="email"
                         onChange={updateEmail}
-                        placeholder="Email address"
+                        placeholder={labels.optimole.email_placeholder}
                     />
 
                     <Button isPrimary type="submit">
-                        Start using Optimole
+                        {labels.optimole.start_cta}
                     </Button>
                 </form>
             </>
@@ -129,7 +129,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         <Button disabled={progress && progress !== 'done'} onClick={dismissNotice} isLink
                 className="om-notice-dismiss">
             <span className="dashicons-no-alt dashicons"/>
-            <span className="screen-reader-text">Dismiss this notice.</span>
+            <span className="screen-reader-text">{labels.optimole.dismisscta}</span>
         </Button>
     );
 
@@ -141,18 +141,18 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     {dismissButton()}
                     <img src={assets + '/optimole-logo.svg'} alt="Optimole logo"/>
 
-                    <h2>Get more with Optimole</h2>
+                    <h2>{labels.optimole.heading}</h2>
 
                     <p>
                         {(type === 'om-editor' || type === 'om-image-block') ?
-                            'Increase this page speed and SEO ranking by optimizing images with Optimole.' :
-                            'Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!'
+                            labels.optimole.message1 :
+                            labels.optimole.message2
                         }
                     </p>
 
                     {( !showForm && 'done' !== progress ) && (
                         <Button isPrimary onClick={toggleForm} className="cta">
-                            Get Started Free
+                            {labels.optimole.gst}
                         </Button>
                     )}
                     {( showForm || 'done' === progress ) && form()}
@@ -173,17 +173,17 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                     <p>{title}</p>
                     <p className="description">{
                         type === 'om-media' ?
-                            'Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.' :
-                            'This image looks to be too large and would affect your site speed, we recommend you to install Optimole to optimize your images.'
+                            labels.optimole.message3 :
+                            labels.optimole.message4
                     }</p>
                     {!showForm && (
                         <div className="actions">
                             <Button isPrimary onClick={toggleForm}>
-                                Get Started Free
+                                {labels.optimole.gst}
                             </Button>
                             <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
                                 <span className="dashicons dashicons-external"/>
-                                <span>Learn more</span>
+                                <span> {labels.optimole.learnmore}</span>
                             </Button>
                         </div>
                     )}

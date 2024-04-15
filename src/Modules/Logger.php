@@ -126,15 +126,15 @@ class Logger extends Abstract_Module {
 	 */
 	public function add_notification( $all_notifications ) {
 
-		$message = apply_filters( $this->product->get_key() . '_logger_heading', 'Do you enjoy <b>{product}</b>? Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected.' );
+		$message = apply_filters( $this->product->get_key() . '_logger_heading', Loader::$labels['logger']['notice'] );
 
 		$message       = str_replace(
 			array( '{product}' ),
 			$this->product->get_friendly_name(),
 			$message
 		);
-		$button_submit = apply_filters( $this->product->get_key() . '_logger_button_submit', 'Sure, I would love to help.' );
-		$button_cancel = apply_filters( $this->product->get_key() . '_logger_button_cancel', 'No, thanks.' );
+		$button_submit = apply_filters( $this->product->get_key() . '_logger_button_submit', Loader::$labels['logger']['cta_y'] );
+		$button_cancel = apply_filters( $this->product->get_key() . '_logger_button_cancel', Loader::$labels['logger']['cta_n'] );
 
 		$all_notifications[] = [
 			'id'      => $this->product->get_key() . '_logger_flag',
