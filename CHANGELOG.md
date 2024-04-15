@@ -1,3 +1,8 @@
+##### [Version 3.3.18](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.17...v3.3.18) (2024-04-05)
+
+### Big Fixes
+- Fix rollback for Themes
+
 ##### [Version 3.3.17](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.16...v3.3.17) (2024-04-01)
 
 ### Improvements
