@@ -1,3 +1,7 @@
+##### [Version 3.3.20](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.19...v3.3.20) (2024-04-16)
+
+fix required params on sprintf
+
 ##### [Version 3.3.19](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.18...v3.3.19) (2024-04-15)
 
 Add full translation support
