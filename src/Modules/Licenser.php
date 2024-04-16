@@ -379,8 +379,8 @@ class Licenser extends Abstract_Module {
 
 		$status                 = $this->get_license_status( true );
 		$no_activations_string  = apply_filters( $this->product->get_key() . '_lc_no_activations_string', Loader::$labels['licenser']['no_activations'] );
-		$no_valid_string        = apply_filters( $this->product->get_key() . '_lc_no_valid_string', sprintf( Loader::$labels['licenser']['inactive'], '<a href="%s" target="_blank">', '</a>', '<a href="%s">', '</a>' ) );
-		$expired_license_string = apply_filters( $this->product->get_key() . '_lc_expired_string', sprintf( Loader::$labels['licenser']['expired'], '<a href="%s" target="_blank">', '</a>' ) );
+		$no_valid_string        = apply_filters( $this->product->get_key() . '_lc_no_valid_string', sprintf( Loader::$labels['licenser']['inactive'], '%s', '<a href="%s" target="_blank">', '</a>', '<a href="%s">', '</a>' ) );
+		$expired_license_string = apply_filters( $this->product->get_key() . '_lc_expired_string', sprintf( Loader::$labels['licenser']['expired'], '%s', '<a href="%s" target="_blank">', '</a>' ) );
 		// No activations left for this license.
 		if ( 'valid' != $status && $this->check_activation() ) {
 			?>
