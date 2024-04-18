@@ -9,6 +9,8 @@
     "build:promos": "wp-scripts build assets/js/src/index.js --output-path=assets/js/build/promos",
     "start:about": "wp-scripts start assets/js/src/about/about.js --output-path=assets/js/build/about",
     "build:about": "wp-scripts build assets/js/src/about/about.js --output-path=assets/js/build/about",
+    "start:float": "wp-scripts start assets/js/src/float_widget/float.js --output-path=assets/js/build/float_widget",
+    "build:float": "wp-scripts build assets/js/src/float_widget/float.js --output-path=assets/js/build/float_widget",
     "build:tracking": "wp-scripts build assets/js/src/tracking.js --output-path=assets/js/build/tracking",
     "build:survey": "wp-scripts build assets/js/src/survey_deps.js --output-path=assets/js/build/survey",
     "start": "npm-run-all --parallel start:*",
