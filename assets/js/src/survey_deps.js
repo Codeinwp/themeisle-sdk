@@ -1,4 +1,4 @@
-import formbricks from "@formbricks/js";
+import formbricks from "@formbricks/js/app";
 
 /**
  * Load the formbricks library and expose it to the global scope.
