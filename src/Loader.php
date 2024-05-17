@@ -62,6 +62,7 @@ final class Loader {
 		'about_us',
 		'announcements',
 		'featured_plugins',
+		'float_widget',
 	];
 	/**
 	 * Holds the labels for the modules.
@@ -274,6 +275,22 @@ final class Loader {
 						'user_3' => 'Otter Blocks work really well and I like the customization options. Easy to use and format to fit in with my site theme – and I’ve not encountered any compatibility or speed issues.',
 					],
 				],
+			],
+		],
+		'float_widget'     => [
+			'button' => 'Toggle Help Widget',
+			'panel'  => [
+				'greeting' => 'Thank you for using %s',
+				'title'    => 'How can we help you?',
+				'close'    => 'Close Toggle Help Widget',
+			],
+			'links'  => [
+				'documentation'   => 'Documentation',
+				'support'         => 'Get Support',
+				'wizard'          => 'Run Setup Wizard',
+				'upgrade'         => 'Upgrade to Pro',
+				'feature_request' => 'Suggest a Feature',
+				'rate'            => 'Rate Us',
 			],
 		],
 	];
