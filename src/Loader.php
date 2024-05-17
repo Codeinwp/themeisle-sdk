@@ -37,7 +37,7 @@ final class Loader {
 	/**
 	 * Holds registered products.
 	 *
-	 * @var array The products which use the SDK.
+	 * @var array<Product> The products which use the SDK.
 	 */
 	private static $products = [];
 	/**
@@ -353,7 +353,7 @@ final class Loader {
 	/**
 	 * Get all products using the SDK.
 	 *
-	 * @return array Products available.
+	 * @return array<Product> Products available.
 	 */
 	public static function get_products() {
 		return self::$products;
