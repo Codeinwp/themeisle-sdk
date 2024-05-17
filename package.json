@@ -9,6 +9,8 @@
     "build:promos": "wp-scripts build assets/js/src/index.js --output-path=assets/js/build/promos",
     "start:about": "wp-scripts start assets/js/src/about/about.js --output-path=assets/js/build/about",
     "build:about": "wp-scripts build assets/js/src/about/about.js --output-path=assets/js/build/about",
+    "start:float": "wp-scripts start assets/js/src/float_widget/float.js --output-path=assets/js/build/float_widget",
+    "build:float": "wp-scripts build assets/js/src/float_widget/float.js --output-path=assets/js/build/float_widget",
     "build:tracking": "wp-scripts build assets/js/src/tracking.js --output-path=assets/js/build/tracking",
     "build:survey": "wp-scripts build assets/js/src/survey_deps.js --output-path=assets/js/build/survey",
     "start": "npm-run-all --parallel start:*",
@@ -22,7 +24,7 @@
     "@semantic-release/exec": "^5.0.0",
     "@semantic-release/git": "^9.0.0",
     "@wordpress/postcss-plugins-preset": "^4.17.0",
-    "@wordpress/scripts": "^23.6.0",
+    "@wordpress/scripts": "^27.8.0",
     "conventional-changelog-simple-preset": "^1.0.20",
     "eslint-config-wordpress": "^2.0.0",
     "grunt-version": "^1.3.1",
@@ -33,7 +35,7 @@
     "semantic-release": "^17.4.7"
   },
   "dependencies": {
-    "@formbricks/js": "^1.6.5",
+    "@formbricks/js": "^2.0.0",
     "object-hash": "^3.0.0"
   }
 }
