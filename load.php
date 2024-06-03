@@ -132,7 +132,7 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 			$plugin_upgrade_option_name = 'themeisle_af_' . $option_content_key . '_plugins_upgrade';
 
 			$theme_option_url = get_option( $theme_upgrade_option_name, false );
-			if ( ! empty( $theme_option ) ) {
+			if ( ! empty( $theme_option_url ) ) {
 				$utmify_url = $theme_option_url;
 			}
 			$plugin_option_url = get_option( $plugin_upgrade_option_name, false );
