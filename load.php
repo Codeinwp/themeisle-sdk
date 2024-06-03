@@ -127,8 +127,8 @@ if ( ! function_exists( 'tsdk_utmify' ) ) {
 		 * Check if there is an affiliate URL for this upgrade link, if so use it.
 		 */
 		if ( $is_upgrade_url ) {
-			$option_content_key = str_replace( '-', '_', $filter_key );
-			$theme_upgrade_option_name = 'themeisle_af_' . $option_content_key . '_themes_upgrade';
+			$option_content_key         = str_replace( '-', '_', $filter_key );
+			$theme_upgrade_option_name  = 'themeisle_af_' . $option_content_key . '_themes_upgrade';
 			$plugin_upgrade_option_name = 'themeisle_af_' . $option_content_key . '_plugins_upgrade';
 
 			$theme_option_url = get_option( $theme_upgrade_option_name, false );
