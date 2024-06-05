@@ -13,6 +13,7 @@
 namespace ThemeisleSDK\Modules;
 
 use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Loader;
 use ThemeisleSDK\Product;
 
 // Exit if accessed directly.
@@ -33,18 +34,27 @@ class Featured_Plugins extends Abstract_Module {
 	private $transient_key = 'themeisle_sdk_featured_plugins_';
 
 	/**
-	 * Check if the slug contains "pro" word as part of slug.
+	 * Check if the product is pro or if a pro version is available.
 	 *
-	 * @param string $slug The product slug.
+	 * @param Product $product Product data.
 	 *
 	 * @return bool
 	 */
-	private function is_pro_slug( $slug ) {
-		if ( ! is_string( $slug ) || empty( $slug ) ) {
+	private function is_pro_available( $product ) {
+		if ( ! $product->is_wordpress_available() ) {
+			return true;
+		}
+
+		$pro_slug = $product->get_pro_slug();
+		if ( empty( $pro_slug ) ) {
 			return false;
 		}
-		// Match "pro" as a whole word exclude '_' from the word boundary.
-		return (bool) preg_match( '/(?:\b|_\K)pro(?=\b|_)/', $slug );
+
+		$all_products = Loader::get_products();
+		if ( isset( $all_products[ $pro_slug ] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -59,9 +69,7 @@ class Featured_Plugins extends Abstract_Module {
 			return false;
 		}
 
-		$slug = $product->get_slug();
-		// only load for products that contain "pro" in the slug.
-		if ( $this->is_pro_slug( $slug ) === false ) {
+		if ( ! $this->is_pro_available( $product ) ) {
 			return false;
 		}
 

@@ -121,6 +121,8 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
 		$plugin_product = new \ThemeisleSDK\Product( $plugin );
 
+		$this->set_protected_property( $plugin_product, 'wordpress_available', true );
+
 		$this->assertFalse( ( new \ThemeisleSDK\Modules\Featured_Plugins() )->can_load( $plugin_product ) );
 	}
 
@@ -141,7 +143,7 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_pro_plugin/plugin_file.php';
 		$plugin_product = new \ThemeisleSDK\Product( $plugin );
 
-		$this->set_protected_property( $plugin_product, 'slug', 'woocommerce-product-addon' );
+		$this->set_protected_property( $plugin_product, 'wordpress_available', true );
 
 		$this->assertFalse( ( new \ThemeisleSDK\Modules\Featured_Plugins() )->can_load( $plugin_product ) );
 	}
