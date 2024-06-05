@@ -33,6 +33,21 @@ class Featured_Plugins extends Abstract_Module {
 	private $transient_key = 'themeisle_sdk_featured_plugins_';
 
 	/**
+	 * Check if the slug contains "pro" word as part of slug.
+	 *
+	 * @param string $slug The product slug.
+	 *
+	 * @return bool
+	 */
+	private function is_pro_slug( $slug ) {
+		if ( ! is_string( $slug ) || empty( $slug ) ) {
+			return false;
+		}
+		// Match "pro" as a whole word exclude '_' from the word boundary.
+		return (bool) preg_match( '/(?:\b|_\K)pro(?=\b|_)/', $slug );
+	}
+
+	/**
 	 * Check if the module can be loaded.
 	 *
 	 * @param Product $product Product data.
@@ -46,7 +61,7 @@ class Featured_Plugins extends Abstract_Module {
 
 		$slug = $product->get_slug();
 		// only load for products that contain "pro" in the slug.
-		if ( strpos( $slug, 'pro' ) === false ) {
+		if ( $this->is_pro_slug( $slug ) === false ) {
 			return false;
 		}
 
