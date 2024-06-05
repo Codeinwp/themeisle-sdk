@@ -34,30 +34,6 @@ class Featured_Plugins extends Abstract_Module {
 	private $transient_key = 'themeisle_sdk_featured_plugins_';
 
 	/**
-	 * Check if the product is pro or if a pro version is available.
-	 *
-	 * @param Product $product Product data.
-	 *
-	 * @return bool
-	 */
-	private function is_pro_available( $product ) {
-		if ( ! $product->is_wordpress_available() ) {
-			return true;
-		}
-
-		$pro_slug = $product->get_pro_slug();
-		if ( empty( $pro_slug ) ) {
-			return false;
-		}
-
-		$all_products = Loader::get_products();
-		if ( isset( $all_products[ $pro_slug ] ) ) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Check if the module can be loaded.
 	 *
 	 * @param Product $product Product data.
@@ -69,7 +45,7 @@ class Featured_Plugins extends Abstract_Module {
 			return false;
 		}
 
-		if ( ! $this->is_pro_available( $product ) ) {
+		if ( $product->is_wordpress_available() ) {
 			return false;
 		}
 
