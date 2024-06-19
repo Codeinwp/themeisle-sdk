@@ -80,7 +80,7 @@ class Float_Widget_Test extends WP_UnitTestCase {
 
 		$this->assertEquals( 'https://placehold.co/200x50.jpg', $themeisle_sdk_float_widget['logoUrl'] );
 		$this->assertEquals( '#FF0000', $themeisle_sdk_float_widget['primaryColor'] );
-		$this->assertEquals( 'Toggle Help Widget', $themeisle_sdk_float_widget['strings']['toggleButton'] );
+		$this->assertEquals( 'Toggle Help Widget for Pretty Product Name', $themeisle_sdk_float_widget['strings']['toggleButton'] );
 		$this->assertEquals( 'Thank you for using Pretty Product Name', $themeisle_sdk_float_widget['strings']['panelGreet'] );
 
 		$this->assertTrue( ! empty( $themeisle_sdk_float_widget['links'] ) );

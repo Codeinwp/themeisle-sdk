@@ -278,7 +278,7 @@ final class Loader {
 			],
 		],
 		'float_widget'     => [
-			'button' => 'Toggle Help Widget',
+			'button' => 'Toggle Help Widget for %s',
 			'panel'  => [
 				'greeting' => 'Thank you for using %s',
 				'title'    => 'How can we help you?',
