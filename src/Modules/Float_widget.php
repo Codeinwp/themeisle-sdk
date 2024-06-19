@@ -185,7 +185,7 @@ class Float_Widget extends Abstract_Module {
 			'logoUrl'      => $this->float_widget_data['logo'],
 			'primaryColor' => esc_attr( $this->float_widget_data['primary_color'] ),
 			'strings'      => [
-				'toggleButton' => Loader::$labels['float_widget']['button'],
+				'toggleButton' => sprintf( Loader::$labels['float_widget']['button'], $this->float_widget_data['nice_name'] ),
 				'panelGreet'   => sprintf( Loader::$labels['float_widget']['panel']['greeting'], $this->float_widget_data['nice_name'] ),
 				'panelTitle'   => Loader::$labels['float_widget']['panel']['title'],
 				'closeToggle'  => Loader::$labels['float_widget']['panel']['close'],
