@@ -1,3 +1,9 @@
+##### [Version 3.3.23](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.22...v3.3.23) (2024-06-19)
+
+- fix: compress images
+- fix: replace huge SVG logo with png version
+- fix: improve text on float widget
+
 ##### [Version 3.3.22](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.21...v3.3.22) (2024-05-17)
 
 - Updated NPM packages
