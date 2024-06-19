@@ -293,7 +293,7 @@ class Announcements extends Abstract_Module {
 		<style>
 			.themeisle-sale {
 				display: flex;
-                align-items: center;
+				align-items: center;
 			}
 		</style>
 		<div class="themeisle-sale notice notice-info is-dismissible" data-announcement="black_friday">
