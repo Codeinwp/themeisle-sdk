@@ -1,0 +1,12 @@
+{
+  "core": null,
+  "themes": [ "https://downloads.wordpress.org/theme/neve.3.8.7.zip" ],
+  "plugins": [ ".", "https://downloads.wordpress.org/plugin/visualizer.zip" ],
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_DISPLAY": true
+  },
+  "lifecycleScripts": {
+		"afterStart": "cp bin/themeisle-sdk.php ."
+	}
+}
