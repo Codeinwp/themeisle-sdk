@@ -9,7 +9,7 @@ npx playwright install
 ```
 
 > [!NOTE]
-> You also need to use Node.js 18 or later, along with Docker and Docker Compose.
+> You also need to use Node.js 18 or later, along with Docker and Docker.
 
 Create the testing instance using the following command:
 
@@ -18,6 +18,9 @@ npm run wp-env start
 ```
 
 This will create a WordPress instance. The port is `8889` and the user is `admin` and the password is `password` (the same values used by `wp-env` testing instance).
+
+> [!NOTE]
+> Read more about `wp-env` [here](https://github.com/WordPress/gutenberg/tree/HEAD/packages/env#readme)
 
 For the _headless_ mode, use the following command:
 
@@ -33,17 +36,6 @@ npm run test:e2e:playwright:debug
 
 > [!NOTE]
 > When writing a test, using the debug mode is recommended since it will allow you to see the browser and the test in action.
-
-For database connection, the credentials are:
-
-- Host: `localhost` or `127.0.0.1`
-- Database: `wordpress`
-- User: `admin`
-- Password: `password`
-- Port: `3306`
-
-> [!NOTE]
-> You can modify the credentials in the `docker-compose.yml` file.
 
 ### Learn more about E2E testing
 

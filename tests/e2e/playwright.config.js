@@ -12,11 +12,11 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const baseConfig = require( '@wordpress/scripts/config/playwright.config' );
 
-const config = defineConfig( {
+const config = defineConfig({
 	...baseConfig,
-	reporter: process.env.CI
-		? [ [ 'github' ], [ './config/flaky-tests-reporter.js' ] ]
-		: 'list',
+	reporter: process.env.CI ?
+		[[ 'github' ], [ './config/flaky-tests-reporter.js' ]] :
+		'list',
 	workers: 1,
 	globalSetup: fileURLToPath(
 		new URL( './config/global-setup.js', 'file:' + __filename ).href
@@ -24,9 +24,13 @@ const config = defineConfig( {
 	projects: [
 		{
 			name: 'chromium',
-			use: { ...devices[ 'Desktop Chrome' ], permissions: ['clipboard-read', 'clipboard-write'] },
-			grepInvert: /-chromium/,
-		},
+			use: {
+				...devices[ 'Desktop Chrome' ],
+				permissions: [ 'clipboard-read', 'clipboard-write' ]
+			},
+			grepInvert: /-chromium/
+		}
+
 		// {
 		// 	name: 'webkit',
 		// 	use: {
@@ -50,7 +54,7 @@ const config = defineConfig( {
 		// 	grep: /@firefox/,
 		// 	grepInvert: /-firefox/,
 		// },
-	],
-} );
+	]
+});
 
 export default config;

@@ -7,6 +7,6 @@
     "WP_DEBUG_DISPLAY": true
   },
   "lifecycleScripts": {
-		"afterStart": "cp bin/themeisle-sdk.php ."
+		"afterStart": "bash ./bin/setup-env-e2e.sh"
 	}
 }
