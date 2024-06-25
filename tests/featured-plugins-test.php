@@ -98,11 +98,30 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Utility method to change the value of a protected property.
+	 *
+	 * @param \ThemeisleSDK\Product $object The object.
+	 * @param string                $property The property name.
+	 * @param mixed                 $new_value The new value.
+	 *
+	 * @return void
+	 * @throws ReflectionException Throws an exception if the property does not exist.
+	 */
+	private function set_protected_property( $object, $property, $new_value ) {
+		$reflection = new ReflectionClass( $object );
+		$property   = $reflection->getProperty( $property );
+		$property->setAccessible( true );
+		$property->setValue( $object, $new_value );
+	}
+
+	/**
 	 * Test plugin not loading without config.
 	 */
 	public function test_plugin_not_loading_if_not_pro() {
 		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
 		$plugin_product = new \ThemeisleSDK\Product( $plugin );
+
+		$this->set_protected_property( $plugin_product, 'wordpress_available', true );
 
 		$this->assertFalse( ( new \ThemeisleSDK\Modules\Featured_Plugins() )->can_load( $plugin_product ) );
 	}
@@ -115,6 +134,18 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$plugin_product = new \ThemeisleSDK\Product( $plugin );
 
 		$this->assertTrue( ( new \ThemeisleSDK\Modules\Featured_Plugins() )->can_load( $plugin_product ) );
+	}
+
+	/**
+	 * Test plugin not loading for slugs that contain pro as part of a word. Eg. Product.
+	 */
+	public function test_plugin_loading_for_words_w_pro() {
+		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_pro_plugin/plugin_file.php';
+		$plugin_product = new \ThemeisleSDK\Product( $plugin );
+
+		$this->set_protected_property( $plugin_product, 'wordpress_available', true );
+
+		$this->assertFalse( ( new \ThemeisleSDK\Modules\Featured_Plugins() )->can_load( $plugin_product ) );
 	}
 
 	/**

@@ -21,7 +21,7 @@ class Utmify_Test extends WP_UnitTestCase {
 				return $arguments;
 			},
 			11,
-			2 
+			2
 		);
 	}
 
@@ -33,8 +33,12 @@ class Utmify_Test extends WP_UnitTestCase {
 				return self::AFFILIATE_URL;
 			},
 			11,
-			2 
+			2
 		);
+	}
+
+	private function set_plugin_upgrade_option( $filter_key, $url ) {
+		update_option( 'themeisle_af_' . $filter_key . '_plugins_upgrade', $url );
 	}
 
 
@@ -58,6 +62,12 @@ class Utmify_Test extends WP_UnitTestCase {
 		$this->register_filter_url();
 
 		$link = tsdk_utmify( 'https://example.com/link', 'area', 'location' );
+
+		$this->assertEquals( self::AFFILIATE_URL, $link );
+
+		$this->set_plugin_upgrade_option( 'sample_plugin', self::AFFILIATE_URL );
+
+		$link = tsdk_utmify( 'https://themeisle.com/plugins/sample-plugin/upgrade', 'area', 'location' );
 
 		$this->assertEquals( self::AFFILIATE_URL, $link );
 
