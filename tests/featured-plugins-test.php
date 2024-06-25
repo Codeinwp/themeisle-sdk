@@ -100,7 +100,7 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 	/**
 	 * Utility method to change the value of a protected property.
 	 *
-	 * @param mixed  $object The object.
+	 * @param \ThemeisleSDK\Product  $object The object.
 	 * @param string $property The property name.
 	 * @param mixed  $new_value The new value.
 	 *
