@@ -1,5 +1,5 @@
 const BLOCKED_URLS = [
-	'https://api.themeisle.com/tracking/log', // Do not send tracking data.
+	'https://api.themeisle.com/tracking/', // Do not send tracking data.
 	'https://app.formbricks.com' // Do not initialize FormBricks survey.
 ];
 
