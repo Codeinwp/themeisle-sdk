@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Translations extends Abstract_Module {
 
-	const API_URL = 'https://translation-themeisle.test/wp-json/gpb-themeisle/';
+	const API_URL = 'https://translate-themeisle.test/wp-json/gpb-themeisle/';
 
 	/**
 	 * Check if we should load module for this.
@@ -46,12 +46,6 @@ class Translations extends Abstract_Module {
 			return false;
 		}
 
-		$lang = $this->get_user_locale();
-
-		if ( 'en_US' === $lang ) {
-			return false;
-		}
-
 		return apply_filters( $product->get_slug() . '_sdk_enable_private_translations', true );
 	}
 
@@ -68,23 +62,20 @@ class Translations extends Abstract_Module {
 
 		add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'add_translations' ], 11 );
 
+		// Allow external downloads for this API.
+		add_filter(
+			'http_request_host_is_external',
+			function ( $external, $host, $url ) {
+				if ( strpos( $url, self::API_URL ) === 0 ) {
+					return true;
+				}
+				return $external;
+			},
+			10,
+			3 
+		);
+
 		return $this;
-	}
-
-	/**
-	 * Get the user's locale.
-	 */
-	private function get_user_locale() {
-		global $wp_version;
-		if ( version_compare( $wp_version, '4.7.0', '>=' ) ) {
-			return get_user_locale();
-		}
-		$user = wp_get_current_user();
-		if ( $user ) {
-			$locale = $user->locale;
-		}
-
-		return $locale ? $locale : get_locale();
 	}
 
 	/**
@@ -121,11 +112,11 @@ class Translations extends Abstract_Module {
 			return false;
 		}
 		$data = json_decode( wp_remote_retrieve_body( $response ) );
-		if ( ! is_object( $data ) ) {
+		if ( ! is_array( $data ) ) {
 			return false;
 		}
 
-		return $data;
+		return (array) $data;
 	}
 
 	/**
@@ -150,7 +141,12 @@ class Translations extends Abstract_Module {
 			return $_transient_data;
 		}
 
+		if ( empty( $_transient_data->translations ) ) {
+			return $_transient_data;
+		}
+
 		foreach ( $translations as $translation ) {
+			$translation = (array) $translation;
 			if ( isset( $translation['language'] ) && in_array( $translation['language'], $locales, true ) ) {
 				$_transient_data->translations[] = $translation;
 			}
