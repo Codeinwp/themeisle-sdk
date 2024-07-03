@@ -110,7 +110,7 @@ class Translations extends Abstract_Module {
 		$response = $this->safe_get(
 			sprintf(
 				'%stranslations',
-				Translations::API_URL,
+				self::API_URL
 			),
 			array(
 				'timeout'   => 15, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout, Inherited by wp_remote_get only, for vip environment we use defaults.
@@ -131,7 +131,7 @@ class Translations extends Abstract_Module {
 	/**
 	 * Append translations that are available via API.
 	 *
-	 * @param $_transient_data
+	 * @param array $_transient_data The transient data.
 	 *
 	 * @return mixed
 	 */
