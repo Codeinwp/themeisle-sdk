@@ -130,24 +130,27 @@ class About_Us extends Abstract_Module {
 			'',
 			101
 		);
-		add_action( 'admin_footer', function () {
-			?>
-            <style>
-                .tsdk-upg-menu-item {
-                    color: #009528;
-                }
+		add_action(
+			'admin_footer',
+			function () {
+				?>
+			<style>
+				.tsdk-upg-menu-item {
+					color: #009528;
+				}
 
-                .tsdk-upg-menu-item:hover {
-                    color: #008a20;
-                }
-            </style>
-            <script type="text/javascript">
-                jQuery(document).ready(function ($) {
-                    $('.tsdk-upg-menu-item').parent().attr('target', '_blank');
-                });
-            </script>
-			<?php
-		} );
+				.tsdk-upg-menu-item:hover {
+					color: #008a20;
+				}
+			</style>
+			<script type="text/javascript">
+				jQuery(document).ready(function ($) {
+					$('.tsdk-upg-menu-item').parent().attr('target', '_blank');
+				});
+			</script>
+				<?php
+			} 
+		);
 	}
 
 	/**
