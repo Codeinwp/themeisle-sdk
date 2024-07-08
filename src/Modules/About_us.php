@@ -124,12 +124,24 @@ class About_Us extends Abstract_Module {
 		add_submenu_page(
 			$this->about_data['location'],
 			$this->about_data['upgrade_text'],
-			$this->about_data['upgrade_text'],
+			'<span class="tsdk-upg-menu-item">' . $this->about_data['upgrade_text'] . '</span>',
 			'manage_options',
 			$this->about_data['upgrade_link'],
 			'',
 			101
 		);
+		add_action( 'admin_footer', function () {
+			?>
+			<style>
+                .tsdk-upg-menu-item {
+                    color: #009528;
+                }
+                .tsdk-upg-menu-item:hover {
+                    color: #008a20;
+                }
+			</style>
+			<?php
+		} );
 	}
 
 	/**
