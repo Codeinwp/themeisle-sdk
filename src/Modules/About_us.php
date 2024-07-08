@@ -132,14 +132,20 @@ class About_Us extends Abstract_Module {
 		);
 		add_action( 'admin_footer', function () {
 			?>
-			<style>
+            <style>
                 .tsdk-upg-menu-item {
                     color: #009528;
                 }
+
                 .tsdk-upg-menu-item:hover {
                     color: #008a20;
                 }
-			</style>
+            </style>
+            <script type="text/javascript">
+                jQuery(document).ready(function ($) {
+                    $('.tsdk-upg-menu-item').parent().attr('target', '_blank');
+                });
+            </script>
 			<?php
 		} );
 	}
