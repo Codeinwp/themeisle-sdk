@@ -33,7 +33,7 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		wp_delete_user( $this->author_id, true );
 	}
