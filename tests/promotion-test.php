@@ -22,7 +22,7 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
+	public function setUp() {
 		parent::setUp();
 		$this->author_id = $this->factory->user->create( array( 'role' => 'editor' ) );
 	}
