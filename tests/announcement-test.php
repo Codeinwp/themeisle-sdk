@@ -40,7 +40,7 @@ class Announcements_Test extends WP_UnitTestCase {
 	}
 
 	private function filter_value( $value ) {
-		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Announcements' );
+		return ( $value && get_class( $value ) === 'ThemeisleSDK\\Modules\\Announcements' );
 	}
 
 	/**
