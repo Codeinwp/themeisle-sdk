@@ -103,7 +103,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @var bool
 	 */
-	private $debug = true;
+	private $debug = false;
 
 	/**
 	 * Should we load this module.
