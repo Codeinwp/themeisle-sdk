@@ -19,8 +19,8 @@
     "codeinwp/phpcs-ruleset": "dev-main"
   },
   "scripts": {
-	"format": "phpcbf --standard=phpcs.xml --report-summary --report-source -s  --runtime-set testVersion 5.6- ",
-	"phpcs": "phpcs --standard=phpcs.xml -s --runtime-set testVersion 5.6-",
+	"format": "phpcbf --standard=phpcs.xml --report-summary --report-source -s  --runtime-set testVersion 7.2- ",
+	"phpcs": "phpcs --standard=phpcs.xml -s --runtime-set testVersion 7.2-",
 	"lint": "composer run-script phpcs"
   },
   "support": {
