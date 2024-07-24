@@ -40,7 +40,10 @@ class Announcements_Test extends WP_UnitTestCase {
 	}
 
 	private function filter_value( $value ) {
-		return ( $value && get_class( $value ) === 'ThemeisleSDK\\Modules\\Announcements' );
+		if ( ! is_object( $value ) ) {
+			return false;
+		}
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Announcements' );
 	}
 
 	/**
@@ -69,7 +72,7 @@ class Announcements_Test extends WP_UnitTestCase {
 		// The event should not be active before the event start date.
 		$module->time = '2024-10-10 00:00:00';
 		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );
-	 
+
 		// The event should not be active after the event end date.
 		$module->time = '2024-12-4 00:00:00';
 		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );

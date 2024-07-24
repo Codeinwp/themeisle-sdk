@@ -32,7 +32,11 @@ class Uninstall_Feedback_Test extends WP_UnitTestCase {
 	}
 
 	private function filter_value( $value ) {
-		return ( $value && get_class( $value ) === 'ThemeisleSDK\\Modules\\Uninstall_Feedback' );
+		if ( ! is_object( $value ) ) {
+			return false;
+		}
+
+		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Uninstall_Feedback' );
 	}
 	/**
 	 * Test product from partner loading.

@@ -22,7 +22,7 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
+	public function setUp() : void {
 		parent::setUp();
 		$this->author_id = $this->factory->user->create( array( 'role' => 'editor' ) );
 	}
@@ -33,7 +33,7 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown(): void {
+	public function tearDown() : void {
 		parent::tearDown();
 		wp_delete_user( $this->author_id, true );
 	}
