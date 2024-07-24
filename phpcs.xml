@@ -16,6 +16,9 @@
     <rule ref="Themeisle"/>
 
 
+    <rule ref="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
     <rule ref="Squiz.Commenting.FunctionComment.Missing">
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
