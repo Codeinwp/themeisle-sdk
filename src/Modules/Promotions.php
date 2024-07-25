@@ -121,6 +121,8 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load[] = 'woo_plugins';
 		$promotions_to_load[] = 'neve-fse';
 
+		$promotions_to_load = array_unique( $promotions_to_load );
+
 		$this->promotions = $this->get_promotions();
 
 		$this->dissallowed_promotions = apply_filters( $product->get_key() . '_dissallowed_promotions', array() );
