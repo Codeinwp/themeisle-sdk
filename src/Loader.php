@@ -53,6 +53,7 @@ final class Loader {
 		'licenser',
 		'logger',
 		'translate',
+		'translations',
 		'review',
 		'recommendation',
 		'notification',
