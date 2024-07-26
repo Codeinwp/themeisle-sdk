@@ -68,90 +68,92 @@ const Footer = ({onClick}) => {
 
 const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
     return (props) => {
-        if (props.isSelected && Boolean(window.themeisleSDKPromotions.showPromotion)) {
 
-            const [isLoading, setLoading] = useState(false);
-            const [installStatus, setInstallStatus] = useState('default');
-            const [hasSkipped, setHasSkipped] = useState(false);
+        const [isLoading, setLoading] = useState(false);
+        const [installStatus, setInstallStatus] = useState('default');
+        const [hasSkipped, setHasSkipped] = useState(false);
+        const [getOption, updateOption, status] = useSettings();
 
-            const [getOption, updateOption, status] = useSettings();
 
-            const install = async () => {
-                setLoading(true);
-                await installPluginOrTheme('otter-blocks');
-                updateOption('themeisle_sdk_promotions_otter_installed', !Boolean(getOption('themeisle_sdk_promotions_otter_installed')));
-                await activatePlugin(window.themeisleSDKPromotions.otterActivationUrl);
-                setLoading(false);
-                setInstallStatus('installed');
-            };
+        const onSkip = () => {
+            const option = {...window.themeisleSDKPromotions.option};
+            option[window.themeisleSDKPromotions.showPromotion] = new Date().getTime() / 1000 | 0;
+            updateOption('themeisle_sdk_promotions', JSON.stringify(option));
+            window.themeisleSDKPromotions.showPromotion = false;
+        };
 
-            const Install = () => {
-                if ('installed' === installStatus) {
-                    return <p><strong>Awesome! Refresh the page to see Otter Blocks in action.</strong></p>;
-                }
-
-                return (
-                    <Button
-                        variant="secondary"
-                        onClick={install}
-                        isBusy={isLoading}
-                        style={style.button}
-                    >
-                        Install & Activate Otter Blocks
-                    </Button>
-                );
-            };
-
-            const onSkip = () => {
-                const option = {...window.themeisleSDKPromotions.option};
-                option[window.themeisleSDKPromotions.showPromotion] = new Date().getTime() / 1000 | 0;
-                updateOption('themeisle_sdk_promotions', JSON.stringify(option));
-                window.themeisleSDKPromotions.showPromotion = false;
-            };
-
-            useEffect(() => {
-                if (hasSkipped) {
-                    onSkip();
-                }
-            }, [hasSkipped]);
-
+        useEffect(() => {
             if (hasSkipped) {
-                return <BlockEdit {...props} />;
+                onSkip();
+            }
+        }, [hasSkipped]);
+
+
+
+        if (! props.isSelected || ! Boolean(window.themeisleSDKPromotions.showPromotion)) {
+            return <BlockEdit {...props} />;
+        }
+        
+        const install = async () => {
+            setLoading(true);
+            await installPluginOrTheme('otter-blocks');
+            updateOption('themeisle_sdk_promotions_otter_installed', !Boolean(getOption('themeisle_sdk_promotions_otter_installed')));
+            await activatePlugin(window.themeisleSDKPromotions.otterActivationUrl);
+            setLoading(false);
+            setInstallStatus('installed');
+        };
+
+        const Install = () => {
+            if ('installed' === installStatus) {
+                return <p><strong>Awesome! Refresh the page to see Otter Blocks in action.</strong></p>;
             }
 
             return (
-                <Fragment>
-                    <BlockEdit {...props} />
-
-                    <InspectorControls>
-                        {Object.keys(upsells).map(key => {
-                            if (key === window.themeisleSDKPromotions.showPromotion) {
-                                const upsell = upsells[key];
-
-                                return (
-                                    <PanelBody
-                                        key={key}
-                                        title={upsell.title}
-                                        initialOpen={false}
-                                    >
-                                        <p>{upsell.description}</p>
-
-                                        <Install/>
-
-                                        <img style={style.image}
-                                             src={window.themeisleSDKPromotions.assets + upsell.image}/>
-
-                                        <Footer onClick={() => setHasSkipped(true)}/>
-                                    </PanelBody>
-                                );
-                            }
-                        })}
-                    </InspectorControls>
-                </Fragment>
+                <Button
+                    variant="secondary"
+                    onClick={install}
+                    isBusy={isLoading}
+                    style={style.button}
+                >
+                    Install & Activate Otter Blocks
+                </Button>
             );
+        };
+
+        if (hasSkipped) {
+            return <BlockEdit {...props} />;
         }
 
-        return <BlockEdit {...props} />;
+        return (
+            <Fragment>
+                <BlockEdit {...props} />
+
+                <InspectorControls>
+                    {Object.keys(upsells).map(key => {
+                        if (key === window.themeisleSDKPromotions.showPromotion) {
+                            const upsell = upsells[key];
+
+                            return (
+                                <PanelBody
+                                    key={key}
+                                    title={upsell.title}
+                                    initialOpen={false}
+                                >
+                                    <p>{upsell.description}</p>
+
+                                    <Install/>
+
+                                    <img style={style.image}
+                                            src={window.themeisleSDKPromotions.assets + upsell.image}/>
+
+                                    <Footer onClick={() => setHasSkipped(true)}/>
+                                </PanelBody>
+                            );
+                        }
+                    })}
+                </InspectorControls>
+            </Fragment>
+        );
     };
 }, 'withInspectorControl');
 

@@ -1,3 +1,8 @@
+##### [Version 3.3.24](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.23...v3.3.24) (2024-06-25)
+
+- Feat: Allow affiliate url change via DB option.
+- Fix: Featured plugins displaying on some non-pro products.
+
 ##### [Version 3.3.23](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.22...v3.3.23) (2024-06-19)
 
 - fix: compress images

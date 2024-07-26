@@ -54,16 +54,10 @@ class Review extends Abstract_Module {
 	public function add_notification( $all_notifications ) {
 
 		$developers = [
-			'Bogdan',
 			'Marius',
 			'Hardeep',
-			'Rodica',
-			'Stefan',
-			'Uriahs',
-			'Madalin',
-			'Cristi',
-			'Silviu',
 			'Andrei',
+			'Robert',
 		];
 
 		$link = 'https://wordpress.org/support/' . $this->product->get_type() . '/' . $this->product->get_slug() . '/reviews/#wporg-footer';

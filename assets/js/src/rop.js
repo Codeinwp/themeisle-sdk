@@ -30,7 +30,7 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 				<span className="screen-reader-text">Dismiss this notice.</span>
 			</Button>
 
-			<p>Boost your content's reach effortlessly! Introducing <b>Revive Old Posts</b>, a cutting-edge plugin from the makers of { window.themeisleSDKPromotions.product }. Seamlessly auto-share old & new content across social media, driving traffic like never before.</p>
+			<p>Boost your content's reach effortlessly! Introducing <b>Revive Social</b>, a cutting-edge plugin from the makers of { window.themeisleSDKPromotions.product }. Seamlessly auto-share old & new content across social media, driving traffic like never before.</p>
 
 			<div className="rop-notice-actions">
 				{ 'installed' !== status ? (
