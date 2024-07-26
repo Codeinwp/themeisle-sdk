@@ -46,7 +46,7 @@ class Translations extends Abstract_Module {
 			return false;
 		}
 
-		return apply_filters( $product->get_slug() . '_sdk_enable_private_translations', true );
+		return apply_filters( $product->get_slug() . '_sdk_enable_private_translations', false );
 	}
 
 	/**
