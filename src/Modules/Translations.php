@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Translations extends Abstract_Module {
 
-	const API_URL = 'https://translate-themeisle.test/wp-json/gpb-themeisle/';
+	const API_URL = 'https://translations.themeisle.com/wp-json/gpb-themeisle/';
 
 	/**
 	 * Check if we should load module for this.
@@ -141,7 +141,7 @@ class Translations extends Abstract_Module {
 			return $_transient_data;
 		}
 
-		if ( empty( $_transient_data->translations ) ) {
+		if ( ! isset( $_transient_data->translations ) ) {
 			return $_transient_data;
 		}
 
