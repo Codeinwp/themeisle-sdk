@@ -78,6 +78,13 @@ class Promotions extends Abstract_Module {
 	private $option_neve_fse = 'themeisle_sdk_promotions_neve_fse_installed';
 
 	/**
+	 * Option key for Redirection for CF7.
+	 *
+	 * @var string
+	 */
+	private $option_redirection_cf7 = 'themeisle_sdk_promotions_redirection_cf7_installed';
+
+	/**
 	 * Loaded promotion.
 	 *
 	 * @var string
@@ -115,10 +122,16 @@ class Promotions extends Abstract_Module {
 
 		$this->debug          = apply_filters( 'themeisle_sdk_promo_debug', $this->debug );
 		$promotions_to_load   = apply_filters( $product->get_key() . '_load_promotions', array() );
+		$promotions_to_load[] = 'otter';
 		$promotions_to_load[] = 'optimole';
 		$promotions_to_load[] = 'rop';
 		$promotions_to_load[] = 'woo_plugins';
 		$promotions_to_load[] = 'neve-fse';
+		$promotions_to_load[] = 'redirection-cf7';
+
+		$promotions_to_load = array_unique( $promotions_to_load );
+
+		$promotions_to_load = array_unique( $promotions_to_load );
 
 		$this->promotions = $this->get_promotions();
 
@@ -271,6 +284,16 @@ class Promotions extends Abstract_Module {
 				'default'           => false,
 			)
 		);
+		register_setting(
+			'themeisle_sdk_settings',
+			$this->option_redirection_cf7,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
 	}
 
 	/**
@@ -313,24 +336,26 @@ class Promotions extends Abstract_Module {
 	 * @return array
 	 */
 	private function get_promotions() {
-		$has_otter               = defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_plugin_installed( 'otter-blocks' );
-		$had_otter_from_promo    = get_option( $this->option_otter, false );
-		$has_optimole            = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
-		$had_optimole_from_promo = get_option( $this->option_optimole, false );
-		$has_rop                 = defined( 'ROP_LITE_VERSION' ) || $this->is_plugin_installed( 'tweet-old-post' );
-		$had_rop_from_promo      = get_option( $this->option_rop, false );
-		$has_woocommerce         = class_exists( 'WooCommerce' );
-		$has_sparks              = defined( 'SPARKS_WC_VERSION' ) || $this->is_plugin_installed( 'sparks-for-woocommerce' );
-		$has_ppom                = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
-		$is_min_req_v            = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
-		$is_min_fse_v            = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
-		$current_theme           = wp_get_theme();
-		$has_neve_fse            = $current_theme->template === 'neve-fse' || $current_theme->parent() === 'neve-fse';
-		$has_enough_attachments  = $this->has_min_media_attachments();
-		$has_enough_old_posts    = $this->has_old_posts();
+		$has_otter                 = defined( 'OTTER_BLOCKS_VERSION' ) || $this->is_plugin_installed( 'otter-blocks' );
+		$had_otter_from_promo      = get_option( $this->option_otter, false );
+		$has_optimole              = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
+		$had_optimole_from_promo   = get_option( $this->option_optimole, false );
+		$has_rop                   = defined( 'ROP_LITE_VERSION' ) || $this->is_plugin_installed( 'tweet-old-post' );
+		$had_rop_from_promo        = get_option( $this->option_rop, false );
+		$has_woocommerce           = class_exists( 'WooCommerce' );
+		$has_sparks                = defined( 'SPARKS_WC_VERSION' ) || $this->is_plugin_installed( 'sparks-for-woocommerce' );
+		$has_ppom                  = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
+		$has_redirection_cf7       = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
+		$had_redirection_cf7_promo = get_option( $this->option_optimole, false );
+		$is_min_req_v              = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
+		$is_min_fse_v              = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
+		$current_theme             = wp_get_theme();
+		$has_neve_fse              = $current_theme->template === 'neve-fse' || $current_theme->parent() === 'neve-fse';
+		$has_enough_attachments    = $this->has_min_media_attachments();
+		$has_enough_old_posts      = $this->has_old_posts();
 
 		$all = [
-			'optimole'    => [
+			'optimole'        => [
 				'om-editor'      => [
 					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen' => 'editor',
@@ -352,7 +377,7 @@ class Promotions extends Abstract_Module {
 					'screen' => 'elementor',
 				],
 			],
-			'otter'       => [
+			'otter'           => [
 				'blocks-css'        => [
 					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
 					'screen' => 'editor',
@@ -366,13 +391,13 @@ class Promotions extends Abstract_Module {
 					'screen' => 'editor',
 				],
 			],
-			'rop'         => [
+			'rop'             => [
 				'rop-posts' => [
 					'env'    => ! $has_rop && ! $had_rop_from_promo && $has_enough_old_posts,
 					'screen' => 'edit-post',
 				],
 			],
-			'woo_plugins' => [
+			'woo_plugins'     => [
 				'ppom'                  => [
 					'env'    => ! $has_ppom && $has_woocommerce,
 					'screen' => 'edit-product',
@@ -390,10 +415,16 @@ class Promotions extends Abstract_Module {
 					'screen' => 'edit-product',
 				],
 			],
-			'neve-fse'    => [
+			'neve-fse'        => [
 				'neve-fse-themes-popular' => [
 					'env'    => ! $has_neve_fse && $is_min_fse_v,
 					'screen' => 'themes-install-popular',
+				],
+			],
+			'redirection-cf7' => [
+				'wpcf7' => [
+					'env'    => ! $has_redirection_cf7 && ! $had_redirection_cf7_promo,
+					'screen' => 'wpcf7',
 				],
 			],
 		];
@@ -470,6 +501,7 @@ class Promotions extends Abstract_Module {
 		$is_editor        = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
 		$is_theme_install = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' || $current_screen->id === 'themes' );
 		$is_product       = isset( $current_screen->id ) && $current_screen->id === 'product';
+		$is_cf7_install   = isset( $current_screen->id ) && function_exists( 'str_contains' ) ? str_contains( $current_screen->id, 'page_wpcf7' ) : false;
 
 		$return = [];
 
@@ -511,6 +543,11 @@ class Promotions extends Abstract_Module {
 							unset( $this->promotions[ $slug ][ $key ] );
 						}
 						break;
+					case 'wpcf7':
+						if ( ! $is_cf7_install ) {
+							unset( $this->promotions[ $slug ][ $key ] );
+						}
+						break;
 				}
 			}
 
@@ -547,6 +584,9 @@ class Promotions extends Abstract_Module {
 			}
 			if ( $this->get_upsells_dismiss_time( 'neve-fse-themes-popular' ) === false ) {
 				add_action( 'admin_notices', [ $this, 'render_neve_fse_themes_notice' ] );
+			}
+			if ( $this->get_upsells_dismiss_time( 'redirection-cf7' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_redirection_cf7_notice' ] );
 			}
 
 			$this->load_woo_promos();
@@ -595,6 +635,10 @@ class Promotions extends Abstract_Module {
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_neve_fse_themes_notice' ] );
 				break;
+			case 'wpcf7':
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
+				add_action( 'admin_notices', [ $this, 'render_redirection_cf7_notice' ] );
+				break;
 		}
 	}
 
@@ -630,7 +674,8 @@ class Promotions extends Abstract_Module {
 			[
 				'debug'                 => $this->debug,
 				'labels'                => [
-					'optimole' => Loader::$labels['promotions']['optimole'],
+					'optimole'       => Loader::$labels['promotions']['optimole'],
+					'redirectionCF7' => Loader::$labels['promotions']['redirection_cf7'],
 				],
 				'email'                 => $user->user_email,
 				'showPromotion'         => $this->loaded_promo,
@@ -648,6 +693,9 @@ class Promotions extends Abstract_Module {
 				'neveFSEMoreUrl'        => tsdk_utmify( 'https://themeisle.com/themes/neve-fse/', 'neve-fse-themes-popular', 'theme-install' ),
 				// translators: %s is the product name.
 				'title'                 => esc_html( sprintf( Loader::$labels['promotions']['recommended'], $this->product->get_name() ) ),
+				'redirectionCF7MoreUrl' => tsdk_utmify( 'https://docs.themeisle.com/collection/2014-redirection-for-contact-form-7', 'redirection-for-contact-form-7', 'plugin-install' ),
+				'rfCF7ActivationUrl'    => $this->get_plugin_activation_link( 'wpcf7-redirect' ),
+				'cf7Dash'               => esc_url( add_query_arg( [ 'page' => 'wpcf7-new' ], admin_url( 'admin.php' ) ) ),
 			]
 		);
 		wp_enqueue_script( $handle );
@@ -672,6 +720,13 @@ class Promotions extends Abstract_Module {
 	 */
 	public function render_neve_fse_themes_notice() {
 		echo '<div id="ti-neve-fse-notice" class="notice notice-info ti-sdk-neve-fse-notice"></div>';
+	}
+
+	/**
+	 * Render Redirection for CF7 notice.
+	 */
+	public function render_redirection_cf7_notice() {
+		echo '<div id="ti-redirection-cf7-notice" class="notice notice-info ti-redirection-cf7-notice"></div>';
 	}
 
 	/**
