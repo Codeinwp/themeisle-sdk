@@ -1,3 +1,11 @@
+##### [Version 3.3.26](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.25...v3.3.26) (2024-07-29)
+
+- fix: JS error in core editor
+- twak: change ROP product name
+- tweak: updated developers list
+- fix: removed duplicate feed URL
+- feat: add private translation functionality
+
 ##### [Version 3.3.25](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.24...v3.3.25) (2024-07-08)
 
 improve upgrade link
