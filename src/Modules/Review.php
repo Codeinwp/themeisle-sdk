@@ -70,7 +70,7 @@ class Review extends Abstract_Module {
 			[ '{product}', '{developer}' ],
 			[
 				$this->product->get_friendly_name(),
-				$developers[ strlen( get_site_url() ) % 10 ],
+				$developers[ strlen( get_site_url() ) % count( $developers ) ],
 			],
 			$message
 		);
