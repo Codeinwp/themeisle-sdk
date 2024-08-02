@@ -345,8 +345,8 @@ class Promotions extends Abstract_Module {
 		$has_woocommerce           = class_exists( 'WooCommerce' );
 		$has_sparks                = defined( 'SPARKS_WC_VERSION' ) || $this->is_plugin_installed( 'sparks-for-woocommerce' );
 		$has_ppom                  = defined( 'PPOM_VERSION' ) || $this->is_plugin_installed( 'woocommerce-product-addon' );
-		$has_redirection_cf7       = defined( 'OPTIMOLE_VERSION' ) || $this->is_plugin_installed( 'optimole-wp' );
-		$had_redirection_cf7_promo = get_option( $this->option_optimole, false );
+		$has_redirection_cf7       = defined( 'WPCF7_PRO_REDIRECT_PLUGIN_VERSION' ) || $this->is_plugin_installed( 'wpcf7-redirect' );
+		$had_redirection_cf7_promo = get_option( $this->option_redirection_cf7, false );
 		$is_min_req_v              = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$is_min_fse_v              = version_compare( get_bloginfo( 'version' ), '6.2', '>=' );
 		$current_theme             = wp_get_theme();
