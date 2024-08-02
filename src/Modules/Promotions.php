@@ -357,74 +357,89 @@ class Promotions extends Abstract_Module {
 		$all = [
 			'optimole'        => [
 				'om-editor'      => [
-					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
-					'screen' => 'editor',
+					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
+					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'om-image-block' => [
-					'env'    => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
-					'screen' => 'editor',
+					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
+					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'om-attachment'  => [
-					'env'    => ! $has_optimole && ! $had_optimole_from_promo,
-					'screen' => 'media-editor',
+					'env'     => ! $has_optimole && ! $had_optimole_from_promo,
+					'screen'  => 'media-editor',
+					'delayed' => true,
 				],
 				'om-media'       => [
-					'env'    => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
-					'screen' => 'media',
+					'env'     => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
+					'screen'  => 'media',
+					'delayed' => true,
 				],
 				'om-elementor'   => [
-					'env'    => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
-					'screen' => 'elementor',
+					'env'     => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
+					'screen'  => 'elementor',
+					'delayed' => true,
 				],
 			],
 			'otter'           => [
 				'blocks-css'        => [
-					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
-					'screen' => 'editor',
+					'env'     => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
+					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'blocks-animation'  => [
-					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
-					'screen' => 'editor',
+					'env'     => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
+					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'blocks-conditions' => [
-					'env'    => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
-					'screen' => 'editor',
+					'env'     => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
+					'screen'  => 'editor',
+					'delayed' => true,
 				],
 			],
 			'rop'             => [
 				'rop-posts' => [
-					'env'    => ! $has_rop && ! $had_rop_from_promo && $has_enough_old_posts,
-					'screen' => 'edit-post',
+					'env'     => ! $has_rop && ! $had_rop_from_promo && $has_enough_old_posts,
+					'screen'  => 'edit-post',
+					'delayed' => true,
 				],
 			],
 			'woo_plugins'     => [
 				'ppom'                  => [
-					'env'    => ! $has_ppom && $has_woocommerce,
-					'screen' => 'edit-product',
+					'env'     => ! $has_ppom && $has_woocommerce,
+					'screen'  => 'edit-product',
+					'delayed' => true,
 				],
 				'sparks-wishlist'       => [
-					'env'    => ! $has_sparks && $has_woocommerce,
-					'screen' => 'edit-product',
+					'env'     => ! $has_sparks && $has_woocommerce,
+					'screen'  => 'edit-product',
+					'delayed' => true,
 				],
 				'sparks-announcement'   => [
-					'env'    => ! $has_sparks && $has_woocommerce,
-					'screen' => 'edit-product',
+					'env'     => ! $has_sparks && $has_woocommerce,
+					'screen'  => 'edit-product',
+					'delayed' => true,
 				],
 				'sparks-product-review' => [
-					'env'    => ! $has_sparks && $has_woocommerce,
-					'screen' => 'edit-product',
+					'env'     => ! $has_sparks && $has_woocommerce,
+					'screen'  => 'edit-product',
+					'delayed' => true,
 				],
 			],
-			'neve-fse'        => [
-				'neve-fse-themes-popular' => [
-					'env'    => ! $has_neve_fse && $is_min_fse_v,
-					'screen' => 'themes-install-popular',
+			'neve'            => [
+				'neve-themes-popular' => [
+					'env'     => ! $has_neve,
+					'screen'  => 'themes-install-popular',
+					'delayed' => true,
 				],
 			],
 			'redirection-cf7' => [
 				'wpcf7' => [
-					'env'    => ! $has_redirection_cf7 && ! $had_redirection_cf7_promo,
-					'screen' => 'wpcf7',
+					'env'     => ! $has_redirection_cf7 && ! $had_redirection_cf7_promo,
+					'screen'  => 'wpcf7',
+					'delayed' => true,
 				],
 			],
 		];
@@ -473,15 +488,13 @@ class Promotions extends Abstract_Module {
 	/**
 	 * Get the last dismiss time of a promotion.
 	 *
-	 * @return int The timestamp of last dismiss, or install time - 4 days.
+	 * @return int | false The timestamp of last dismiss or false.
 	 */
 	private function get_last_dismiss_time() {
 		$dismissed = $this->get_upsells_dismiss_time();
 
 		if ( empty( $dismissed ) ) {
-			// we return the product install time - 4 days because we want to show the upsell after 3 days,
-			// and we move the product install time 4 days in the past.
-			return $this->product->get_install_time() - 4 * DAY_IN_SECONDS;
+			return false;
 		}
 
 		return max( array_values( $dismissed ) );
@@ -504,9 +517,20 @@ class Promotions extends Abstract_Module {
 		$is_cf7_install   = isset( $current_screen->id ) && function_exists( 'str_contains' ) ? str_contains( $current_screen->id, 'page_wpcf7' ) : false;
 
 		$return = [];
+		
+		// Delayed promotions are shown after 4 days
+		$promo_display_start_time  = $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS );
+		$should_show_delayed_promo = time() < $promo_display_start_time;
 
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
+
+				if ( ! $this->debug && isset( $data['delayed'] ) && $data['delayed'] && $should_show_delayed_promo ) {
+					unset( $this->promotions[ $slug ][ $key ] );
+
+					continue;
+				}
+
 				switch ( $data['screen'] ) {
 					case 'media-editor':
 						if ( ! $is_media && ! $is_editor ) {
