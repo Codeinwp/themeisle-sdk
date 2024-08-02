@@ -408,24 +408,20 @@ class Promotions extends Abstract_Module {
 			],
 			'woo_plugins'     => [
 				'ppom'                  => [
-					'env'     => ! $has_ppom && $has_woocommerce,
-					'screen'  => 'edit-product',
-					'delayed' => true,
+					'env'    => ! $has_ppom && $has_woocommerce,
+					'screen' => 'edit-product',
 				],
 				'sparks-wishlist'       => [
-					'env'     => ! $has_sparks && $has_woocommerce,
-					'screen'  => 'edit-product',
-					'delayed' => true,
+					'env'    => ! $has_sparks && $has_woocommerce,
+					'screen' => 'edit-product',
 				],
 				'sparks-announcement'   => [
-					'env'     => ! $has_sparks && $has_woocommerce,
-					'screen'  => 'edit-product',
-					'delayed' => true,
+					'env'    => ! $has_sparks && $has_woocommerce,
+					'screen' => 'edit-product',
 				],
 				'sparks-product-review' => [
-					'env'     => ! $has_sparks && $has_woocommerce,
-					'screen'  => 'edit-product',
-					'delayed' => true,
+					'env'    => ! $has_sparks && $has_woocommerce,
+					'screen' => 'edit-product',
 				],
 			],
 			'neve'            => [
