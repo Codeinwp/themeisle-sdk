@@ -29,8 +29,6 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
   const handlePrimaryAction = (e) => {
     e.preventDefault();
 
-    console.log(neveAction)
-
     if (neveAction === 'activate') {
       setProgress('activating');
       updateOption('themeisle_sdk_promotions_neve_installed', true).then(() => {
