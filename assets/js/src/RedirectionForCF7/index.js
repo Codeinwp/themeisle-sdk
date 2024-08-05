@@ -53,7 +53,7 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
     if (progress === 'done') {
       return (
           <div className="done">
-            <p> {labels.redirectionCF7.all_set}</p>
+            <p> {labels.all_set}</p>
             <Button icon="external" variant="primary" href={cf7Dash} target="_blank">
               {labels.redirectionCF7.gotodash}
             </Button>
@@ -66,8 +66,8 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
           <p className="om-progress">
             <span className="dashicons dashicons-update spin"/>
             <span>
-              {progress === 'installing' && labels.redirectionCF7.installing}
-              {progress === 'activating' && labels.redirectionCF7.activating}
+              {progress === 'installing' && labels.installing}
+              {progress === 'activating' && labels.activating}
               &hellip;
             </span>
           </p>
@@ -94,7 +94,7 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
                   </Button>
                   <Button isLink target="_blank" href="https://wordpress.org/plugins/wpcf7-redirect/">
                     <span className="dashicons dashicons-external"/>
-                    <span> {labels.redirectionCF7.learnmore}</span>
+                    <span> {labels.learnmore}</span>
                   </Button>
                 </div>
             )}
