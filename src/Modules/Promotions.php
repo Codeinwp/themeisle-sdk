@@ -161,7 +161,9 @@ class Promotions extends Abstract_Module {
 
 		$last_dismiss = $this->get_last_dismiss_time();
 
-		if ( ! $this->debug && $last_dismiss && ( time() - $last_dismiss ) < 7 * DAY_IN_SECONDS ) {
+		$dismissed_recently = $last_dismiss !== false && ( time() - $last_dismiss ) < 7 * DAY_IN_SECONDS;
+
+		if ( ! $this->debug && $dismissed_recently ) {
 			return;
 		}
 
@@ -508,15 +510,17 @@ class Promotions extends Abstract_Module {
 		$is_cf7_install   = isset( $current_screen->id ) && function_exists( 'str_contains' ) ? str_contains( $current_screen->id, 'page_wpcf7' ) : false;
 
 		$return = [];
-		
-		// Delayed promotions are shown after 4 days
-		$promo_display_start_time  = $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS );
-		$should_show_delayed_promo = time() < $promo_display_start_time;
+
+		// Delayed promotions are shown after 3 days
+		$promo_display_start_time = (int) $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS );
+		$skip_because_of_delay    = time() < $promo_display_start_time;
 
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
 
-				if ( ! $this->debug && isset( $data['delayed'] ) && $data['delayed'] && $should_show_delayed_promo ) {
+				$data = wp_parse_args( $data, [ 'delayed' => false ] );
+
+				if ( ! $this->debug && $data['delayed'] === true && $skip_because_of_delay ) {
 					unset( $this->promotions[ $slug ][ $key ] );
 
 					continue;
