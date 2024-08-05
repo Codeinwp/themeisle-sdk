@@ -17,15 +17,23 @@ class Promotion_Test extends WP_UnitTestCase {
 	private $author_id;
 
 	/**
+	 * Product.
+	 *
+	 * @var \ThemeisleSDK\Product
+	 */
+	private $product;
+
+	/**
 	 * Set up.
 	 * Create a test user.
 	 *
 	 * @return void
 	 */
-	public function setUp() : void {
+	public function setUp(): void {
 		parent::setUp();
 		$this->author_id = $this->factory->user->create( array( 'role' => 'editor' ) );
 	}
+
 
 	/**
 	 * Tear down.
@@ -33,7 +41,7 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() : void {
+	public function tearDown(): void {
 		parent::tearDown();
 		wp_delete_user( $this->author_id, true );
 	}
@@ -79,32 +87,28 @@ class Promotion_Test extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function testPromotionDisallowFilter() {
-		wp_set_current_user( 1 );
-		$file    = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
-		$product = new \ThemeisleSDK\Product( $file );
+	public function testPromotionLoading() {
+		$this->setup_screen();
 
 		$promotions = new \ThemeisleSDK\Modules\Promotions();
-
+		$product    = $this->get_product();
 		$this->assertTrue( $promotions->can_load( $product ) );
 		$promotions->load( $product );
-
-		set_current_screen( 'edit-post' );
-		$current_screen = get_current_screen();
-		$current_screen->is_block_editor( true );
-
 		$promotions->load_available();
 		$promotions->enqueue();
 
 		global $wp_scripts; // phpcs:ignore
 		$data                     = $wp_scripts->get_data( 'ti-sdk-promo', 'data' );
-		$prev_data                = $data;
 		$data                     = str_replace( 'var themeisleSDKPromotions = ', '', $data );
-		$data                     = substr( $data, 0, -1 );
+		$data                     = substr( $data, 0, - 1 );
 		$themeisle_sdk_promotions = json_decode( $data, true );
 
 		$this->assertEquals( 'Sample plugin.', $themeisle_sdk_promotions['product'] );
 		$this->assertTrue( ! empty( $themeisle_sdk_promotions['showPromotion'] ) );
+	}
+
+	public function testPromotionDisallowFilter() {
+		$this->setup_screen();
 
 		add_filter(
 			'sample_plugin_dissallowed_promotions',
@@ -113,21 +117,15 @@ class Promotion_Test extends WP_UnitTestCase {
 					'om-editor',
 					'om-image-block',
 					'om-attachment',
-					'om-media',
-					'om-elementor',
 					'blocks-css',
 					'blocks-animation',
 					'blocks-conditions',
-					'rop-posts',
-					'ppom',
-					'sparks-wishlist',
-					'sparks-announcement',
-					'sparks-product-review',
 				];
 			}
 		);
 
 		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
 
 		$this->assertTrue( $promotions->can_load( $product ) );
 		$promotions->load( $product );
@@ -135,13 +133,35 @@ class Promotion_Test extends WP_UnitTestCase {
 		$promotions->enqueue();
 
 		global $wp_scripts; // phpcs:ignore
-		$data = $wp_scripts->get_data( 'ti-sdk-promo', 'data' );
-		// we remove the previous enqueued data to only use the new one.
-		$data                     = str_replace( $prev_data, '', $data );
+		$data                     = $wp_scripts->get_data( 'ti-sdk-promo', 'data' );
 		$data                     = str_replace( 'var themeisleSDKPromotions = ', '', $data );
-		$data                     = substr( $data, 0, -1 );
+		$data                     = substr( $data, 0, - 1 );
 		$themeisle_sdk_promotions = json_decode( $data, true );
 
 		$this->assertTrue( empty( $themeisle_sdk_promotions['showPromotion'] ) ); // This should be empty as we filter all promotions.
 	}
+
+	private function get_product() {
+		$file = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
+
+		$product = $this->getMockBuilder( \ThemeisleSDK\Product::class )
+						->setConstructorArgs( [ $file ] )
+						->setMethods( [ 'get_install_time' ] )
+						->getMock();
+
+		$product->method( 'get_install_time' )
+				->willReturn( time() - ( 4 * DAY_IN_SECONDS ) );
+
+		return $product;
+	}
+
+
+	private function setup_screen() {
+		wp_set_current_user( 1 );
+
+		set_current_screen( 'edit-post' );
+		$screen = get_current_screen();
+		$screen->is_block_editor( true );
+	}
+
 }
