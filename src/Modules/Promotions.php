@@ -776,7 +776,7 @@ class Promotions extends Abstract_Module {
 
 		$meta = wp_get_attachment_metadata( $post->ID );
 
-		if ( isset( $meta['filesize'] ) && $meta['filesize'] < 200000 ) {
+		if ( isset( $meta['filesize'] ) && $meta['filesize'] < 100000 ) {
 			return $fields;
 		}
 
