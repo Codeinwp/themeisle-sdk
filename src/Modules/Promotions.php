@@ -357,17 +357,14 @@ class Promotions extends Abstract_Module {
 				'om-editor'      => [
 					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen'  => 'editor',
-					'delayed' => true,
 				],
 				'om-image-block' => [
 					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen'  => 'editor',
-					'delayed' => true,
 				],
 				'om-attachment'  => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo,
 					'screen'  => 'media-editor',
-					'delayed' => true,
 				],
 				'om-media'       => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
@@ -377,7 +374,6 @@ class Promotions extends Abstract_Module {
 				'om-elementor'   => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
 					'screen'  => 'elementor',
-					'delayed' => true,
 				],
 			],
 			'otter'           => [
