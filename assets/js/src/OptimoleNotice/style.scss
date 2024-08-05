@@ -20,7 +20,7 @@
 
   .description {
     font-size: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     color: #000;
   }
 
@@ -37,9 +37,7 @@
     gap: 10px;
   }
 
-  .form-wrap {
-    display: grid;
-
+  .om-progress {
     span:not(.dashicons) {
       font-weight: 500;
     }
@@ -120,11 +118,12 @@
     --wp-admin-theme-color: #3858E9;
     --wp-admin-theme-color-darker-10: #2e47ba;
 
+    gap: 10px;
+    border-left: 4px solid #3858E9;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     position: relative;
-    text-align: center;
     padding: 20px 10px;
 
     > span {
@@ -144,18 +143,17 @@
     p {
       font-size: 13px;
       max-width: 250px;
-      margin: 0 auto;
-      line-height: 17px;
+      margin: 0;
+      line-height: normal;
     }
 
     i {
-      margin-top: 10px;
+      margin: 10px 0 0;
       font-size: 12px;
       color: #757575;
     }
 
     .cta {
-      margin: 20px auto 0;
       padding: 10px 25px !important;
     }
 
@@ -165,14 +163,6 @@
 
     input {
       border-radius: 0;
-    }
-
-    form {
-      place-items: center;
-      width: 75%;
-      display: grid;
-      margin-top: 10px;
-      gap: 10px;
     }
 
     .done {
@@ -187,7 +177,7 @@
     }
 
     .om-progress {
-      margin: 20px 0;
+      margin: 10px 0;
     }
   }
 }
@@ -201,7 +191,7 @@
 
 .om-progress {
   gap: 5px;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
 
@@ -278,4 +268,8 @@
   p {
     padding: 0 10px 0 0;
   }
+}
+
+.ti-sdk-optimole-post-publish {
+  padding: 0 !important;
 }

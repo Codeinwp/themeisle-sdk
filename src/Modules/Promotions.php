@@ -103,7 +103,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @var bool
 	 */
-	private $debug = false;
+	private $debug = true;
 
 	/**
 	 * Should we load this module.
@@ -357,10 +357,12 @@ class Promotions extends Abstract_Module {
 				'om-editor'      => [
 					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'om-image-block' => [
 					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen'  => 'editor',
+					'delayed' => true,
 				],
 				'om-attachment'  => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo,
@@ -369,11 +371,11 @@ class Promotions extends Abstract_Module {
 				'om-media'       => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
 					'screen'  => 'media',
-					'delayed' => true,
 				],
 				'om-elementor'   => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
 					'screen'  => 'elementor',
+					'delayed' => true,
 				],
 			],
 			'otter'           => [
