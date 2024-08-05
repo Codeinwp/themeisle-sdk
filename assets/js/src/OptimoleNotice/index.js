@@ -84,7 +84,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
         if (progress === 'done') {
             return (
                 <div className={"done"}>
-                    <p> {labels.optimole.all_set}</p>
+                    <p> {labels.all_set}</p>
                     <Button icon={'external'} isPrimary href={optimoleDash} target="_blank">
                         {labels.optimole.gotodash}
                     </Button>
@@ -97,9 +97,9 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                 <p className="om-progress">
                     <span className="dashicons dashicons-update spin"/>
                     <span>
-                        {progress === 'installing' && labels.optimole.installing}
-                        {progress === 'activating' && labels.optimole.activating}
-                        {progress === 'connecting' && labels.optimole.connecting}
+                        {progress === 'installing' && labels.installing}
+                        {progress === 'activating' && labels.activating}
+                        {progress === 'connecting' && labels.connecting}
                         &hellip;
                     </span>
                 </p>
@@ -183,7 +183,7 @@ export default function OptimoleNotice({stacked = false, noImage = false, type, 
                             </Button>
                             <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
                                 <span className="dashicons dashicons-external"/>
-                                <span> {labels.optimole.learnmore}</span>
+                                <span> {labels.learnmore}</span>
                             </Button>
                         </div>
                     )}

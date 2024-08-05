@@ -693,10 +693,7 @@ class Promotions extends Abstract_Module {
 			'themeisleSDKPromotions',
 			[
 				'debug'                 => $this->debug,
-				'labels'                => [
-					'optimole'       => Loader::$labels['promotions']['optimole'],
-					'redirectionCF7' => Loader::$labels['promotions']['redirection_cf7'],
-				],
+				'labels'                => Loader::$labels['promotions'],
 				'email'                 => $user->user_email,
 				'showPromotion'         => $this->loaded_promo,
 				'optionKey'             => $this->option_main,
