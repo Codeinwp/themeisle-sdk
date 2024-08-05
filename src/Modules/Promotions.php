@@ -103,7 +103,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @var bool
 	 */
-	private $debug = false;
+	private $debug = true;
 
 	/**
 	 * Should we load this module.
@@ -367,12 +367,10 @@ class Promotions extends Abstract_Module {
 				'om-attachment'  => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo,
 					'screen'  => 'media-editor',
-					'delayed' => true,
 				],
 				'om-media'       => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && $has_enough_attachments,
 					'screen'  => 'media',
-					'delayed' => true,
 				],
 				'om-elementor'   => [
 					'env'     => ! $has_optimole && ! $had_optimole_from_promo && defined( 'ELEMENTOR_VERSION' ),
@@ -780,7 +778,7 @@ class Promotions extends Abstract_Module {
 
 		$meta = wp_get_attachment_metadata( $post->ID );
 
-		if ( isset( $meta['filesize'] ) && $meta['filesize'] < 200000 ) {
+		if ( isset( $meta['filesize'] ) && $meta['filesize'] < 100000 ) {
 			return $fields;
 		}
 

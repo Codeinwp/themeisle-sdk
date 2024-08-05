@@ -139,16 +139,13 @@ final class Loader {
 				'spark_desc3'  => 'Enable an advanced review section, enlarging the basic review options with lots of capabilities.',
 			],
 			'optimole'        => [
+				'installOptimole'   => 'Install Optimole',
 				'gotodash'          => 'Go to Optimole dashboard',
-				'start_cta'         => 'Start using Optimole',
 				'dismisscta'        => 'Dismiss this notice.',
-				'gst'               => 'Get Started Free',
-				'heading'           => 'Get more with Optimole',
 				'message1'          => 'Increase this page speed and SEO ranking by optimizing images with Optimole.',
 				'message3'          => 'Save your server space by storing images to Optimole and deliver them optimized from 400 locations around the globe. Unlimited images, Unlimited traffic.',
 				'message4'          => 'This image looks to be too large and would affect your site speed, we recommend you to install Optimole to optimize your images.',
 				'message2'          => 'Leverage Optimole\'s full integration with Elementor to automatically lazyload, resize, compress to AVIF/WebP and deliver from 400 locations around the globe!',
-				'email_placeholder' => 'Email address',
 			],
 			'redirectionCF7'  => [
 				'gotodash'   => 'Go to Contact Forms',
