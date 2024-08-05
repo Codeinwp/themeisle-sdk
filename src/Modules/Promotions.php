@@ -422,9 +422,8 @@ class Promotions extends Abstract_Module {
 			],
 			'neve'            => [
 				'neve-themes-popular' => [
-					'env'     => ! $has_neve && ! $has_neve_from_promo,
-					'screen'  => 'themes-install-popular',
-					'delayed' => true,
+					'env'    => ! $has_neve && ! $has_neve_from_promo,
+					'screen' => 'themes-install-popular',
 				],
 			],
 			'redirection-cf7' => [
