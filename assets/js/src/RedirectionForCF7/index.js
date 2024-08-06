@@ -4,7 +4,7 @@ import {Button} from '@wordpress/components';
 import {activatePlugin, installPluginOrTheme} from "../common/utils";
 import useSettings from "../common/useSettings";
 
-export default function RedirectionForCF7({type, onDismiss, initialStatus = null}) {
+export default function RedirectionForCF7({type, onDismiss}) {
   const {
     title,
     option,
@@ -14,9 +14,8 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
     cf7Dash,
   } = window.themeisleSDKPromotions;
 
-  const [showStatus, setShowStatus] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const [progress, setProgress] = useState(initialStatus);
+  const [progress, setProgress] = useState(null);
   const [getOption, updateOption] = useSettings();
 
   const dismissNotice = async () => {
@@ -33,7 +32,6 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
 
   const installPluginRequest = async (e) => {
     e.preventDefault();
-    setShowStatus(true);
     setProgress('installing');
     await installPluginOrTheme('wpcf7-redirect');
 
@@ -50,36 +48,44 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
   }
 
   const installPluginRequestStatus = () => {
-    if (progress === 'done') {
-      return (
-          <div className="done">
-            <p> {labels.all_set}</p>
-            <Button icon="external" variant="primary" href={cf7Dash} target="_blank">
-              {labels.redirectionCF7.gotodash}
-            </Button>
-          </div>
-      );
-    }
-
-    if (progress) {
-      return (
-          <p className="om-progress">
-            <span className="dashicons dashicons-update spin"/>
-            <span>
-              {progress === 'installing' && labels.installing}
-              {progress === 'activating' && labels.activating}
-              &hellip;
-            </span>
-          </p>
-      );
-    }
+    return progress === 'done' ? (
+        <div className="done">
+          <p> {labels.all_set}</p>
+          <Button icon="external" variant="primary" href={cf7Dash} target="_blank">
+            {labels.redirectionCF7.gotodash}
+          </Button>
+        </div>
+    ) : (
+        <p className="om-progress">
+          <span className="dashicons dashicons-update spin"/>
+          <span>
+            {progress === 'installing' && labels.installing}
+            {progress === 'activating' && labels.activating}
+            &hellip;
+          </span>
+        </p>
+    );
   };
+
+  const actionButtons = (
+      <div className="actions">
+        <Button isPrimary onClick={installPluginRequest}>
+          {labels.redirectionCF7.gst}
+        </Button>
+        <Button isLink target="_blank" href="https://wordpress.org/plugins/wpcf7-redirect/">
+          <span className="dashicons dashicons-external"/>
+          <span> {labels.learnmore}</span>
+        </Button>
+      </div>
+  )
 
   return (
       <>
-        <Button disabled={progress && progress !== 'done'}
-                onClick={dismissNotice} isLink
-                className="om-notice-dismiss">
+        <Button
+            disabled={progress && progress !== 'done'}
+            onClick={dismissNotice} isLink
+            className="om-notice-dismiss"
+        >
           <span className="dashicons-no-alt dashicons"/>
           <span className="screen-reader-text">{labels.redirectionCF7.dismisscta}</span>
         </Button>
@@ -87,22 +93,7 @@ export default function RedirectionForCF7({type, onDismiss, initialStatus = null
           <div>
             <p>{title}</p>
             <p className="description">{labels.redirectionCF7.message}</p>
-            {!showStatus && (
-                <div className="actions">
-                  <Button isPrimary onClick={installPluginRequest}>
-                    {labels.redirectionCF7.gst}
-                  </Button>
-                  <Button isLink target="_blank" href="https://wordpress.org/plugins/wpcf7-redirect/">
-                    <span className="dashicons dashicons-external"/>
-                    <span> {labels.learnmore}</span>
-                  </Button>
-                </div>
-            )}
-            {showStatus && (
-                <div className="form-wrap">
-                  {installPluginRequestStatus()}
-                </div>
-            )}
+            {progress ? installPluginRequestStatus() : actionButtons}
           </div>
         </div>
       </>

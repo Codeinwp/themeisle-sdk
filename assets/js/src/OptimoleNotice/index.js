@@ -7,16 +7,12 @@ import useSettings from "../common/useSettings";
 
 export default function OptimoleNotice({stacked = false, type, onDismiss, onSuccess, initialStatus = null}) {
   const {
-    assets,
     title,
-    email: initialEmail,
     option,
     optionKey,
     labels,
     optimoleActivationUrl,
-    optimoleApi,
     optimoleDash,
-    nonce,
   } = window.themeisleSDKPromotions;
   const [dismissed, setDismissed] = useState(false);
   const [progress, setProgress] = useState(initialStatus);
@@ -87,65 +83,49 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
       </Button>
   );
 
-  if (stacked) {
-    return (
-        <div className="ti-om-stack-wrap ti-sdk-om-notice">
-          <div className="om-stack-notice">
-            {dismissButton()}
+  const actionButtons = (stacked = false) => (
+      <>
+        <Button isPrimary onClick={installAndActivate} className={ stacked ? 'cta' : ''}>
+          {labels.optimole.installOptimole}
+        </Button>
+        <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
+          <span className="dashicons dashicons-external"/>
+          <span> {labels.learnmore}</span>
+        </Button>
+      </>
+  )
 
-            <i>{title}</i>
-
-            <p>
-              {(type === 'om-editor' || type === 'om-image-block') ?
-                  labels.optimole.message1 :
-                  labels.optimole.message2
-              }
-            </p>
-
-            {(!progress) && (
-                <>
-                  <Button isPrimary onClick={installAndActivate} className="cta">
-                    {labels.optimole.installOptimole}
-                  </Button>
-                  <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
-                    <span className="dashicons dashicons-external"/>
-                    <span> {labels.learnmore}</span>
-                  </Button>
-                </>
-            )}
-
-            {progress && renderProgress()}
-
-          </div>
+  const stackedNotice = (
+      <div className="ti-om-stack-wrap ti-sdk-om-notice">
+        <div className="om-stack-notice">
+          {dismissButton()}
+          <i>{title}</i>
+          <p>
+            {['om-editor', 'om-image-block'].includes(type) ? labels.optimole.message1 : labels.optimole.message2}
+          </p>
+          {progress ? renderProgress() : actionButtons(true)}
         </div>
-    );
-  }
+      </div>
+  );
 
-  return (
+  const notice = (
       <>
         {dismissButton()}
         <div className="content">
           <div>
             <p>{title}</p>
-            <p className="description">{
-              type === 'om-media' ?
-                  labels.optimole.message3 :
-                  labels.optimole.message4
-            }</p>
-            {!progress && (
+            <p className="description">
+              {type === 'om-media' ? labels.optimole.message3 : labels.optimole.message4}
+            </p>
+            {progress ? renderProgress() : (
                 <div className="actions">
-                  <Button isPrimary onClick={installAndActivate}>
-                    {labels.optimole.installOptimole}
-                  </Button>
-                  <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
-                    <span className="dashicons dashicons-external"/>
-                    <span> {labels.learnmore}</span>
-                  </Button>
+                  {actionButtons()}
                 </div>
             )}
-            {renderProgress()}
           </div>
         </div>
       </>
   );
+
+  return stacked ? stackedNotice : notice;
 }
