@@ -157,15 +157,13 @@ class Promotions extends Abstract_Module {
 			return;
 		}
 
-		$this->product = $product;
+		$last_dismiss_time = $this->get_last_dismiss_time();
 
-		$last_dismiss = $this->get_last_dismiss_time();
-
-		$dismissed_recently = $last_dismiss !== false && ( time() - $last_dismiss ) < 7 * DAY_IN_SECONDS;
-
-		if ( ! $this->debug && $dismissed_recently ) {
+		if ( ! $this->debug && is_int( $last_dismiss_time ) && ( time() - $last_dismiss_time ) < WEEK_IN_SECONDS ) {
 			return;
 		}
+
+		$this->product = $product;
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
@@ -486,11 +484,7 @@ class Promotions extends Abstract_Module {
 	private function get_last_dismiss_time() {
 		$dismissed = $this->get_upsells_dismiss_time();
 
-		if ( empty( $dismissed ) ) {
-			return false;
-		}
-
-		return max( array_values( $dismissed ) );
+		return empty( $dismissed ) ? false : max( array_values( $dismissed ) );
 	}
 
 	/**
@@ -512,8 +506,7 @@ class Promotions extends Abstract_Module {
 		$return = [];
 
 		// Delayed promotions are shown after 3 days
-		$promo_display_start_time = (int) $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS );
-		$skip_because_of_delay    = time() < $promo_display_start_time;
+		$skip_because_of_delay = time() < ( (int) $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS ) );
 
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
@@ -687,10 +680,7 @@ class Promotions extends Abstract_Module {
 		$deps              = array_merge( $asset_file['dependencies'], [ 'updates' ] );
 
 		$themes      = wp_get_themes();
-		$neve_action = 'install';
-		if ( isset( $themes['neve'] ) ) {
-			$neve_action = 'activate';
-		}
+		$neve_action = isset( $themes['neve'] ) ? 'activate' : 'install';
 
 		wp_register_script( $handle, $themeisle_sdk_src . 'assets/js/build/promos/index.js', $deps, $asset_file['version'], true );
 		wp_localize_script(
