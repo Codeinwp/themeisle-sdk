@@ -199,7 +199,6 @@ class Optimole {
         render(
             <div className="notice notice-info ti-sdk-om-notice" style={{margin: 0}}>
                 <OptimoleNotice
-                    noImage={true}
                     type="om-attachment"
                     onDismiss={() => {
                         mount.style.opacity = 0;
