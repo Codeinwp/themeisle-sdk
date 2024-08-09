@@ -2,8 +2,8 @@ const installPluginOrTheme = ( slug, theme = false ) => {
 	return new Promise( ( resolve ) => {
 		wp.updates.ajax( theme === true ? 'install-theme' : 'install-plugin', {
 			slug,
-			success: () => {
-				resolve( { success: true } );
+			success: (response) => {
+				resolve( { success: true, data: response } );
 			},
 			error: ( err ) => {
 				resolve( { success: false, code: err.errorCode } );

@@ -1,21 +1,8 @@
-import {Fragment, render, unmountComponentAtNode, useState} from '@wordpress/element';
-import {registerPlugin,} from '@wordpress/plugins';
-import {PluginPostPublishPanel} from '@wordpress/edit-post';
-import {useSelect} from '@wordpress/data';
-import {createHigherOrderComponent} from '@wordpress/compose';
-import {addFilter} from '@wordpress/hooks';
-import {InspectorControls} from '@wordpress/block-editor';
-
-import {getBlocksByType} from "./common/utils";
+import { render } from '@wordpress/element';
 import RedirectionForCF7 from "./RedirectionForCF7";
 
 class RedirectionForCF7Notice {
     constructor() {
-        const {showPromotion, debug} = window.themeisleSDKPromotions;
-        this.promo = showPromotion;
-        this.debug = debug === '1';
-        this.domRef = null;
-
         this.run();
     }
 
@@ -34,7 +21,7 @@ class RedirectionForCF7Notice {
             <RedirectionForCF7
                 type="redirection-cf7"
                 onDismiss={() => {
-                    root.style.opacity = 0;
+                    root.style.display = 'none';
                 }}
             />, root);
     }
