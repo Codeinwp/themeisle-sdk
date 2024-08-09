@@ -1,3 +1,11 @@
+##### [Version 3.3.28](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.27...v3.3.28) (2024-08-09)
+
+
+- fix: remove the delay on woo plugins promos [closes Codeinwp/themeisle[#1655](https://github.com/Codeinwp/themeisle-sdk/issues/1655)]
+- fix: swap Neve FSE notice with Neve [closes Codeinwp/themeisle[#1654](https://github.com/Codeinwp/themeisle-sdk/issues/1654)]
+- fix: rework optimole promo [closes Codeinwp/themeisle[#1656](https://github.com/Codeinwp/themeisle-sdk/issues/1656)]
+- fix: translations workflow always requiring updates [closes Codeinwp/neve-pro-addon[#2840](https://github.com/Codeinwp/themeisle-sdk/issues/2840)]
+
 ##### [Version 3.3.27](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.26...v3.3.27) (2024-07-30)
 
 - fix: array out of bounds index
