@@ -499,21 +499,28 @@ class Promotions extends Abstract_Module {
 		$is_media         = isset( $current_screen->id ) && $current_screen->id === 'upload';
 		$is_posts         = isset( $current_screen->id ) && $current_screen->id === 'edit-post';
 		$is_editor        = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
-		$is_theme_install = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' || $current_screen->id === 'themes' );
+		$is_theme_install = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' );
 		$is_product       = isset( $current_screen->id ) && $current_screen->id === 'product';
 		$is_cf7_install   = isset( $current_screen->id ) && function_exists( 'str_contains' ) ? str_contains( $current_screen->id, 'page_wpcf7' ) : false;
 
 		$return = [];
-
-		// Delayed promotions are shown after 3 days
-		$skip_because_of_delay = time() < ( (int) $this->product->get_install_time() + ( 3 * DAY_IN_SECONDS ) );
+		
+		$product_install_time = (int) $this->product->get_install_time();
+		$is_older             = time() > ( $product_install_time + ( 3 * DAY_IN_SECONDS ) );
+		$is_newer             = time() < ( $product_install_time + ( 5 * MINUTE_IN_SECONDS ) );
 
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
 
 				$data = wp_parse_args( $data, [ 'delayed' => false ] );
 
-				if ( ! $this->debug && $data['delayed'] === true && $skip_because_of_delay ) {
+				if (
+					! $this->debug && 
+					( 
+						( $data['delayed'] === true && ! $is_older ) || // Skip promotions that are delayed for 3 days.
+						$is_newer // Skip promotions for the first 5 minutes after install.
+					)
+				) {
 					unset( $this->promotions[ $slug ][ $key ] );
 
 					continue;
