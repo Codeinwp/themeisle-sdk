@@ -369,7 +369,7 @@ class Promotions extends Abstract_Module {
 		$had_redirection_cf7_promo = get_option( $this->option_redirection_cf7, false );
 		$has_hyve                  = defined( 'HYVE_LITE_VERSION' ) || $this->is_plugin_installed( 'hyve' ) || $this->is_plugin_installed( 'hyve-lite' );
 		$had_hyve_from_promo       = get_option( $this->option_hyve, false );
-		$has_hyve_conditions       = version_compare( get_bloginfo( 'version' ), '6.2', '>=' ) && ( $this->has_chat_plugin() || $this->has_support_page() );
+		$has_hyve_conditions       = version_compare( get_bloginfo( 'version' ), '6.2', '>=' ) && $this->has_support_page();
 		$is_min_req_v              = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$current_theme             = wp_get_theme();
 		$has_neve                  = $current_theme->template === 'neve' || $current_theme->parent() === 'neve';
@@ -1221,33 +1221,6 @@ class Promotions extends Abstract_Module {
 
 		wp_send_json( $response );
 		wp_die();
-	}
-
-	/**
-	 * Check if the user has a chat plugin installed.
-	 */
-	public function has_chat_plugin() {
-		$transient_name = 'tisdk_has_chat_plugin';
-		$has_chat       = get_transient( $transient_name );
-
-		if ( false === $has_chat ) {
-			$plugins = get_option( 'active_plugins' );
-
-			foreach ( $plugins as $plugin ) {
-				if ( false !== strpos( strtolower( $plugin ), 'chat' ) ) {
-					$has_chat = true;
-					break;
-				}
-			}
-
-			if ( ! $has_chat ) {
-				$has_chat = false;
-			}
-
-			set_transient( $transient_name, $has_chat, DAY_IN_SECONDS );
-		}
-
-		return $has_chat;
 	}
 
 	/**
