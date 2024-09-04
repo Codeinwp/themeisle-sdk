@@ -1008,7 +1008,6 @@ class Promotions extends Abstract_Module {
 				content: url("data:image/svg+xml,%3Csvg fill='%23135e96' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='<?php echo esc_attr( $icon ); ?>'/%3E%3C/svg%3E") !important;
 				min-width: 13px;
 				max-width: 13px;
-				margin: auto;
 			}
 
 			.tisdk-suggestions_options.active a::before {
