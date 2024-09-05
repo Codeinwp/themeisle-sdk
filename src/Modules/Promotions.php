@@ -1231,8 +1231,6 @@ class Promotions extends Abstract_Module {
 		$has_support    = get_transient( $transient_name );
 
 		if ( false === $has_support ) {
-			$has_support = false;
-
 			global $wpdb;
 
 			// We use %i escape identifier that was added in WP 6.2.0, hence need to ignore PHPCS warning.
@@ -1247,13 +1245,11 @@ class Promotions extends Abstract_Module {
 				)
 			);
 
-			if ( $query ) {
-				$has_support = true;
-			}
+			$has_support = $query ? 'yes' : 'no';
 
-			set_transient( $transient_name, $has_support, DAY_IN_SECONDS );
+			set_transient( $transient_name, $has_support, 7 * DAY_IN_SECONDS );
 		}
 
-		return $has_support;
+		return 'yes' === $has_support;
 	}
 }
