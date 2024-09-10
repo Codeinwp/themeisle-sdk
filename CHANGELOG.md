@@ -1,3 +1,7 @@
+##### [Version 3.3.29](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.28...v3.3.29) (2024-08-21)
+
+- feat: improve the Promotions appearance timing
+
 ##### [Version 3.3.28](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.27...v3.3.28) (2024-08-09)
 
 
