@@ -338,7 +338,7 @@ class About_Us extends Abstract_Module {
 				'name' => 'Otter',
 			],
 			'tweet-old-post'                      => [
-				'name' => 'Revive Old Post',
+				'name' => 'Revive Social',
 			],
 			'feedzy-rss-feeds'                    => [
 				'name' => 'Feedzy',
@@ -371,6 +371,12 @@ class About_Us extends Abstract_Module {
 			'templates-patterns-collection'       => [
 				'name'        => 'Templates Cloud',
 				'description' => Loader::$labels['about_us']['others']['tpc_desc'],
+			],
+			'wp-cloudflare-page-cache'            => [
+				'name' => 'Super Page Cache',
+			],
+			'hyve-lite'                           => [
+				'name' => 'Hyve Lite',
 			],
 		];
 

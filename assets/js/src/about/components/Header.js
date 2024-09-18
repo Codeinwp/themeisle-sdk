@@ -5,12 +5,16 @@ export default function Header( { pages = [], selected = '' } ) {
       return  hash === selected ? 'active' : '';
     };
 
+    let supportURLBasePath = ['neve', 'hestia'].indexOf( currentProduct.slug ) > -1 ? 'theme' : 'plugin';
+    const reviewLink       = `https://wordpress.org/support/${supportURLBasePath}/${currentProduct.slug}/reviews/#new-post`;
+
     return (
         <div>
             <div className="head">
                 <div className="container">
                     <img src={logoUrl} alt={currentProduct.name}/>
                     <p>by <a href="https://themeisle.com">Themeisle</a></p>
+                    <p className="review-link">Enjoying {currentProduct.name}? <a href={reviewLink} target="_blank">Give us a rating!</a></p>
                 </div>
             </div>
             {( links.length > 0 || pages.length > 0 ) && <div className="container">
