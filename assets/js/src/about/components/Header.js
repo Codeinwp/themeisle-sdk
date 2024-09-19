@@ -5,8 +5,8 @@ export default function Header( { pages = [], selected = '' } ) {
       return  hash === selected ? 'active' : '';
     };
 
-    let supportURLBasePath = ['neve', 'hestia'].indexOf( currentProduct.slug ) > -1 ? 'theme' : 'plugin';
-    const reviewLink       = `https://wordpress.org/support/${supportURLBasePath}/${currentProduct.slug}/reviews/#new-post`;
+    const supportURLBasePath = ['neve', 'hestia'].indexOf( currentProduct.slug ) > -1 ? 'theme' : 'plugin';
+    const reviewLink         = `https://wordpress.org/support/${supportURLBasePath}/${currentProduct.slug?.replaceAll( '_', '-' )}/reviews/#new-post`;
 
     return (
         <div>
