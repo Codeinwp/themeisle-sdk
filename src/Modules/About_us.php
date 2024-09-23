@@ -415,14 +415,13 @@ class About_Us extends Abstract_Module {
 			}
 
 			$api_data = $this->call_plugin_api( $slug );
-
-			if ( ! isset( $product['icon'] ) ) {
+			if ( ! isset( $product['icon'] ) && ( isset( $api_data->icons['2x'] ) || $api_data->icons['1x'] ) ) {
 				$products[ $slug ]['icon'] = isset( $api_data->icons['2x'] ) ? $api_data->icons['2x'] : $api_data->icons['1x'];
 			}
-			if ( ! isset( $product['description'] ) ) {
+			if ( ! isset( $product['description'] ) && isset( $api_data->short_description ) ) {
 				$products[ $slug ]['description'] = $api_data->short_description;
 			}
-			if ( ! isset( $product['name'] ) ) {
+			if ( ! isset( $product['name'] ) && isset( $api_data->name ) ) {
 				$products[ $slug ]['name'] = $api_data->name;
 			}
 		}
