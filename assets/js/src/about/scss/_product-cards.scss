@@ -1,7 +1,7 @@
 .product-cards {
   display: grid;
   gap: 30px;
-
+  grid-template-columns: repeat(3,minmax(0,1fr));
   @media (--tablet) {
     grid-template-columns: 1fr 1fr;
   }
@@ -13,9 +13,12 @@
 
 .product-card {
   background: #fff;
-  display: grid;
   border: var(--border);
-
+  display: flex;
+  flex-direction: column;
+  *{
+    box-sizing: border-box;
+  }
   h2 {
     font-size: 21px;
     margin: 0;
@@ -29,11 +32,13 @@
   .header {
     padding: 20px 15px 0;
     display: flex;
+    width: 100%;
     align-items: center;
   }
 
   .body {
     padding: 20px 15px;
+    width: 100%;
   }
 
   img {
@@ -48,8 +53,10 @@
     display: flex;
     align-items: center;
     padding: 15px;
+    width: 100%;
+    margin-top: auto;
     align-self: flex-end;
-	justify-content: space-between;
+	 justify-content: space-between;
 
     p {
       margin: 8px 0;
