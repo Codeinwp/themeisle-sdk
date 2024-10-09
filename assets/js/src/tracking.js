@@ -49,8 +49,10 @@ export const getChoice = arr => {
  * @property {boolean} [ignoreLimit] - Ignore the limit of the events to be send.
  */
 
-class EventTrackingAccumulator {
-	constructor() {
+export class EventTrackingAccumulator {
+	constructor( tiTelemetry ) {
+
+		tiTelemetry ??= {}
 
 		/**
 		 * @type {Map<string, TrackingData>} - The events to be sent.
@@ -180,11 +182,9 @@ class EventTrackingAccumulator {
 	 * Send all the events in the accumulator. Clears the accumulator after sending. All the listeners will be notified.
 	 */
 	uploadEvents = async() => {
-
 		if ( 0 === this.events.size ) {
 			return;
 		}
-
 		try {
 			const events = Array.from( this.events.values() );
 			this.events.clear();
@@ -366,7 +366,7 @@ class EventTrackingAccumulator {
 }
 
 // Initialize the accumulator.
-window.tiTrk = new EventTrackingAccumulator();
+window.tiTrk = new EventTrackingAccumulator( window?.tiTelemetry );
 
 // Send the events on save for the customizer.
 window?.wp?.customize?.bind( 'save', () => {
