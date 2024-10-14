@@ -376,6 +376,7 @@ class Promotions extends Abstract_Module {
 		$has_neve_from_promo       = get_option( $this->option_neve, false );
 		$has_enough_attachments    = $this->has_min_media_attachments();
 		$has_enough_old_posts      = $this->has_old_posts();
+		$is_min_php_8_1            = version_compare( PHP_VERSION, '8.1', '>=' );
 
 		$all = [
 			'optimole'        => [
@@ -460,7 +461,7 @@ class Promotions extends Abstract_Module {
 			],
 			'hyve'            => [
 				'hyve-plugins-install' => [
-					'env'    => ! $has_hyve && ! $had_hyve_from_promo && $has_hyve_conditions,
+					'env'    => $is_min_php_8_1 && ! $has_hyve && ! $had_hyve_from_promo && $has_hyve_conditions,
 					'screen' => 'plugin-install',
 				],
 			],
