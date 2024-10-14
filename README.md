@@ -28,3 +28,7 @@ and manually autoloading the load.php file in the composer.json file of your pro
 - The library works out of the box by simply loading the autoloader into the plugin/theme files.
 - Some modules are loaded only if the product is not available on WordPress.org ( licenser/review ). You can define if the product is available on wordpress.org by adding this file header `WordPress Available:  <yes|no>` where `<yes|no>` will be replaced with the proper status.
 - If the product requires is a premium one and requires a licesing mechanism, we can use `Requires License: <yes|no>` to specifically tell that the product requires license.
+
+### Guides
+- [Add and use Telemetry in a product](./docs/TELEMETRY.md)
+- [Running and adding an E2E test](./docs/E2E.md)
