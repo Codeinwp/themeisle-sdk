@@ -1,3 +1,8 @@
+##### [Version 3.3.31](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.30...v3.3.31) (2024-10-14)
+
+- Update minimum PHP version required for Hyve promo
+- add E2E test support with wp-scripts and Playwright
+
 ##### [Version 3.3.30](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.29...v3.3.30) (2024-09-10)
 
 - Remove margin auto from ThemeIsle Woo tab
