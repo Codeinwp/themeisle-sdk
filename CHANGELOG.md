@@ -1,3 +1,9 @@
+##### [Version 3.3.32](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.31...v3.3.32) (2024-10-16)
+
+- Fix translations bugs and adapt mechanism to work on themes
+- Adds product review links in About page
+- Fix About page layout on Safari browser
+
 ##### [Version 3.3.31](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.30...v3.3.31) (2024-10-14)
 
 - Update minimum PHP version required for Hyve promo
