@@ -121,6 +121,15 @@ class Script_Loader extends Abstract_Module {
 			$asset_file['version'],
 			true
 		);
+
+		$language            = get_user_locale();
+		$available_languages = [
+			'de_DE'        => 'de',
+			'de_DE_formal' => 'de',
+		];
+		$lang_code           = isset( $available_languages[ $language ] ) ? $available_languages[ $language ] : 'en';
+
+		wp_localize_script( $handler, 'tsdk_survey_attrs', [ 'language' => $lang_code ] );
 	}
 
 	/**
