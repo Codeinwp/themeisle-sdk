@@ -47,7 +47,7 @@
     "semantic-release": "^17.4.7"
   },
   "dependencies": {
-    "@formbricks/js": "^2.0.0",
+    "@formbricks/js": "^2.2.0",
     "object-hash": "^3.0.0"
   }
 }
