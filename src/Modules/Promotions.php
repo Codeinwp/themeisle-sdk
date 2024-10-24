@@ -166,7 +166,7 @@ class Promotions extends Abstract_Module {
 
 		$last_dismiss_time = $this->get_last_dismiss_time();
 
-		if ( ! $this->debug && is_int( $last_dismiss_time ) && ( time() - $last_dismiss_time ) < WEEK_IN_SECONDS ) {
+		if ( ! $this->debug && is_int( $last_dismiss_time ) && ( time() - $last_dismiss_time ) < ( 3 * WEEK_IN_SECONDS ) ) {
 			return;
 		}
 
@@ -539,7 +539,7 @@ class Promotions extends Abstract_Module {
 		
 		$product_install_time = (int) $this->product->get_install_time();
 		$is_older             = time() > ( $product_install_time + ( 3 * DAY_IN_SECONDS ) );
-		$is_newer             = time() < ( $product_install_time + ( 5 * MINUTE_IN_SECONDS ) );
+		$is_newer             = time() < ( $product_install_time + ( 6 * HOUR_IN_SECONDS ) );
 
 		foreach ( $this->promotions as $slug => $promos ) {
 			foreach ( $promos as $key => $data ) {
@@ -548,9 +548,9 @@ class Promotions extends Abstract_Module {
 
 				if (
 					! $this->debug && 
-					( 
+					(
 						( $data['delayed'] === true && ! $is_older ) || // Skip promotions that are delayed for 3 days.
-						$is_newer // Skip promotions for the first 5 minutes after install.
+						$is_newer // Skip promotions for the first 6 hours after install.
 					)
 				) {
 					unset( $this->promotions[ $slug ][ $key ] );
