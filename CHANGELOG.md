@@ -1,3 +1,8 @@
+##### [Version 3.3.33](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.32...v3.3.33) (2024-10-24)
+
+- chore: disable otter promos by default
+- feat: add lang code for Formbricks survey
+
 ##### [Version 3.3.32](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.31...v3.3.32) (2024-10-16)
 
 - Fix translations bugs and adapt mechanism to work on themes
