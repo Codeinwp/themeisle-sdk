@@ -1,3 +1,8 @@
+##### [Version 3.3.34](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.33...v3.3.34) (2024-10-25)
+
+- Add initial promo delay to 6 hours
+- Add 21 days delay between two promos
+
 ##### [Version 3.3.33](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.32...v3.3.33) (2024-10-24)
 
 - chore: disable otter promos by default
