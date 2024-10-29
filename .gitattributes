@@ -19,7 +19,7 @@ README.md                export-ignore
 assets/js/src            export-ignore
 docs                     export-ignore
 .wp-env.override.json    export-ignore
-postcss.config.js    postcss.config.js
+postcss.config.js        export-ignore
 # Set the default behavior for all files.
 * text=auto
 
