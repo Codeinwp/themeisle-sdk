@@ -159,6 +159,12 @@ final class Loader {
 				'dismisscta' => 'Dismiss this notice.',
 				'message'    => 'Hyve is an AI-powered chatbot that turns your WordPress content into interactive conversations, helping you efficiently handle user inquiries.',
 			],
+			'wp_full_pay'     => [
+				'gotodash'   => 'Go to WP Full Pay Settings',
+				'install'    => 'Install WP Full Pay',
+				'dismisscta' => 'Dismiss this notice.',
+				'message'    => 'Accept Stripe payments on your WordPress with WP Full Pay plugin. WP Full Pay allows you to create Stripe payments form to accept one-time payments, donations and subscriptions.',
+			],
 		],
 		'welcome'          => [
 			'ctan'    => 'No, thanks.',

@@ -40,6 +40,7 @@ abstract class Abstract_Module {
 		'sparks-for-woocommerce'              => 'sparks-for-woocommerce/sparks-for-woocommerce.php',
 		'templates-patterns-collection'       => 'templates-patterns-collection/templates-patterns-collection.php',
 		'wpcf7-redirect'                      => 'wpcf7-redirect/wpcf7-redirect.php',
+		'wp-full-stripe-free'                 => 'wp-full-stripe-free/wp-full-stripe.php',
 	];
 
 	/**
