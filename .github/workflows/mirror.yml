@@ -1,0 +1,24 @@
+name: Mirror Main Branch and Tags
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # This ensures we fetch all tags and commits
+
+      - name: Push main branch and tags to mirror repo
+        env:
+          TARGET_REPO: 'https://pirate-bot:${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-lib.git'
+        run: |
+          git remote add mirror "$TARGET_REPO"
+          git push mirror master --force  # Push only the main branch
+          git push mirror --tags --force  # Push all tags
