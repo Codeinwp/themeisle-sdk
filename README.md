@@ -32,3 +32,5 @@ and manually autoloading the load.php file in the composer.json file of your pro
 ### Guides
 - [Add and use Telemetry in a product](./docs/TELEMETRY.md)
 - [Running and adding an E2E test](./docs/E2E.md)
+
+
