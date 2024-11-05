@@ -24,6 +24,8 @@ jobs:
         run: |
           git remote add mirror "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-lib"
            # Reset to a single commit with no history
+          git config --global user.email ${{ secrets.BOT_EMAIL }}
+          git config --global user.name "pirate-bot"
           git checkout master
           git reset --soft $(git rev-list --max-parents=0 HEAD)  # Go to the first commit, keeping changes
           git commit --amend -m "new changes"  # Create a single commit
