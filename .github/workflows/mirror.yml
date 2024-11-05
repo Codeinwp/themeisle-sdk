@@ -15,6 +15,10 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+      - name: Remove specific folder
+        run: |
+          rm -rf .github
+          git rm -r --cached .github || true
 
       - name: Push main branch and tags to mirror repo
         env:
@@ -23,13 +27,14 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{ secrets.BOT_EMAIL }}
         run: |
           git remote add mirror "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-lib"
+          git remove .github
            # Reset to a single commit with no history
           git config --global user.email ${{ secrets.BOT_EMAIL }}
           git config --global user.name "pirate-bot"
           git checkout master
           git reset --soft $(git rev-list --max-parents=0 HEAD)  # Go to the first commit, keeping changes
-          git commit --amend -m "new changes"  # Create a single commit
-
+          git commit --amend -m "new changes [skip ci]"  # Create a single commit
+          
           # Push to the mirror repo, overwriting history
           git push mirror master --force  # Push only the master branch with new history
           git push mirror --tags --force
