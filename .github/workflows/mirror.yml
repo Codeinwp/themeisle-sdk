@@ -27,7 +27,6 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{ secrets.BOT_EMAIL }}
         run: |
           git remote add mirror "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-lib"
-          git remove .github
            # Reset to a single commit with no history
           git config --global user.email ${{ secrets.BOT_EMAIL }}
           git config --global user.name "pirate-bot"
