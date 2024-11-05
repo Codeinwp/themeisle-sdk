@@ -1,3 +1,7 @@
+##### [Version 3.3.35](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.34...v3.3.35) (2024-10-29)
+
+ignore dev files
+
 ##### [Version 3.3.34](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.33...v3.3.34) (2024-10-25)
 
 - Add initial promo delay to 6 hours
