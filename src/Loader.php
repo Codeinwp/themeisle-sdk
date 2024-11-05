@@ -163,7 +163,7 @@ final class Loader {
 				'gotodash'   => 'Go to WP Full Pay Settings',
 				'install'    => 'Install WP Full Pay',
 				'dismisscta' => 'Dismiss this notice.',
-				'message'    => 'Accept Stripe payments on your WordPress with WP Full Pay plugin. WP Full Pay allows you to create Stripe payments form to accept one-time payments, donations and subscriptions.',
+				'message'    => 'Enhance your donation page with WP Full Pay—create custom Stripe forms for one-time and recurring donations, manage transactions easily, and boost support with a seamless setup.',
 			],
 		],
 		'welcome'          => [
