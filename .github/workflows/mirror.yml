@@ -33,7 +33,8 @@ jobs:
           # Reset to a single commit with no history
           git checkout master
           git reset --soft $(git rev-list --max-parents=0 HEAD)  # Go to the first commit, keeping changes 
-          git commit --amend --author="pirate-bot <${{ secrets.BOT_EMAIL }}}" -m "sync [skip ci]"  # Create a single commit with explicit author
+          git commit --amend --author="pirate-bot <${{ secrets.BOT_EMAIL }}>" -m "new changes [skip ci]"  # Create a single commit with explicit author
+          
           
           # Push to the mirror repo, overwriting history
           git push mirror master --force  # Push only the master branch with new history
