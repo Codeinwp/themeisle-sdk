@@ -47,12 +47,16 @@ jobs:
           # Fetch all tags from the target repository
           git fetch mirror --tags
           
-          if [ -n "$(git tag -l)" ]; then
+           # Store all local tags in a variable
+          TAGS=$(git tag -l)
+      
+          # Only delete tags if there are any
+          if [ -n "$TAGS" ]; then
             # Delete all tags locally
-            git tag -l | xargs -I {} git tag -d {}
+            echo "$TAGS" | xargs -I {} git tag -d {}
             
             # Delete all tags remotely from the target repository
-            git push mirror --delete $(git tag -l)
+            echo "$TAGS" | xargs -I {} git push mirror --delete {}
           fi
       
           # Fetch tags from the source repository and recreate them as lightweight tags
