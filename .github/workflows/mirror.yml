@@ -45,24 +45,19 @@ jobs:
           
           # Fetch all tags from the target repository
           git fetch mirror --tags
-          
-           # Store all local tags in a variable
-          TAGS=$(git tag -l)
-      
-          # Only delete tags if there are any
-          if [ -n "$TAGS" ]; then
-            # Delete all tags locally
-            echo "$TAGS" | xargs -I {} git tag -d {}
-            
-            # Delete all tags remotely from the target repository
-            echo "$TAGS" | xargs -I {} git push mirror --delete {}
-          fi
+           
       
           # Fetch tags from the source repository and recreate them as lightweight tags
           git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
           for tag in $(git tag); do
-              commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
-              git tag -f -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
+              # Check if the tag exists in the mirror repository
+              if ! git rev-parse "refs/remotes/mirror/tags/$tag" >/dev/null 2>&1; then
+                  # Tag does not exist in mirror, so create it
+                  commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
+                  git tag -f -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
+              else
+                  echo "Tag $tag already exists in mirror repository. Skipping..."
+              fi
           done
       
           # Push lightweight tags to the target repository
@@ -85,7 +80,7 @@ jobs:
             prerelease=$(_jq '.prerelease')
           
             # Create the release in the target repository
-            curl -s -X POST -H "Authorization: token $TARGET_TOKEN" \
+            curl -s -X POST -H "Authorization: token ${{ secrets.BOT_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/Codeinwp/themeisle-sdk-main/releases \
               -d "{
