@@ -46,12 +46,14 @@ jobs:
           
           # Fetch all tags from the target repository
           git fetch mirror --tags
-      
-          # Delete all tags locally
-          git tag -l | xargs -I {} git tag -d {}
-      
-          # Delete all tags remotely from the target repository
-          git push mirror --delete $(git tag -l)
+          
+          if [ -n "$(git tag -l)" ]; then
+            # Delete all tags locally
+            git tag -l | xargs -I {} git tag -d {}
+            
+            # Delete all tags remotely from the target repository
+            git push mirror --delete $(git tag -l)
+          fi
       
           # Fetch tags from the source repository and recreate them as lightweight tags
           git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
