@@ -123,4 +123,61 @@ class Announcements_Test extends WP_UnitTestCase {
 		$module->time = '2024-11-27 23:59:59';
 		$this->assertFalse( $module->is_active( $dates ) );
 	}
+
+	public function test_get_announcements_for_plugins() {
+		// Setup dates using UTC time
+		$start = gmdate( 'Y-m-d H:i:s', strtotime( '-1 day', time() ) );
+		$end   = gmdate( 'Y-m-d H:i:s', strtotime( 'tomorrow', time() ) );
+		
+		$module = new \ThemeisleSDK\Modules\Announcements(
+			array(
+				'black_friday' => array(
+					'start'    => $start,
+					'end'      => $end,
+					'rendered' => false,
+				),
+			)
+		);
+
+		// Get announcements and verify structure
+		$announcements = $module->get_announcements_for_plugins();
+		
+		// Check if black friday announcement exists and is active
+		$this->assertArrayHasKey( 'black_friday', $announcements );
+		$this->assertTrue( ! empty( $announcements['black_friday']['active'] ) );
+
+		// Verify required URL and banner fields exist for neve product
+		$this->assertArrayHasKey( 'neve_dashboard_url', $announcements['black_friday'] );
+		
+		// Verify URLs are valid
+		foreach ( $announcements['black_friday'] as $key => $value ) {
+			if ( strpos( $key, '_url' ) !== false ) {
+				$this->assertNotEmpty( filter_var( $value, FILTER_VALIDATE_URL ) );
+			}
+		}
+	}
+
+	public function test_render_banner() {
+		$module = new \ThemeisleSDK\Modules\Announcements();
+
+		$test_settings = array(
+			'cta_url'      => 'https://example.com',
+			'img_src'      => 'https://example.com/image.jpg',
+			'urgency_text' => 'Test urgency text',
+		);
+
+		$rendered = $module->render_banner( $test_settings );
+		
+		$this->assertStringContainsString( 'href="' . $test_settings['cta_url'] . '"', $rendered );
+		$this->assertStringContainsString( 'src="' . $test_settings['img_src'] . '"', $rendered );
+		$this->assertStringContainsString( $test_settings['urgency_text'], $rendered );
+		
+		$this->assertStringContainsString( 'class="tsdk-banner-cta"', $rendered );
+		$this->assertStringContainsString( 'class="tsdk-banner-img"', $rendered );
+		$this->assertStringContainsString( 'class="tsdk-banner-urgency-text"', $rendered );
+
+		// Test with empty settings
+		$empty_rendered = $module->render_banner();
+		$this->assertEmpty( $empty_rendered );
+	}
 }

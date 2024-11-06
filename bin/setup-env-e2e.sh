@@ -15,3 +15,6 @@ npm run wp-env run tests-cli wp option set visualizer_logger_flag "yes"
 echo "[3] Install plugins"
 npm run wp-env run tests-cli wp plugin install visualizer
 npm run wp-env run tests-cli wp plugin activate visualizer
+
+echo "[4] Activate SDK as plugin"
+npm run wp-env run tests-cli wp plugin activate themeisle-sdk
