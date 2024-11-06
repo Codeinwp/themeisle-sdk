@@ -21,7 +21,9 @@ jobs:
       - name: Remove specific folder
         run: |
           rm -rf .github
+          rm -rf CHANGELOG.md
           git rm -r --cached .github || true
+          git rm -r --cached CHANGELOG.md || true
 
       - name: Push main branch and tags to mirror repo
         env:
@@ -41,3 +43,51 @@ jobs:
           # Push to the mirror repo, overwriting history
           git push mirror master --force  # Push only the master branch with new history
           git push mirror --tags --force
+          
+          # Fetch all tags from the target repository
+          git fetch target --tags
+      
+          # Delete all tags locally
+          git tag -l | xargs -I {} git tag -d {}
+      
+          # Delete all tags remotely from the target repository
+          git push target --delete $(git tag -l)
+      
+          # Fetch tags from the source repository and recreate them as lightweight tags
+          git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
+          for tag in $(git tag); do
+              commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag
+              git tag -f "$tag" "$commit_hash"         # Re-create as a lightweight tag
+          done
+      
+          # Push lightweight tags to the target repository
+          git push target --tags --force
+      - name: Sync releases from source to target repo
+        run: |
+          # Fetch all releases from the source repository
+          releases=$(curl -s -H "Authorization: token ${{ secrets.BOT_TOKEN }}" \
+                    "https://api.github.com/repos/Codeinwp/themeisle-sdk-main/releases")
+          
+          # Loop through each release and create it in the target repository
+          for row in $(echo "${releases}" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+          
+            tag_name=$(_jq '.tag_name')
+            release_name=$(_jq '.name')
+            draft=$(_jq '.draft')
+            prerelease=$(_jq '.prerelease')
+          
+            # Create the release in the target repository
+            curl -s -X POST -H "Authorization: token $TARGET_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/<target_owner>/<target_repo>/releases \
+              -d "{
+                \"tag_name\": \"${tag_name}\",
+                \"name\": \"${release_name}\",
+                \"body\": \"\",
+                \"draft\": ${draft},
+                \"prerelease\": ${prerelease}
+              }"
+          done
