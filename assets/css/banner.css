@@ -48,3 +48,7 @@
         left: 0%;
     }
 }
+
+.notice:not(#tsdk_banner) {
+    display: none;
+}
