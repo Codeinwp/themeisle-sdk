@@ -1,3 +1,8 @@
+##### [Version 3.3.36](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.35...v3.3.36) (2024-11-06)
+
+- Update Blackfriday
+- Add WP Full Pay
+
 ##### [Version 3.3.35](https://github.com/Codeinwp/themeisle-sdk/compare/v3.3.34...v3.3.35) (2024-10-29)
 
 ignore dev files
