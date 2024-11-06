@@ -45,13 +45,15 @@ jobs:
           git push mirror --tags --force
           
           # Fetch all tags from the target repository
-          git fetch target --tags
-      
-          # Delete all tags locally
-          git tag -l | xargs -I {} git tag -d {}
-      
-          # Delete all tags remotely from the target repository
-          git push target --delete $(git tag -l)
+          git fetch mirror --tags
+          
+          if [ -n "$(git tag -l)" ]; then
+            # Delete all tags locally
+            git tag -l | xargs -I {} git tag -d {}
+            
+            # Delete all tags remotely from the target repository
+            git push mirror --delete $(git tag -l)
+          fi
       
           # Fetch tags from the source repository and recreate them as lightweight tags
           git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
@@ -61,7 +63,7 @@ jobs:
           done
       
           # Push lightweight tags to the target repository
-          git push target --tags --force
+          git push mirror --tags --force
       - name: Sync releases from source to target repo
         run: |
           # Fetch all releases from the source repository
