@@ -43,24 +43,26 @@ jobs:
           # Push to the mirror repo, overwriting history
           git push mirror master --force  # Push only the master branch with new history
           
-          # Fetch all tags from the target repository
-          git fetch mirror --tags
-           
-      
-          # Fetch tags from the source repository and recreate them as lightweight tags
-          git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
+          # Fetch tags from both the source and mirror repositories
+          git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"  # Source repo
+          git fetch mirror --tags  # Mirror repo
+    
+          # Get a list of tags in the mirror repository
+          mirror_tags=$(git ls-remote --tags mirror | awk '{print $2}' | sed 's#refs/tags/##')
+    
+          # Loop through each tag in the source repository
           for tag in $(git tag); do
-              # Check if the tag exists in the mirror repository
-              if ! git rev-parse "refs/remotes/mirror/tags/$tag" >/dev/null 2>&1; then
-                  # Tag does not exist in mirror, so create it
-                  commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
-                  git tag -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
-              else
-                  echo "Tag $tag already exists in mirror repository. Skipping..."
-              fi
+            # Check if the tag exists in the mirror repository by searching mirror_tags variable
+            if ! echo "$mirror_tags" | grep -w "$tag" >/dev/null 2>&1; then
+              # Tag does not exist in mirror, so create it as an annotated tag
+              commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
+              git tag -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
+            else
+              echo "Tag $tag already exists in mirror repository. Skipping..."
+            fi
           done
-      
-          # Push lightweight tags to the target repository
+          
+          # Push only the new tags to the mirror repository
           git push mirror --tags
       - name: Sync releases from source to target repo
         run: |
