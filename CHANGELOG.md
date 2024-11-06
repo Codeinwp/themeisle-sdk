@@ -1,3 +1,7 @@
+##### [Version 3.3.37](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.36...v3.3.37) (2024-11-06)
+
+- Hotfix for Black Friday Global notice
+
 ##### [Version 3.3.36](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.35...v3.3.36) (2024-11-06)
 
 - Update Blackfriday
