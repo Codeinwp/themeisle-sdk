@@ -54,7 +54,7 @@ jobs:
               if ! git rev-parse "refs/remotes/mirror/tags/$tag" >/dev/null 2>&1; then
                   # Tag does not exist in mirror, so create it
                   commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
-                  git tag -f -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
+                  git tag -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
               else
                   echo "Tag $tag already exists in mirror repository. Skipping..."
               fi
