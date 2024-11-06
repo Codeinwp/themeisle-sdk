@@ -46,7 +46,7 @@ jobs:
           # Fetch all tags from the target repository
           git fetch mirror --tags
            
-      s
+      
           # Fetch tags from the source repository and recreate them as lightweight tags
           git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
           for tag in $(git tag); do
