@@ -42,7 +42,6 @@ jobs:
           
           # Push to the mirror repo, overwriting history
           git push mirror master --force  # Push only the master branch with new history
-          git push mirror --tags --force
           
           # Fetch all tags from the target repository
           git fetch mirror --tags
@@ -62,8 +61,8 @@ jobs:
           # Fetch tags from the source repository and recreate them as lightweight tags
           git fetch --tags "https://${{ secrets.BOT_TOKEN }}@github.com/Codeinwp/themeisle-sdk-main"
           for tag in $(git tag); do
-              commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag
-              git tag -f "$tag" "$commit_hash"         # Re-create as a lightweight tag
+              commit_hash=$(git rev-list -n 1 "$tag")  # Get the commit hash for each tag 
+              git tag -f -a "$tag" "$commit_hash" -m "New Release"  # Annotated tag with custom message
           done
       
           # Push lightweight tags to the target repository
@@ -88,7 +87,7 @@ jobs:
             # Create the release in the target repository
             curl -s -X POST -H "Authorization: token $TARGET_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/<target_owner>/<target_repo>/releases \
+              https://api.github.com/repos/Codeinwp/themeisle-sdk-main/releases \
               -d "{
                 \"tag_name\": \"${tag_name}\",
                 \"name\": \"${release_name}\",
