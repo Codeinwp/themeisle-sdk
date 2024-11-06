@@ -325,9 +325,9 @@ class Announcements extends Abstract_Module {
 		foreach ( Loader::get_products() as $product ) {
 			$slug = $product->get_slug();
 
-			// Do not add if the contains the string 'pro'.
-			if ( strpos( $slug, 'pro' ) !== false ) {
-				continue;
+			// NOTE: No notice if the user has at least one Pro product.
+			if ( $product->requires_license() ) {
+				return;
 			}
 
 			$product_names[] = $product->get_name();
