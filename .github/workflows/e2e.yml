@@ -33,8 +33,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Install environment
         run: |
-          cp ./bin/themeisle-sdk.php ./      
-          npm run wp-env start
+          npm run env:start
       - name: Run the tests
         run: |
           npm run test:e2e:playwright

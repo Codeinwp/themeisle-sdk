@@ -6,6 +6,6 @@
     "WP_DEBUG_DISPLAY": true
   },
   "lifecycleScripts": {
-		"afterStart": "bash ./bin/setup-env-e2e.sh"
+		"afterStart": "bash ./bin/setup-after-env-e2e.sh"
 	}
 }
