@@ -149,7 +149,7 @@ class Promotion_Test extends WP_UnitTestCase {
 		$product    = $this->get_product();
 		$this->assertTrue( $promotions->can_load( $product ) );
 		$promotions->load( $product );
-		$promos     = $promotions->promotions;
+		$promos = $promotions->promotions;
 
 		$this->assertNotContains( 'wp-full-pay-plugins-install', $promos );
 	}
