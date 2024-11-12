@@ -32,7 +32,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @var array
 	 */
-	private $promotions = array();
+	public $promotions = array();
 
 	/**
 	 * Holds the values of the promotions that are not allowed to be shown.
