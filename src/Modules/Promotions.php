@@ -32,7 +32,7 @@ class Promotions extends Abstract_Module {
 	 *
 	 * @var array
 	 */
-	private $promotions = array();
+	public $promotions = array();
 
 	/**
 	 * Holds the values of the promotions that are not allowed to be shown.
@@ -393,6 +393,7 @@ class Promotions extends Abstract_Module {
 		$has_hyve_conditions       = version_compare( get_bloginfo( 'version' ), '6.2', '>=' ) && $this->has_support_page();
 		$has_wfp_full_pay          = defined( 'WP_FULL_STRIPE_BASENAME' ) || $this->is_plugin_installed( 'wp-full-stripe-free' );
 		$had_wfp_from_promo        = get_option( $this->option_wp_full_pay, false );
+		$has_wfp_conditions        = $this->has_donate_page();
 		$is_min_req_v              = version_compare( get_bloginfo( 'version' ), '5.8', '>=' );
 		$current_theme             = wp_get_theme();
 		$has_neve                  = $current_theme->template === 'neve' || $current_theme->parent() === 'neve';
@@ -490,7 +491,7 @@ class Promotions extends Abstract_Module {
 			],
 			'wp_full_pay'     => [
 				'wp-full-pay-plugins-install' => [
-					'env'    => ! $has_wfp_full_pay && ! $had_wfp_from_promo,
+					'env'    => ! $has_wfp_full_pay && ! $had_wfp_from_promo && $has_wfp_conditions,
 					'screen' => 'plugin-install',
 				],
 			],
