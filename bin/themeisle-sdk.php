@@ -38,7 +38,7 @@ add_action( 'admin_menu', function () {
 	} );
 } );
 
-add_filter( 'themeisle_sdk_about_us_metadata', function ( $config ) {
+add_filter( 'themeisle_sdk_main_about_us_metadata', function ( $config ) {
 	return [
 		'location'         => 'themeisle-sdk',
 		'logo'             => 'https://placehold.co/200x50.jpg',

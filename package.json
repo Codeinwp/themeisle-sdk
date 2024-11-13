@@ -20,6 +20,7 @@
     "release": "semantic-release --debug",
     "dist": "bash ./bin/dist.sh",
     "wp-env": "wp-env",
+    "env:start": "bash ./bin/setup-before-env-e2e.sh && npm run wp-env start", 
     "test:e2e:playwright": "wp-scripts test-playwright --config tests/e2e/playwright.config.js",
     "test:e2e:playwright:debug": "wp-scripts test-playwright --config tests/e2e/playwright.config.js --ui",
     "test:unit:php:base": "wp-env run --env-cwd='wp-content/plugins/themeisle-sdk' tests-wordpress vendor/bin/phpunit",
