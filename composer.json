@@ -14,7 +14,7 @@
       "homepage": "https://themeisle.com"
     }
   ],
-  "version": "3.3.38",
+  "version": "3.3.39",
   "require-dev": {
     "codeinwp/phpcs-ruleset": "dev-main",
     "yoast/phpunit-polyfills": "^2.0"
