@@ -69,7 +69,7 @@ class Licenser_Test extends WP_UnitTestCase {
 	 */
 	public function test_licenser_can_load() {
 
-		$file    = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
+		$file    = dirname( __FILE__ ) . '/sample_products/sample_pro_plugin/plugin_file.php';
 		$product = new \ThemeisleSDK\Product( $file );
 
 		$this->assertTrue( ( new \ThemeisleSDK\Modules\Licenser() )->can_load( $product ) );
