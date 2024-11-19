@@ -9,7 +9,7 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       sample-pro-plugin
  * WordPress Available:  no
- * Requires License:    no
+ * Requires License:    es
  */
 
 require_once 'vendor/load.php';
