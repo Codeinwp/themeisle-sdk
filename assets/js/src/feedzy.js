@@ -40,7 +40,7 @@ const withFeedzyNotice = createHigherOrderComponent((BlockEdit) => {
                     <PanelBody>
                         <div 
                             style={{
-                                padding: '10px',
+                                padding: '16px 10px',
                                 backgroundColor: '#f0f6fc',
                                 borderLeft: '4px solid #72aee6',
                                 margin: '5px 0',
@@ -54,8 +54,8 @@ const withFeedzyNotice = createHigherOrderComponent((BlockEdit) => {
                                 onClick={() => setHasSkipped(true)}
                                 style={{
                                     position: 'absolute',
-                                    top: '8px',
-                                    right: '8px',
+                                    top: '-2px',
+                                    right: '3px',
                                     cursor: 'pointer',
                                     background: 'none',
                                     border: 'none',
