@@ -140,7 +140,7 @@ final class Loader {
 			],
 
 			'feedzy'          => [
-				'import_desc'       => 'Schedule automatic content imports from any RSS feed directly to your site.',
+				'import_desc'       => 'Schedule automatic content imports from any RSS feed directly to your site. %sBuilt by %s.%s',
 				'install_now'       => 'Install Now',
 				'by'                => 'by %s',
 				'editor_recommends' => '%s recommends %sFeedzy%s to display entries from any RSS feed with more advanced styling and filtering options.',

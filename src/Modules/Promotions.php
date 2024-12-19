@@ -257,8 +257,8 @@ class Promotions extends Abstract_Module {
 		if ( isset( $_GET['wp_full_pay_reference_key'] ) ) {
 			update_option( 'wp_full_pay_reference_key', sanitize_key( $_GET['wp_full_pay_reference_key'] ) );
 		}
-		if ( isset( $_GET['feedzy_reference_key'] ) ) {
-			update_option( 'feedzy_reference_key', sanitize_key( $_GET['feedzy_reference_key'] ) );
+		if ( isset( $_GET['feedzy_reference_key'] ) || ( isset( $_GET['from'], $_GET['plugin'] ) && $_GET['from'] === 'import' && str_starts_with( sanitize_key( $_GET['plugin'] ), 'feedzy' ) ) ) {
+			update_option( 'feedzy_reference_key', sanitize_key( $_GET['feedzy_reference_key'] ?? 'i-' . $this->product->get_key() ) );
 			update_option( $this->option_feedzy, 1 );
 		}
 	}
@@ -448,7 +448,7 @@ class Promotions extends Abstract_Module {
 			],
 			'feedzy_import'   => [
 				'feedzy-import' => [
-					'env'    => ! $has_feedzy && is_main_site(),
+					'env'    => true,
 					'screen' => 'import',
 					'always' => true,
 				],
@@ -747,7 +747,8 @@ class Promotions extends Abstract_Module {
 				add_action( 'admin_notices', [ $this, 'render_rop_dash_notice' ] );
 				break;
 			case 'feedzy-import':
-				add_action( 'admin_head', [ $this, 'add_import' ] );
+				add_action( 'load-import.php', [ $this, 'add_import' ] );
+
 				break;
 			case 'feedzy-editor':
 				add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue' ] );
@@ -795,53 +796,18 @@ class Promotions extends Abstract_Module {
 	 * @return void
 	 */
 	public function add_import() {
-		$url = wp_nonce_url(
-			add_query_arg(
-				array(
-					'action'               => 'install-plugin',
-					'plugin'               => 'feedzy-rss-feeds',
-					'from'                 => 'import',
-					'feedzy_reference_key' => 'i-' . $this->product->get_key(),
-				),
-				self_admin_url( 'update.php' )
-			),
-			'install-plugin_feedzy-rss-feeds'
+		global $wp_importers;
+		if ( isset( $wp_importers['feedzy-rss-feeds'] ) ) {
+			return;
+		}
+		$wp_importers['feedzy-rss-feeds'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			'Feedzy',
+			sprintf( Loader::$labels['promotions']['feedzy']['import_desc'], '<span style="float: left; font-style: italic;margin-top:0.4em;">', $this->product->get_friendly_name(), '</span>' ),
+			'install' => 'feedzy-rss-feeds',
 		);
-		?>
-		<script type="text/javascript">
-			document.addEventListener("DOMContentLoaded", function () {
-				// Select the table body
-				const tableBody = document.querySelector('.widefat.importers.striped tbody');
-
-				// Create a new row
-				const newRow = document.createElement('tr');
-				newRow.className = 'importer-item';
-
-				// Create the first cell for the title and actions
-				const titleCell = document.createElement('td');
-				titleCell.className = 'import-system';
-				titleCell.innerHTML = `
-		<span class="importer-title">Feedzy</span>
-<span class="importer-action"><a href="<?php echo esc_url( $url ); ?>" class="install-now" data-slug="feedzy-rss-feeds" data-name="Feedzy" aria-label="<?php echo esc_attr( Loader::$labels['promotions']['feedzy']['install_now'] ); ?>"><?php echo esc_attr( Loader::$labels['promotions']['feedzy']['install_now'] ); ?></a> | <?php echo esc_attr( sprintf( Loader::$labels['promotions']['feedzy']['by'], $this->product->get_friendly_name() ) ); ?></span>
-	`;
-
-				// Create the second cell for the description
-				const descCell = document.createElement('td');
-				descCell.className = 'desc';
-				descCell.innerHTML = `
-		<span class="importer-desc"><?php echo esc_attr( Loader::$labels['promotions']['feedzy']['import_desc'] ); ?></span>
-	`;
-
-				// Append cells to the new row
-				newRow.appendChild(titleCell);
-				newRow.appendChild(descCell);
-
-				// Append the new row to the table body
-				tableBody.appendChild(newRow);
-			});
-		</script>
-
-		<?php
+		if ( defined( 'FEEDZY_BASEFILE' ) ) {
+			unset( $wp_importers['feedzy-rss-feeds']['install'] );
+		}
 	}
 	/**
 	 * Render dashboard notice.
