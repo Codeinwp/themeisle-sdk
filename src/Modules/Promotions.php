@@ -154,7 +154,7 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load[] = 'feedzy_import';
 
 		if ( defined( 'NEVE_VERSION' ) || defined( 'WPMM_PATH' ) || defined( 'OTTER_BLOCKS_VERSION' ) || defined( 'OBFX_URL' ) ) {
-			$promos[] = 'feedzy_embed';
+			$promotions_to_load[] = 'feedzy_embed';
 		}
 		$promotions_to_load = array_unique( $promotions_to_load );
 
