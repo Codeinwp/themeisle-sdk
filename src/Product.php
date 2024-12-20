@@ -348,7 +348,7 @@ class Product {
 	public function get_friendly_name() {
 		$name = trim( str_replace( 'Lite', '', $this->get_name() ) );
 		if ( defined( 'OTTER_BLOCKS_BASEFILE' ) && OTTER_BLOCKS_BASEFILE === $this->basefile ) {
-			$name = 'Otter';
+			$name = 'Otter Blocks';
 		}
 		if ( defined( 'OPTML_BASEFILE' ) && OPTML_BASEFILE === $this->basefile ) {
 			$name = 'Optimole';
