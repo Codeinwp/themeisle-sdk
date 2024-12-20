@@ -723,6 +723,7 @@ class Promotions extends Abstract_Module {
 				add_action( 'admin_notices', [ $this, 'render_wp_full_pay_notice' ] );
 			}
 
+			add_action( 'load-import.php', [ $this, 'add_import' ] );
 			$this->load_woo_promos();
 
 			return;
