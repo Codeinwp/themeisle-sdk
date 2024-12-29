@@ -4,4 +4,5 @@ import './rop.js';
 import './neve.js';
 import './redirection-for-cf7.js';
 import './hyve.js';
+import './feedzy.js';
 import './wp-full-pay.js';
