@@ -171,6 +171,7 @@ class Script_Loader extends Abstract_Module {
 
 		return [
 			'userId'     => $user_id,
+			'apiHost'    => 'https://app.formbricks.com',
 			'attributes' => [
 				'language' => $lang_code,
 			],

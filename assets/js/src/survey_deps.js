@@ -16,8 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    const isNumeric = (value) => !isNaN(value) && typeof value !== "boolean";
+
     // Auto-trigger if the survey use the new format delivered with SDK.
-    if ( window.tsdk_survey_data?.attributes?.install_days_number ) {
+    if ( isNumeric( window.tsdk_survey_data?.attributes?.install_days_number ) ) {
         window.tsdk_formbricks?.init({});
     }
  
