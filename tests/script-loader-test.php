@@ -214,4 +214,27 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		$data = $script_loader->get_survey_common_data();
 		$this->assertEquals( 'en', $data['attributes']['language'] );
 	}
+
+	/**
+	 * Test the secret masking filter.
+	 * 
+	 * @return void
+	 */
+	public function test_secret_masking() {
+		$script_loader = new \ThemeisleSDK\Modules\Script_Loader();
+
+		// Test normal string
+		$this->assertEquals( '****test', $script_loader->secret_masking( 'testtest' ) );
+
+		// Test odd length string
+		$this->assertEquals( '***test', $script_loader->secret_masking( 'footest' ) );
+
+		// Test empty string
+		$this->assertEquals( '', $script_loader->secret_masking( '' ) );
+
+		// Test non-string input
+		$this->assertEquals( 123, $script_loader->secret_masking( 123 ) );
+		$this->assertEquals( null, $script_loader->secret_masking( null ) );
+		$this->assertEquals( [], $script_loader->secret_masking( [] ) );
+	}
 }

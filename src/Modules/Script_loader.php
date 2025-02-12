@@ -62,6 +62,7 @@ class Script_Loader extends Abstract_Module {
 
 		add_filter( 'themeisle_sdk_dependency_script_handler', [ $this, 'get_script_handler' ], 10, 1 );
 		add_action( 'themeisle_sdk_dependency_enqueue_script', [ $this, 'enqueue_script' ], 10, 1 );
+		add_filter( 'themeisle_sdk_secret_masking', [ $this, 'secret_masking' ], 10, 1 );
 
 		add_filter( 'themeisle_sdk_script_setup', '__return_true' );
 
@@ -223,5 +224,21 @@ class Script_Loader extends Abstract_Module {
 			[],
 			$asset_file['version']
 		);
+	}
+
+	/**
+	 * Mask a secret with `*` for half of its length.
+	 * 
+	 * @param mixed $secret The secret.
+	 * 
+	 * @return mixed The masked secret if secret is a valid string.
+	 */
+	public function secret_masking( $secret ) {
+		if ( empty( $secret ) || ! is_string( $secret ) ) {
+			return $secret;
+		}
+
+		$len = strlen( $secret );
+		return str_repeat( '*', $len / 2 ) . substr( $secret, $len / 2 );
 	}
 }
