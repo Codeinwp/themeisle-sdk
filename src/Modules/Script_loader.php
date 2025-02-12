@@ -238,7 +238,7 @@ class Script_Loader extends Abstract_Module {
 			return $secret;
 		}
 
-		$len = strlen( $secret );
-		return str_repeat( '*', $len / 2 ) . substr( $secret, $len / 2 );
+		$half_len = intval( strlen( $secret ) / 2 );
+		return str_repeat( '*', $half_len ) . substr( $secret, $half_len );
 	}
 }
