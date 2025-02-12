@@ -147,4 +147,71 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		do_action( 'themeisle_sdk_dependency_enqueue_script', 'test' );
 		$this->assertFalse( wp_script_is( $handler, 'enqueued' ) );
 	}
+
+	/**
+	 * Test the load_survey_for_product method.
+	 * 
+	 * @return void
+	 */
+	public function test_load_survey_for_product() {
+		$file          = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
+		$product       = new \ThemeisleSDK\Product( $file );
+		$script_loader = new \ThemeisleSDK\Modules\Script_Loader();
+		
+		$script_loader->load_survey_for_product( $product->get_slug(), [] );
+
+		// Verify the survey script is loaded
+		$handler = $script_loader->get_script_handler( 'survey' );
+		$this->assertNotEmpty( $handler );
+		$this->assertTrue( wp_script_is( $handler, 'enqueued' ) );
+	}
+
+	/**
+	 * Test the get_survey_common_data method.
+	 * 
+	 * @return void
+	 */
+	public function test_get_survey_common_data() {
+		$script_loader = new \ThemeisleSDK\Modules\Script_Loader();
+		
+		// Set up test filters
+		add_filter(
+			'themeisle_sdk_current_lang',
+			function() {
+				return 'de_DE';
+			}
+		);
+
+		add_filter(
+			'themeisle_sdk_current_site_url',
+			function() {
+				return 'https://example.com/wordpress';
+			}
+		);
+		
+		$data = $script_loader->get_survey_common_data();
+		
+		// Assert the structure and content of returned data
+		$this->assertIsArray( $data );
+		$this->assertArrayHasKey( 'userId', $data );
+		$this->assertArrayHasKey( 'attributes', $data );
+		$this->assertArrayHasKey( 'language', $data['attributes'] );
+		
+		// Test German language mapping
+		$this->assertEquals( 'de', $data['attributes']['language'] );
+		
+		// Test userId generation
+		$expected_user_id = 'u_' . hash( 'crc32b', 'example.com/wordpress' );
+		$this->assertEquals( $expected_user_id, $data['userId'] );
+		
+		// Test with different language that are not yet supported.
+		add_filter(
+			'themeisle_sdk_current_lang',
+			function() {
+				return 'fr_FR';
+			}
+		);
+		$data = $script_loader->get_survey_common_data();
+		$this->assertEquals( 'en', $data['attributes']['language'] );
+	}
 }
