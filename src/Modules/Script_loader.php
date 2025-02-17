@@ -62,8 +62,28 @@ class Script_Loader extends Abstract_Module {
 
 		add_filter( 'themeisle_sdk_dependency_script_handler', [ $this, 'get_script_handler' ], 10, 1 );
 		add_action( 'themeisle_sdk_dependency_enqueue_script', [ $this, 'enqueue_script' ], 10, 1 );
+		add_filter( 'themeisle_sdk_secret_masking', [ $this, 'secret_masking' ], 10, 1 );
 
 		add_filter( 'themeisle_sdk_script_setup', '__return_true' );
+
+		add_action( 'themeisle_internal_page', [ $this, 'load_survey_for_product' ], 10, 2 );
+	}
+
+	/**
+	 * Load survey for product using internal pages.
+	 *
+	 * @param string $product_slug Product slug.
+	 * @param string $page_slug    Page slug.
+	 */
+	public function load_survey_for_product( $product_slug, $page_slug ) {
+		$data = apply_filters( 'themeisle-sdk/survey/' . $product_slug, [], $page_slug );
+
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			return;
+		}
+
+		$handler = $this->get_script_handler( 'survey' );
+		$this->load_survey( $handler, $data );
 	}
 
 	/**
@@ -109,10 +129,11 @@ class Script_Loader extends Abstract_Module {
 	 * Load the survey script.
 	 * 
 	 * @param string $handler The script handler.
+	 * @param array  $data The survey data.
 	 * 
 	 * @return void
 	 */
-	public function load_survey( $handler ) {
+	public function load_survey( $handler, $data = array() ) {
 		global $themeisle_sdk_max_path;
 		$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/survey/survey_deps.asset.php';
 
@@ -124,14 +145,38 @@ class Script_Loader extends Abstract_Module {
 			true
 		);
 
-		$language            = get_user_locale();
+		$data = array_replace_recursive( $this->get_survey_common_data(), $data );
+
+		wp_localize_script( $handler, 'tsdk_survey_data', $data );
+	}
+
+	/**
+	 * Get the common data in the Formbrick survey format.
+	 * 
+	 * @return array
+	 */
+	public function get_survey_common_data() {
+		$language            = apply_filters( 'themeisle_sdk_current_lang', get_user_locale() );
 		$available_languages = [
 			'de_DE'        => 'de',
 			'de_DE_formal' => 'de',
 		];
 		$lang_code           = isset( $available_languages[ $language ] ) ? $available_languages[ $language ] : 'en';
 
-		wp_localize_script( $handler, 'tsdk_survey_attrs', [ 'language' => $lang_code ] );
+		$url_parts = wp_parse_url( apply_filters( 'themeisle_sdk_current_site_url', get_site_url() ) );
+		$clean_url = str_replace( 'www.', '', $url_parts['host'] );
+		if ( isset( $url_parts['path'] ) ) {
+			$clean_url .= $url_parts['path'];
+		}
+		$user_id = 'u_' . hash( 'crc32b', $clean_url ); 
+
+		return [
+			'userId'     => $user_id,
+			'apiHost'    => 'https://app.formbricks.com',
+			'attributes' => [
+				'language' => $lang_code,
+			],
+		];
 	}
 
 	/**
@@ -179,5 +224,21 @@ class Script_Loader extends Abstract_Module {
 			[],
 			$asset_file['version']
 		);
+	}
+
+	/**
+	 * Mask a secret with `*` for half of its length.
+	 * 
+	 * @param mixed $secret The secret.
+	 * 
+	 * @return mixed The masked secret if secret is a valid string.
+	 */
+	public function secret_masking( $secret ) {
+		if ( empty( $secret ) || ! is_string( $secret ) ) {
+			return $secret;
+		}
+
+		$half_len = intval( strlen( $secret ) / 2 );
+		return str_repeat( '*', $half_len ) . substr( $secret, $half_len );
 	}
 }

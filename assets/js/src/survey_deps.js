@@ -1,4 +1,4 @@
-import formbricks from "@formbricks/js/app";
+import formbricks from "@formbricks/js";
 
 /**
  * Load the formbricks library and expose it to the global scope.
@@ -7,16 +7,21 @@ import formbricks from "@formbricks/js/app";
 document.addEventListener("DOMContentLoaded", () => {
     window.tsdk_formbricks = {
         init: (args) => {
-            if ( typeof args.attributes === 'object' ) {
-                args.attributes = {
-                    ...window.tsdk_survey_attrs,
-                    ...args.attributes
-                }
+            args = {
+                ...args,
+                ...window.tsdk_survey_data
             }
-            
+
             formbricks?.init(args)
         }
     };
+
+    const isNumeric = (value) => !isNaN(value) && typeof value !== "boolean";
+
+    // Auto-trigger if the survey use the new format delivered with SDK.
+    if ( isNumeric( window.tsdk_survey_data?.attributes?.install_days_number ) ) {
+        window.tsdk_formbricks?.init({});
+    }
  
     window.dispatchEvent(new Event("themeisle:survey:loaded"));
 });
