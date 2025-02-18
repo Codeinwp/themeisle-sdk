@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (typeof args !== 'object' || args === null) {
                 args = {};
             }
-         
+
             const mergedArgs = {
                 ...window.tsdk_survey_data,
                 ...args,
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ...(args.attributes ?? {})
                 }
             }
-            
+
             formbricks?.init(mergedArgs)
         }
     };
@@ -39,6 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener( 'themeisle:survey:trigger:cancel', () => {
         clearTimeout( timer );
     })
- 
+
     window.dispatchEvent(new Event("themeisle:survey:loaded"));
 });
