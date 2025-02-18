@@ -186,7 +186,7 @@ class Script_Loader extends Abstract_Module {
 		) {
 			$common_data['attributes']['days_since_install'] = $this->install_time_category( $reference_data['attributes']['install_days_number'] );
 		}
-	
+
 		return $common_data;
 	}
 
@@ -198,19 +198,23 @@ class Script_Loader extends Abstract_Module {
 	 * @return int The category.
 	 */
 	private function install_time_category( $install_days_number ) {
-		$install_category = 0;
-
 		if ( 1 < $install_days_number && 8 > $install_days_number ) {
-			$install_category = 7;
-		} elseif ( 8 <= $install_days_number && 31 > $install_days_number ) {
-			$install_days_number = 30;
-		} elseif ( 30 < $install_days_number && 90 > $install_days_number ) {
-			$install_category = 90;
-		} elseif ( 90 <= $install_days_number ) {
-			$install_category = 91;
+			return 7;
+		}
+		
+		if ( 8 <= $install_days_number && 31 > $install_days_number ) {
+			return 30;
+		}
+		
+		if ( 30 < $install_days_number && 90 > $install_days_number ) {
+			return 90;
+		}
+		
+		if ( 90 <= $install_days_number ) {
+			return 91;
 		}
 
-		return $install_category;
+		return 0;
 	}
 
 	/**

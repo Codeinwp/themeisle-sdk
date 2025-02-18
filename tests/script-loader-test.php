@@ -241,4 +241,40 @@ class Script_Loader_Test extends WP_UnitTestCase {
 		$this->assertEquals( null, $script_loader->secret_masking( null ) );
 		$this->assertEquals( [], $script_loader->secret_masking( [] ) );
 	}
+
+	/**
+	 * Test the install_time_category method for all cases.
+	 * 
+	 * @return void 
+	 */
+	public function test_install_time_category() {
+		$script_loader = new \ThemeisleSDK\Modules\Script_Loader();
+
+		$test_data = [
+			// Test default case (0-1 days)
+			0   => 0,
+			1   => 0,
+			// Test 1-7 days category
+			2   => 7,
+			5   => 7,
+			7   => 7,
+			// Test 8-30 days category
+			8   => 30,
+			15  => 30,
+			30  => 30,
+			// Test 31-89 days category
+			31  => 90,
+			45  => 90,
+			89  => 90,
+			// Test 90+ days category
+			90  => 91,
+			100 => 91,
+			365 => 91,
+		];
+
+		foreach ( $test_data as $days => $expected ) {
+			$data = $script_loader->get_survey_common_data( [ 'attributes' => [ 'install_days_number' => $days ] ] );
+			$this->assertEquals( $expected, $data['attributes']['days_since_install'], "Failed asserting that {$days} days maps to category {$expected}" );
+		}
+	}
 }
