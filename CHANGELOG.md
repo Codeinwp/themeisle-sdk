@@ -1,3 +1,8 @@
+##### [Version 3.3.42](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.41...v3.3.42) (2025-02-17)
+
+- Updated Formbricks package version
+- Added support for Formbrick script loading via Internal Pages hooks
+
 ##### [Version 3.3.41](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.40...v3.3.41) (2025-02-05)
 
 - fixed a minor issue that prevented the translation checking for Hestia PRO
