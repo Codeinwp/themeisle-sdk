@@ -7,21 +7,38 @@ import formbricks from "@formbricks/js";
 document.addEventListener("DOMContentLoaded", () => {
     window.tsdk_formbricks = {
         init: (args) => {
-            args = {
-                ...args,
-                ...window.tsdk_survey_data
+            if (typeof args !== 'object' || args === null) {
+                args = {};
             }
 
-            formbricks?.init(args)
+            const mergedArgs = {
+                ...window.tsdk_survey_data,
+                ...args,
+                attributes: {
+                    ...(window.tsdk_survey_data.attributes ?? {}),
+                    ...(args.attributes ?? {})
+                }
+            }
+
+            formbricks?.init(mergedArgs)
         }
     };
 
     const isNumeric = (value) => !isNaN(value) && typeof value !== "boolean";
 
+    let timer = null;
+
     // Auto-trigger if the survey use the new format delivered with SDK.
     if ( isNumeric( window.tsdk_survey_data?.attributes?.install_days_number ) ) {
-        window.tsdk_formbricks?.init({});
+        timer = setTimeout(() => {
+            window.tsdk_formbricks?.init();
+        }, 350);
     }
- 
+
+    // Cancel auto-trigger if a plugin request manual control.
+    window.addEventListener( 'themeisle:survey:trigger:cancel', () => {
+        clearTimeout( timer );
+    })
+
     window.dispatchEvent(new Event("themeisle:survey:loaded"));
 });

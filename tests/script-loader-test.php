@@ -189,13 +189,17 @@ class Script_Loader_Test extends WP_UnitTestCase {
 			}
 		);
 		
-		$data = $script_loader->get_survey_common_data();
+		$data = $script_loader->get_survey_common_data( [ 'attributes' => [ 'install_days_number' => 3 ] ] );
 		
 		// Assert the structure and content of returned data
 		$this->assertIsArray( $data );
 		$this->assertArrayHasKey( 'userId', $data );
 		$this->assertArrayHasKey( 'attributes', $data );
 		$this->assertArrayHasKey( 'language', $data['attributes'] );
+		$this->assertArrayHasKey( 'days_since_install', $data['attributes'] );
+
+		// Test install category.
+		$this->assertEquals( 7, $data['attributes']['days_since_install'] );
 		
 		// Test German language mapping
 		$this->assertEquals( 'de', $data['attributes']['language'] );

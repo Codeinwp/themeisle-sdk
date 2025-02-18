@@ -145,7 +145,7 @@ class Script_Loader extends Abstract_Module {
 			true
 		);
 
-		$data = array_replace_recursive( $this->get_survey_common_data(), $data );
+		$data = array_replace_recursive( $this->get_survey_common_data( $data ), $data );
 
 		wp_localize_script( $handler, 'tsdk_survey_data', $data );
 	}
@@ -153,9 +153,11 @@ class Script_Loader extends Abstract_Module {
 	/**
 	 * Get the common data in the Formbrick survey format.
 	 * 
+	 * @param array $reference_data Reference data to extrapolate common properties.
+	 * 
 	 * @return array
 	 */
-	public function get_survey_common_data() {
+	public function get_survey_common_data( $reference_data = array() ) {
 		$language            = apply_filters( 'themeisle_sdk_current_lang', get_user_locale() );
 		$available_languages = [
 			'de_DE'        => 'de',
@@ -168,15 +170,47 @@ class Script_Loader extends Abstract_Module {
 		if ( isset( $url_parts['path'] ) ) {
 			$clean_url .= $url_parts['path'];
 		}
-		$user_id = 'u_' . hash( 'crc32b', $clean_url ); 
+		$user_id = 'u_' . hash( 'crc32b', $clean_url );
 
-		return [
+		$common_data = [
 			'userId'     => $user_id,
 			'apiHost'    => 'https://app.formbricks.com',
 			'attributes' => [
 				'language' => $lang_code,
 			],
 		];
+
+		if (
+			isset( $reference_data['attributes'], $reference_data['attributes']['install_days_number'] )
+			&& is_int( $reference_data['attributes']['install_days_number'] )
+		) {
+			$common_data['attributes']['days_since_install'] = $this->install_time_category( $reference_data['attributes']['install_days_number'] );
+		}
+	
+		return $common_data;
+	}
+
+	/**
+	 * Compute the install time category.
+	 * 
+	 * @param int $install_days_number The number of days passed since installation.
+	 * 
+	 * @return int The category.
+	 */
+	private function install_time_category( $install_days_number ) {
+		$install_category = 0;
+
+		if ( 1 < $install_days_number && 8 > $install_days_number ) {
+			$install_category = 7;
+		} elseif ( 8 <= $install_days_number && 31 > $install_days_number ) {
+			$install_days_number = 30;
+		} elseif ( 30 < $install_days_number && 90 > $install_days_number ) {
+			$install_category = 90;
+		} elseif ( 90 <= $install_days_number ) {
+			$install_category = 91;
+		}
+
+		return $install_category;
 	}
 
 	/**
