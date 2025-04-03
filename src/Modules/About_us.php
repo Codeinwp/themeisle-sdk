@@ -229,7 +229,7 @@ class About_Us extends Abstract_Module {
 			],
 			'canInstallPlugins'  => current_user_can( 'install_plugins' ),
 			'canActivatePlugins' => current_user_can( 'activate_plugins' ),
-			'showReviewLink'     => ! ( isset( $this->about_data['review_link'] ) && false === $this->about_data['review_link'] )
+			'showReviewLink'     => ! ( isset( $this->about_data['review_link'] ) && false === $this->about_data['review_link'] ),
 		];
 	}
 
