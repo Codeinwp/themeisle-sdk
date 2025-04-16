@@ -14,6 +14,7 @@
  *     'has_upgrade_menu'   => <condition>,
  *     'upgrade_link'       => <url>,
  *     'upgrade_text'       => 'Get Pro Version',
+ *     'review_link'        => false, // Leave it empty for default WPorg link or false to hide it.
  *  ]
  * }
  *
@@ -228,6 +229,7 @@ class About_Us extends Abstract_Module {
 			],
 			'canInstallPlugins'  => current_user_can( 'install_plugins' ),
 			'canActivatePlugins' => current_user_can( 'activate_plugins' ),
+			'showReviewLink'     => ! ( isset( $this->about_data['review_link'] ) && false === $this->about_data['review_link'] ),
 		];
 	}
 
