@@ -87,6 +87,11 @@ class Featured_Plugins extends Abstract_Module {
 			return $res;
 		}
 
+		if ( isset( $args->page ) && 1 === (int) $args->page && isset( $args->search ) && ! empty( $args->search ) ) {
+			$res->plugins = $this->maybe_prepend_lms_plugin( $res->plugins, $args );
+			return $res;
+		}
+
 		if ( ! isset( $args->browse ) || $args->browse !== 'featured' ) {
 			return $res;
 		}
@@ -98,6 +103,35 @@ class Featured_Plugins extends Abstract_Module {
 		$res->plugins = $plugins;
 
 		return $res;
+	}
+
+	/**
+	 * Prepend the LMS plugin if the search query matches LMS-related terms.
+	 *
+	 * @param array $plugins The plugins array.
+	 * @param object $args The plugin API arguments.
+	 * @return array
+	 */
+	private function maybe_prepend_lms_plugin( $plugins, $args ) {
+		$search = isset( $args->search ) ? strtolower( $args->search ) : '';
+		if (
+			strpos( $search, 'lms' ) !== false ||
+			strpos( $search, 'learning' ) !== false
+		) {
+			$filter_slugs = apply_filters( 'themeisle_sdk_masteriyo_filter_slugs', [ 'learning-management-system' ] );
+			$masteriyo    = $this->get_plugins_filtered_from_author( $args, $filter_slugs, 'masteriyo' );
+
+			if ( ! empty( $masteriyo ) ) {
+				// Remove existing LMS plugin if present to avoid duplicates.
+				$plugins = array_filter( $plugins, function( $plugin ) {
+					return ( is_object( $plugin ) && isset( $plugin->slug ) && $plugin->slug !== 'learning-management-system' ) ||
+						( is_array( $plugin ) && isset( $plugin['slug'] ) && $plugin['slug'] !== 'learning-management-system' );
+				} );
+
+				$plugins = array_merge( $masteriyo, $plugins );
+			}
+		}
+		return $plugins;
 	}
 
 	/**
