@@ -383,6 +383,9 @@ class About_Us extends Abstract_Module {
 			'wp-full-stripe-free'                 => [
 				'name' => 'WP Full Pay',
 			],
+			'learning-management-system'          => [
+				'name' => 'Masteriyo LMS',
+			],
 		];
 
 		foreach ( $products as $slug => $product ) {
