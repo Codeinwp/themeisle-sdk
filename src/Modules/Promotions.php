@@ -548,7 +548,7 @@ class Promotions extends Abstract_Module {
 					'screen' => 'plugin-install',
 				],
 			],
-			'masteriyo'      => [
+			'masteriyo'       => [
 				'masteriyo-plugins-install' => [
 					'env'    => $is_min_php_7_2 && ! $has_masteriyo && ! $had_masteriyo_from_promo && $has_masteriyo_conditions,
 					'screen' => 'plugin-install',
