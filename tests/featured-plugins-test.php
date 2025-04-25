@@ -267,37 +267,44 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 			->getMock();
 
 		$lms_plugin = (object) [
-			'name' => 'LMS Plugin',
-			'slug' => 'learning-management-system',
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
 			'version' => '1.0.0',
-			'author' => 'masteriyo',
+			'author'  => 'masteriyo',
 		];
 
 		$module->method( 'get_plugins_filtered_from_author' )
 			->willReturn( [ $lms_plugin ] );
 
 		// Including a duplicate LMS plugin to test deduplication.
-		$existing_plugin = (object) [
-			'name' => 'Other Plugin',
-			'slug' => 'other-plugin',
+		$existing_plugin      = (object) [
+			'name'    => 'Other Plugin',
+			'slug'    => 'other-plugin',
 			'version' => '2.0.0',
-			'author' => 'someone',
+			'author'  => 'someone',
 		];
 		$duplicate_lms_plugin = (object) [
-			'name' => 'LMS Plugin',
-			'slug' => 'learning-management-system',
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
 			'version' => '1.0.0',
-			'author' => 'masteriyo',
+			'author'  => 'masteriyo',
 		];
 
 		$plugins = [ $existing_plugin, $duplicate_lms_plugin ];
 
-		$args = (object) [ 'search' => 'best lms plugin', 'page' => 1 ];
+		$args = (object) [
+			'search' => 'best lms plugin',
+			'page'   => 1,
+		];
 
-		$result = $module->filter_plugin_api_results( (object) [
-			'plugins' => $plugins,
-			'info'    => [ 'results' => 10 ],
-		], 'query_plugins', $args );
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => $plugins,
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			$args
+		);
 
 		$this->assertEquals( 'learning-management-system', $result->plugins[0]->slug, 'LMS plugin should be prepended.' );
 		$this->assertEquals( 'other-plugin', $result->plugins[1]->slug, 'Other plugin should follow.' );

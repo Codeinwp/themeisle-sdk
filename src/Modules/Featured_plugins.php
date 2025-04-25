@@ -167,7 +167,7 @@ class Featured_Plugins extends Abstract_Module {
 	 *
 	 * @return array
 	 */
-	private function get_plugins_filtered_from_author( $args, $filter_slugs = [], $author = 'Themeisle' ) {
+	protected function get_plugins_filtered_from_author( $args, $filter_slugs = [], $author = 'Themeisle' ) {
 
 		$cached = get_transient( $this->transient_key . $author );
 		if ( $cached ) {
