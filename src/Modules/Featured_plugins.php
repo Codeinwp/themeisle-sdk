@@ -108,7 +108,7 @@ class Featured_Plugins extends Abstract_Module {
 	/**
 	 * Prepend the LMS plugin if the search query matches LMS-related terms.
 	 *
-	 * @param array $plugins The plugins array.
+	 * @param array  $plugins The plugins array.
 	 * @param object $args The plugin API arguments.
 	 * @return array
 	 */
@@ -123,10 +123,13 @@ class Featured_Plugins extends Abstract_Module {
 
 			if ( ! empty( $masteriyo ) ) {
 				// Remove existing LMS plugin if present to avoid duplicates.
-				$plugins = array_filter( $plugins, function( $plugin ) {
-					return ( is_object( $plugin ) && isset( $plugin->slug ) && $plugin->slug !== 'learning-management-system' ) ||
-						( is_array( $plugin ) && isset( $plugin['slug'] ) && $plugin['slug'] !== 'learning-management-system' );
-				} );
+				$plugins = array_filter(
+					$plugins,
+					function( $plugin ) {
+						return ( is_object( $plugin ) && isset( $plugin->slug ) && $plugin->slug !== 'learning-management-system' ) ||
+							( is_array( $plugin ) && isset( $plugin['slug'] ) && $plugin['slug'] !== 'learning-management-system' );
+					}
+				);
 
 				$plugins = array_merge( $masteriyo, $plugins );
 			}

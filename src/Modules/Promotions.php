@@ -547,8 +547,8 @@ class Promotions extends Abstract_Module {
 					'env'    => ! $has_wfp_full_pay && ! $had_wfp_from_promo && $has_wfp_conditions,
 					'screen' => 'plugin-install',
 				],
-			 ],
-			 'masteriyo' => [
+			],
+			 'masteriyo'      => [
 				'masteriyo-plugins-install' => [
 					'env'    => $is_min_php_7_2 && ! $has_masteriyo && ! $had_masteriyo_from_promo && $has_masteriyo_conditions,
 					'screen' => 'plugin-install',
@@ -1458,10 +1458,10 @@ class Promotions extends Abstract_Module {
 	 * @return bool True if the tagline contains LMS-related keywords, false otherwise.
 	 */
 	public function has_lms_tagline() {
-		$transient_name = 'tisdk_has_lms_tagline';
+		$transient_name  = 'tisdk_has_lms_tagline';
 		$has_lms_tagline = get_transient( $transient_name );
 
-		// if ( false === $has_lms_tagline ) {
+		if ( false === $has_lms_tagline ) {
 			$tagline      = strtolower( get_bloginfo( 'description' ) );
 			$lms_keywords = array( 'learning', 'courses' );
 
@@ -1474,7 +1474,7 @@ class Promotions extends Abstract_Module {
 			}
 
 			set_transient( $transient_name, $has_lms_tagline, DAY_IN_SECONDS );
-		// }
+		}
 
 		return $has_lms_tagline === 'yes';
 	}
