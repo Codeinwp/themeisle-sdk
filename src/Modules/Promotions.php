@@ -106,6 +106,13 @@ class Promotions extends Abstract_Module {
 	private $option_feedzy = 'themeisle_sdk_promotions_feedzy_installed';
 
 	/**
+	 * Option key for Masteriyo promos.
+	 *
+	 * @var string
+	 */
+	private $option_masteriyo = 'themeisle_sdk_promotions_masteriyo_installed';
+
+	/**
 	 * Loaded promotion.
 	 *
 	 * @var string
@@ -152,6 +159,7 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load[] = 'hyve';
 		$promotions_to_load[] = 'wp_full_pay';
 		$promotions_to_load[] = 'feedzy_import';
+		$promotions_to_load[] = 'masteriyo';
 
 		if ( defined( 'NEVE_VERSION' ) || defined( 'WPMM_PATH' ) || defined( 'OTTER_BLOCKS_VERSION' ) || defined( 'OBFX_URL' ) ) {
 			$promotions_to_load[] = 'feedzy_embed';
@@ -257,6 +265,7 @@ class Promotions extends Abstract_Module {
 		if ( isset( $_GET['wp_full_pay_reference_key'] ) ) {
 			update_option( 'wp_full_pay_reference_key', sanitize_key( $_GET['wp_full_pay_reference_key'] ) );
 		}
+
 		if ( isset( $_GET['feedzy_reference_key'] ) || ( isset( $_GET['from'], $_GET['plugin'] ) && $_GET['from'] === 'import' && str_starts_with( sanitize_key( $_GET['plugin'] ), 'feedzy' ) ) ) {
 			update_option( 'feedzy_reference_key', sanitize_key( $_GET['feedzy_reference_key'] ?? 'i-' . $this->product->get_key() ) );
 			update_option( $this->option_feedzy, 1 );
@@ -350,6 +359,16 @@ class Promotions extends Abstract_Module {
 				'default'           => false,
 			)
 		);
+		register_setting(
+			'themeisle_sdk_settings',
+			$this->option_masteriyo,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
 	}
 
 	/**
@@ -416,9 +435,12 @@ class Promotions extends Abstract_Module {
 		$has_enough_attachments    = $this->has_min_media_attachments();
 		$has_enough_old_posts      = $this->has_old_posts();
 		$is_min_php_8_1            = version_compare( PHP_VERSION, '8.1', '>=' );
-
-		$has_feedzy            = defined( 'FEEDZY_BASEFILE' ) || $this->is_plugin_installed( 'feedzy-rss-feedss' );
-		$had_feedzy_from_promo = get_option( $this->option_feedzy, false );
+		$has_feedzy                = defined( 'FEEDZY_BASEFILE' ) || $this->is_plugin_installed( 'feedzy-rss-feedss' );
+		$had_feedzy_from_promo     = get_option( $this->option_feedzy, false );
+		$has_masteriyo             = defined( 'MASTERIYO_VERSION' ) || $this->is_plugin_installed( 'learning-management-system' );
+		$had_masteriyo_from_promo  = get_option( $this->option_masteriyo, false );
+		$has_masteriyo_conditions  = $this->has_lms_tagline();
+		$is_min_php_7_2            = version_compare( PHP_VERSION, '7.2', '>=' );
 
 		$all = [
 			'optimole'        => [
@@ -523,6 +545,12 @@ class Promotions extends Abstract_Module {
 			'wp_full_pay'     => [
 				'wp-full-pay-plugins-install' => [
 					'env'    => ! $has_wfp_full_pay && ! $had_wfp_from_promo && $has_wfp_conditions,
+					'screen' => 'plugin-install',
+				],
+			 ],
+			 'masteriyo' => [
+				'masteriyo-plugins-install' => [
+					'env'    => $is_min_php_7_2 && ! $has_masteriyo && ! $had_masteriyo_from_promo && $has_masteriyo_conditions,
 					'screen' => 'plugin-install',
 				],
 			],
@@ -723,6 +751,10 @@ class Promotions extends Abstract_Module {
 				add_action( 'admin_notices', [ $this, 'render_wp_full_pay_notice' ] );
 			}
 
+			if ( $this->get_upsells_dismiss_time( 'masteriyo-plugins-install' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_masteriyo_notice' ] );
+			}
+
 			add_action( 'load-import.php', [ $this, 'add_import' ] );
 			$this->load_woo_promos();
 
@@ -787,6 +819,10 @@ class Promotions extends Abstract_Module {
 			case 'wp-full-pay-plugins-install':
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_wp_full_pay_notice' ] );
+				break;
+			case 'masteriyo-plugins-install':
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
+				add_action( 'admin_notices', [ $this, 'render_masteriyo_notice' ] );
 				break;
 		}
 	}
@@ -881,6 +917,8 @@ class Promotions extends Abstract_Module {
 				'hyveDash'               => esc_url( add_query_arg( [ 'page' => 'wpfs-settings-stripe' ], admin_url( 'admin.php' ) ) ),
 				'wpFullPayActivationUrl' => $this->get_plugin_activation_link( 'wp-full-stripe-free' ),
 				'wpFullPayDash'          => esc_url( add_query_arg( [ 'page' => 'wpfs-settings-stripe' ], admin_url( 'admin.php' ) ) ),
+				'masteriyoActivationUrl' => $this->get_plugin_activation_link( 'masteriyo' ),
+				'masteriyoDash'          => esc_url( add_query_arg( [ 'page' => 'masteriyo-onboard' ], admin_url( 'index.php' ) ) ),
 				'nevePreviewURL'         => esc_url( add_query_arg( [ 'theme' => 'neve' ], admin_url( 'theme-install.php' ) ) ),
 				'neveAction'             => $neve_action,
 				'activateNeveURL'        => esc_url(
@@ -938,6 +976,13 @@ class Promotions extends Abstract_Module {
 	 */
 	public function render_redirection_cf7_notice() {
 		echo '<div id="ti-redirection-cf7-notice" class="notice notice-info ti-sdk-om-notice"></div>';
+	}
+
+	/**
+	 * Render Masteriyo notice.
+	 */
+	public function render_masteriyo_notice() {
+		echo '<div id="ti-masteriyo-notice" class="notice notice-info ti-sdk-om-notice"></div>';
 	}
 
 	/**
@@ -1405,5 +1450,32 @@ class Promotions extends Abstract_Module {
 		}
 
 		return 'yes' === $has_donate;
+	}
+
+	/**
+	 * Check if the tagline contains LMS related keywords.
+	 *
+	 * @return bool True if the tagline contains LMS-related keywords, false otherwise.
+	 */
+	public function has_lms_tagline() {
+		$transient_name = 'tisdk_has_lms_tagline';
+		$has_lms_tagline = get_transient( $transient_name );
+
+		// if ( false === $has_lms_tagline ) {
+			$tagline      = strtolower( get_bloginfo( 'description' ) );
+			$lms_keywords = array( 'learning', 'courses' );
+
+			$has_lms_tagline = 'no';
+			foreach ( $lms_keywords as $keyword ) {
+				if ( strpos( $tagline, $keyword ) !== false ) {
+					$has_lms_tagline = 'yes';
+					break;
+				}
+			}
+
+			set_transient( $transient_name, $has_lms_tagline, DAY_IN_SECONDS );
+		// }
+
+		return $has_lms_tagline === 'yes';
 	}
 }

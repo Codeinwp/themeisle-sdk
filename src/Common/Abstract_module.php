@@ -193,6 +193,10 @@ abstract class Abstract_Module {
 		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
 		$plugin        = isset( $this->plugin_paths[ $slug ] ) ? $this->plugin_paths[ $slug ] : $slug . '/' . $slug . '.php';
 
+		if ( 'masteriyo' === $slug ) {
+			$plugin = 'learning-management-system/lms.php';
+		}
+
 		return add_query_arg(
 			array(
 				'plugin_status' => 'all',
