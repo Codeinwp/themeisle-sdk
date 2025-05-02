@@ -92,41 +92,44 @@ class Featured_Plugins extends Abstract_Module {
 	public function maybe_add_inline_js() {
 		$screen = get_current_screen();
 		if ( isset( $screen->base ) && 'plugin-install' === $screen->base ) {
-			add_action( 'admin_footer', function() {
-				$text = 'Recommended by ' . $this->product->get_friendly_name();
-				echo '<script>(function(){
-					function onPluginCardFound(card) {
-						var recommendedDiv = document.createElement("div");
-						Object.assign(recommendedDiv.style, {
-							display: "block",
-							textAlign: "center",
-							padding: "0 12px 12px",
-							background: "#f6f7f7"
-						});
-						console.log("Plugin card found:", card);
-						recommendedDiv.innerHTML = "' . $text . '";
-						card.appendChild(recommendedDiv);
-					}
-
-					function checkAndRun() {
-						var card = document.querySelector(".plugin-card-learning-management-system");
-						if (card) {
-							onPluginCardFound(card);
-							return true;
+			add_action(
+				'admin_footer',
+				function() {
+					$text = 'Recommended by ' . $this->product->get_friendly_name();
+					echo '<script>(function(){
+						function onPluginCardFound(card) {
+							var recommendedDiv = document.createElement("div");
+							Object.assign(recommendedDiv.style, {
+								display: "block",
+								textAlign: "center",
+								padding: "0 12px 12px",
+								background: "#f6f7f7"
+							});
+							console.log("Plugin card found:", card);
+							recommendedDiv.innerHTML = "' . esc_html( $text ) . '";
+							card.appendChild(recommendedDiv);
 						}
-						return false;
-					}
 
-					if (!checkAndRun()) {
-						var observer = new MutationObserver(function(mutations, obs) {
-							if (checkAndRun()) {
-								obs.disconnect();
+						function checkAndRun() {
+							var card = document.querySelector(".plugin-card-learning-management-system");
+							if (card) {
+								onPluginCardFound(card);
+								return true;
 							}
-						});
-						observer.observe(document.body, { childList: true, subtree: true });
-					}
-				})();</script>';
-			} );
+							return false;
+						}
+
+						if (!checkAndRun()) {
+							var observer = new MutationObserver(function(mutations, obs) {
+								if (checkAndRun()) {
+									obs.disconnect();
+								}
+							});
+							observer.observe(document.body, { childList: true, subtree: true });
+						}
+					})();</script>';
+				}
+			);
 		}
 	}
 
