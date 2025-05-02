@@ -33,6 +33,13 @@ class Featured_Plugins extends Abstract_Module {
 	private $transient_key = 'themeisle_sdk_featured_plugins_';
 
 	/**
+	 * The current product instance.
+	 *
+	 * @var Product|null
+	 */
+	protected $product = null;
+
+	/**
 	 * Check if the module can be loaded.
 	 *
 	 * @param Product $product Product data.
@@ -59,6 +66,8 @@ class Featured_Plugins extends Abstract_Module {
 	 * @return void
 	 */
 	public function load( $product ) {
+		$this->product = $product;
+
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			return;
 		}
@@ -70,6 +79,55 @@ class Featured_Plugins extends Abstract_Module {
 		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_true' );
 
 		add_filter( 'plugins_api_result', [ $this, 'filter_plugin_api_results' ], 10, 3 );
+
+		// Enqueue inline JS only on plugin-install.php.
+		add_action( 'admin_enqueue_scripts', [ $this, 'maybe_add_inline_js' ] );
+	}
+
+	/**
+	 * Enqueue inline JavaScript only on plugin-install.php.
+	 *
+	 * @return void
+	 */
+	public function maybe_add_inline_js() {
+		$screen = get_current_screen();
+		if ( isset( $screen->base ) && 'plugin-install' === $screen->base ) {
+			add_action( 'admin_footer', function() {
+				$text = 'Recommended by ' . $this->product->get_friendly_name();
+				echo '<script>(function(){
+					function onPluginCardFound(card) {
+						var recommendedDiv = document.createElement("div");
+						Object.assign(recommendedDiv.style, {
+							display: "block",
+							textAlign: "center",
+							padding: "0 12px 12px",
+							background: "#f6f7f7"
+						});
+						console.log("Plugin card found:", card);
+						recommendedDiv.innerHTML = "' . $text . '";
+						card.appendChild(recommendedDiv);
+					}
+
+					function checkAndRun() {
+						var card = document.querySelector(".plugin-card-learning-management-system");
+						if (card) {
+							onPluginCardFound(card);
+							return true;
+						}
+						return false;
+					}
+
+					if (!checkAndRun()) {
+						var observer = new MutationObserver(function(mutations, obs) {
+							if (checkAndRun()) {
+								obs.disconnect();
+							}
+						});
+						observer.observe(document.body, { childList: true, subtree: true });
+					}
+				})();</script>';
+			} );
+		}
 	}
 
 	/**
@@ -116,7 +174,7 @@ class Featured_Plugins extends Abstract_Module {
 		$search = isset( $args->search ) ? strtolower( $args->search ) : '';
 		if (
 			strpos( $search, 'lms' ) !== false ||
-			strpos( $search, 'learning' ) !== false
+			strpos( $search, 'learn' ) !== false
 		) {
 			$filter_slugs = apply_filters( 'themeisle_sdk_masteriyo_filter_slugs', [ 'learning-management-system' ] );
 			$masteriyo    = $this->get_plugins_filtered_from_author( $args, $filter_slugs, 'masteriyo' );
