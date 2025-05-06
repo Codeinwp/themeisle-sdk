@@ -41,6 +41,7 @@ abstract class Abstract_Module {
 		'templates-patterns-collection'       => 'templates-patterns-collection/templates-patterns-collection.php',
 		'wpcf7-redirect'                      => 'wpcf7-redirect/wpcf7-redirect.php',
 		'wp-full-stripe-free'                 => 'wp-full-stripe-free/wp-full-stripe.php',
+		'learning-management-system'          => 'learning-management-system/lms.php',
 	];
 
 	/**
@@ -192,10 +193,6 @@ abstract class Abstract_Module {
 	public function get_plugin_activation_link( $slug ) {
 		$reference_key = $slug === 'otter-blocks' ? 'reference_key' : 'optimole_reference_key';
 		$plugin        = isset( $this->plugin_paths[ $slug ] ) ? $this->plugin_paths[ $slug ] : $slug . '/' . $slug . '.php';
-
-		if ( 'masteriyo' === $slug ) {
-			$plugin = 'learning-management-system/lms.php';
-		}
 
 		return add_query_arg(
 			array(

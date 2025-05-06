@@ -13,6 +13,7 @@
 namespace ThemeisleSDK\Modules;
 
 use ThemeisleSDK\Common\Abstract_Module;
+use ThemeisleSDK\Loader;
 use ThemeisleSDK\Product;
 
 // Exit if accessed directly.
@@ -95,7 +96,8 @@ class Featured_Plugins extends Abstract_Module {
 			add_action(
 				'admin_footer',
 				function() {
-					$text = 'Recommended by ' . $this->product->get_friendly_name();
+					$text = esc_html( sprintf( Loader::$labels['promotions']['recommended'], $this->product->get_friendly_name() ) );
+
 					echo '<script>(function(){
 						function onPluginCardFound(card) {
 							var recommendedDiv = document.createElement("div");

@@ -336,6 +336,9 @@ class About_Us extends Abstract_Module {
 				'description' => Loader::$labels['about_us']['others']['neve_desc'],
 				'icon'        => $this->get_sdk_uri() . 'assets/images/neve.png',
 			],
+			'learning-management-system'          => [
+				'name' => 'Masteriyo LMS',
+			],
 			'otter-blocks'                        => [
 				'name' => 'Otter',
 			],
@@ -382,9 +385,6 @@ class About_Us extends Abstract_Module {
 			],
 			'wp-full-stripe-free'                 => [
 				'name' => 'WP Full Pay',
-			],
-			'learning-management-system'          => [
-				'name' => 'Masteriyo LMS',
 			],
 		];
 

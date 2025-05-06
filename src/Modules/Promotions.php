@@ -159,7 +159,7 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load[] = 'hyve';
 		$promotions_to_load[] = 'wp_full_pay';
 		$promotions_to_load[] = 'feedzy_import';
-		$promotions_to_load[] = 'masteriyo';
+		$promotions_to_load[] = 'learning-management-system';
 
 		if ( defined( 'NEVE_VERSION' ) || defined( 'WPMM_PATH' ) || defined( 'OTTER_BLOCKS_VERSION' ) || defined( 'OBFX_URL' ) ) {
 			$promotions_to_load[] = 'feedzy_embed';
@@ -443,7 +443,7 @@ class Promotions extends Abstract_Module {
 		$is_min_php_7_2            = version_compare( PHP_VERSION, '7.2', '>=' );
 
 		$all = [
-			'optimole'        => [
+			'optimole'                   => [
 				'om-editor'      => [
 					'env'     => ! $has_optimole && $is_min_req_v && ! $had_optimole_from_promo,
 					'screen'  => 'editor',
@@ -468,20 +468,20 @@ class Promotions extends Abstract_Module {
 					'delayed' => true,
 				],
 			],
-			'feedzy_import'   => [
+			'feedzy_import'              => [
 				'feedzy-import' => [
 					'env'    => true,
 					'screen' => 'import',
 					'always' => true,
 				],
 			],
-			'feedzy_embed'    => [
+			'feedzy_embed'               => [
 				'feedzy-editor' => [
 					'env'    => ! $has_feedzy && is_main_site() && ! $had_feedzy_from_promo,
 					'screen' => 'editor',
 				],
 			],
-			'otter'           => [
+			'otter'                      => [
 				'blocks-css'        => [
 					'env'     => ! $has_otter && $is_min_req_v && ! $had_otter_from_promo,
 					'screen'  => 'editor',
@@ -498,14 +498,14 @@ class Promotions extends Abstract_Module {
 					'delayed' => true,
 				],
 			],
-			'rop'             => [
+			'rop'                        => [
 				'rop-posts' => [
 					'env'     => ! $has_rop && ! $had_rop_from_promo && $has_enough_old_posts,
 					'screen'  => 'edit-post',
 					'delayed' => true,
 				],
 			],
-			'woo_plugins'     => [
+			'woo_plugins'                => [
 				'ppom'                  => [
 					'env'    => ! $has_ppom && $has_woocommerce,
 					'screen' => 'edit-product',
@@ -523,32 +523,32 @@ class Promotions extends Abstract_Module {
 					'screen' => 'edit-product',
 				],
 			],
-			'neve'            => [
+			'neve'                       => [
 				'neve-themes-popular' => [
 					'env'    => ! $has_neve && ! $has_neve_from_promo,
 					'screen' => 'themes-install-popular',
 				],
 			],
-			'redirection-cf7' => [
+			'redirection-cf7'            => [
 				'wpcf7' => [
 					'env'     => ! $has_redirection_cf7 && ! $had_redirection_cf7_promo,
 					'screen'  => 'wpcf7',
 					'delayed' => true,
 				],
 			],
-			'hyve'            => [
+			'hyve'                       => [
 				'hyve-plugins-install' => [
 					'env'    => $is_min_php_8_1 && ! $has_hyve && ! $had_hyve_from_promo && $has_hyve_conditions,
 					'screen' => 'plugin-install',
 				],
 			],
-			'wp_full_pay'     => [
+			'wp_full_pay'                => [
 				'wp-full-pay-plugins-install' => [
 					'env'    => ! $has_wfp_full_pay && ! $had_wfp_from_promo && $has_wfp_conditions,
 					'screen' => 'plugin-install',
 				],
 			],
-			'masteriyo'       => [
+			'learning-management-system' => [
 				'masteriyo-plugins-install' => [
 					'env'    => $is_min_php_7_2 && ! $has_masteriyo && ! $had_masteriyo_from_promo && $has_masteriyo_conditions,
 					'screen' => 'plugin-install',
@@ -1458,24 +1458,15 @@ class Promotions extends Abstract_Module {
 	 * @return bool True if the tagline contains LMS-related keywords, false otherwise.
 	 */
 	public function has_lms_tagline() {
-		$transient_name  = 'tisdk_has_lms_tagline';
-		$has_lms_tagline = get_transient( $transient_name );
+		$tagline      = strtolower( get_bloginfo( 'description' ) );
+		$lms_keywords = array( 'learning', 'courses' );
 
-		if ( false === $has_lms_tagline ) {
-			$tagline      = strtolower( get_bloginfo( 'description' ) );
-			$lms_keywords = array( 'learning', 'courses' );
-
-			$has_lms_tagline = 'no';
-			foreach ( $lms_keywords as $keyword ) {
-				if ( strpos( $tagline, $keyword ) !== false ) {
-					$has_lms_tagline = 'yes';
-					break;
-				}
+		foreach ( $lms_keywords as $keyword ) {
+			if ( strpos( $tagline, $keyword ) !== false ) {
+				return true;
 			}
-
-			set_transient( $transient_name, $has_lms_tagline, DAY_IN_SECONDS );
 		}
 
-		return $has_lms_tagline === 'yes';
+		return false;
 	}
 }
