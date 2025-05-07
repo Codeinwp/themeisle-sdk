@@ -107,28 +107,26 @@ class Featured_Plugins extends Abstract_Module {
 								padding: "0 12px 12px",
 								background: "#f6f7f7"
 							});
-							console.log("Plugin card found:", card);
 							recommendedDiv.innerHTML = "' . esc_html( $text ) . '";
 							card.appendChild(recommendedDiv);
 						}
 
 						function checkAndRun() {
 							var card = document.querySelector(".plugin-card-learning-management-system");
-							if (card) {
+							if (card && !card.dataset.recommendedAdded) {
 								onPluginCardFound(card);
-								return true;
+								card.dataset.recommendedAdded = "true";
 							}
-							return false;
 						}
 
-						if (!checkAndRun()) {
-							var observer = new MutationObserver(function(mutations, obs) {
-								if (checkAndRun()) {
-									obs.disconnect();
-								}
-							});
-							observer.observe(document.body, { childList: true, subtree: true });
-						}
+						var observer = new MutationObserver(function(mutations) {
+							checkAndRun();
+						});
+
+						observer.observe(document.body, { childList: true, subtree: true });
+
+						// Initial check in case the card is already present.
+						checkAndRun();
 					})();</script>';
 				}
 			);
