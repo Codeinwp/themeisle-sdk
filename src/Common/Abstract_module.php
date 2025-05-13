@@ -41,6 +41,7 @@ abstract class Abstract_Module {
 		'templates-patterns-collection'       => 'templates-patterns-collection/templates-patterns-collection.php',
 		'wpcf7-redirect'                      => 'wpcf7-redirect/wpcf7-redirect.php',
 		'wp-full-stripe-free'                 => 'wp-full-stripe-free/wp-full-stripe.php',
+		'learning-management-system'          => 'learning-management-system/lms.php',
 	];
 
 	/**

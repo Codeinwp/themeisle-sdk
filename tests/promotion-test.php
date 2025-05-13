@@ -179,6 +179,25 @@ class Promotion_Test extends WP_UnitTestCase {
 		$this->assertContains( 'wp-full-pay-plugins-install', $promos );
 	}
 
+	public function testMasteriyoPromoShown() {
+		update_option( 'blogdescription', 'Courses' );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertContains( 'masteriyo-plugins-install', $promos );
+
+	}
+
 	private function get_product() {
 		$file = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
 

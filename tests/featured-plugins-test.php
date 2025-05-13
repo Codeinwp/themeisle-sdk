@@ -254,4 +254,68 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$this->assertEquals( 2, count( $filtered_api_result->plugins ) );
 	}
 
+	/**
+	 * Test LMS plugin is prepended when searching for LMS-related terms.
+	 */
+	public function test_lms_plugin_is_prepended_on_lms_search() {
+		wp_set_current_user( self::$admin_id );
+		$plugin         = dirname( __FILE__ ) . '/sample_products/sample_pro_plugin/plugin_file.php';
+		$plugin_product = new \ThemeisleSDK\Product( $plugin );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$lms_plugin = (object) [
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
+			'version' => '1.0.0',
+			'author'  => 'masteriyo',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $lms_plugin ] );
+
+		// Including a duplicate LMS plugin to test deduplication.
+		$existing_plugin      = (object) [
+			'name'    => 'Other Plugin',
+			'slug'    => 'other-plugin',
+			'version' => '2.0.0',
+			'author'  => 'someone',
+		];
+		$duplicate_lms_plugin = (object) [
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
+			'version' => '1.0.0',
+			'author'  => 'masteriyo',
+		];
+
+		$plugins = [ $existing_plugin, $duplicate_lms_plugin ];
+
+		$args = (object) [
+			'search' => 'best lms plugin',
+			'page'   => 1,
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => $plugins,
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			$args
+		);
+
+		$this->assertEquals( 'learning-management-system', $result->plugins[0]->slug, 'LMS plugin should be prepended.' );
+		$this->assertEquals( 'other-plugin', $result->plugins[1]->slug, 'Other plugin should follow.' );
+		// Ensure no duplicate LMS plugin exists.
+		$lms_count = 0;
+		foreach ( $result->plugins as $plugin ) {
+			if ( isset( $plugin->slug ) && $plugin->slug === 'learning-management-system' ) {
+				$lms_count++;
+			}
+		}
+		$this->assertEquals( 1, $lms_count, 'There should be only one LMS plugin in the results.' );
+	}
+
 }

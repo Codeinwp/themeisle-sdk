@@ -6,3 +6,4 @@ import './redirection-for-cf7.js';
 import './hyve.js';
 import './feedzy.js';
 import './wp-full-pay.js';
+import './masteriyo.js';

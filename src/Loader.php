@@ -172,6 +172,12 @@ final class Loader {
 				'dismisscta' => 'Dismiss this notice.',
 				'message'    => 'Enhance your donation page with WP Full Pay—create custom Stripe forms for one-time and recurring donations, manage transactions easily, and boost support with a seamless setup.',
 			],
+			'masteriyo'       => [
+				'gotodash'   => 'Go to Masteriyo Dashboard',
+				'install'    => 'Install Masteriyo',
+				'dismisscta' => 'Dismiss this notice.',
+				'message'    => 'Transform your site into a learning hub with Masteriyo LMS. Build engaging courses with intuitive tools, track student progress effortlessly, and grow your education business with powerful marketing features and seamless payment integration.',
+			],
 		],
 		'welcome'          => [
 			'ctan'    => 'No, thanks.',
