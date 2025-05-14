@@ -183,6 +183,8 @@ class About_Us extends Abstract_Module {
 		$asset_file = require $themeisle_sdk_max_path . '/assets/js/build/about/about.asset.php';
 		$deps       = array_merge( $asset_file['dependencies'], [ 'updates' ] );
 
+		do_action( 'themeisle_internal_page', $this->product->get_slug(), 'about_us' );
+
 		wp_register_script( $handle, $this->get_sdk_uri() . 'assets/js/build/about/about.js', $deps, $asset_file['version'], true );
 		wp_localize_script( $handle, 'tiSDKAboutData', $this->get_about_localization_data() );
 

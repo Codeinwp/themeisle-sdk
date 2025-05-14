@@ -221,4 +221,13 @@ abstract class Abstract_Module {
 
 		return is_plugin_active( $plugin );
 	}
+
+	/**
+	 * Get the current date.
+	 * 
+	 * @return \DateTime The date time.
+	 */
+	public function get_current_date() {
+		return apply_filters( 'themeisle_sdk_current_date', new \DateTime( 'now' ) );
+	}
 }

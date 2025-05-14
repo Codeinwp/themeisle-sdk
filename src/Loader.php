@@ -72,10 +72,10 @@ final class Loader {
 	 */
 	public static $labels = [
 		'announcements'    => [
-			'hurry_up'    => 'Hurry up! Only %s left.',
-			'sale_live'   => 'Themeisle Black Friday Sale is Live!',
-			'learn_more'  => 'Learn more',
-			'max_savings' => 'Enjoy Maximum Savings on %s',
+			'notice_link_label' => 'See the Offer',
+			'max_savings'       => 'Our biggest sale of the year: <strong>%s OFF everything!</strong>  Don\'t miss this limited-time offer.',
+			'black_friday'      => 'Black Friday Sale',
+			'time_left'         => '%s left',
 		],
 		'compatibilities'  => [
 			'notice'        => '%s requires a newer version of %s. Please %supdate%s %s %s to the latest version.',

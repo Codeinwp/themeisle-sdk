@@ -39,6 +39,10 @@ function About() {
         setTabToCurrentHash();
         window.addEventListener('hashchange', setTabToCurrentHash);
 
+        if ( window.tsdk_reposition_notice ) {
+            window.tsdk_reposition_notice();
+        }
+
         return () => {
             window.removeEventListener('hashchange', setTabToCurrentHash);
         };
@@ -60,6 +64,7 @@ function About() {
     return (
         <div className="ti-about">
             <Header pages={pages}/>
+            <div id="tsdk_banner"></div>
             <Hero/>
             <ProductCards/>
         </div>
