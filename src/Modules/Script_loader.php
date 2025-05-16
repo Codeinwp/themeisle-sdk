@@ -172,7 +172,7 @@ class Script_Loader extends Abstract_Module {
 
 		$common_data = [
 			'userId'     => $user_id,
-			'apiHost'    => 'https://app.formbricks.com',
+			'appUrl'     => 'https://app.formbricks.com',
 			'attributes' => [
 				'language' => $lang_code,
 			],

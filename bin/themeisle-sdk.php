@@ -14,6 +14,8 @@
 
 require_once 'load.php';
 
+define( 'SDK_PRODUCT_SLUG', basename( plugin_dir_path( __FILE__ ) ) );
+
 function _add_product( $products ) {
 	$products[] = __FILE__;
 
@@ -50,4 +52,25 @@ add_filter( 'themeisle_sdk_main_about_us_metadata', function ( $config ) {
 		'upgrade_link'     => esc_url( 'https://themeisle.com/themes/neve/pricing/' ),
 		'upgrade_text'     => 'Get Pro Version',
 	];
+} );
+
+add_action( 'admin_enqueue_scripts', function() {
+
+	$screen = get_current_screen();
+	if ( 'toplevel_page_themeisle-sdk' !== $screen->id ) {
+		return;
+	}
+
+	add_filter( 'themeisle-sdk/survey/' . SDK_PRODUCT_SLUG, function( $data, $page_slug ) {
+		$data = [
+			'environmentId' => 'clr0ml8qx4spz8up0j8lu7t4q', // Development environment in Formbricks.
+			'attributes'    => [
+				'install_days_number' => 3
+			]
+		];
+
+		return $data;
+	}, 10, 2 );
+
+	do_action( 'themeisle_internal_page', SDK_PRODUCT_SLUG, 'test-page' );
 } );
