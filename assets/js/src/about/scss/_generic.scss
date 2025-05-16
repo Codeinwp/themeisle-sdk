@@ -17,6 +17,16 @@ button {
   animation: spin 1s infinite linear;
 }
 
+#tsdk_banner:has(.themeisle-sale) {
+  max-width: 990px;
+  margin: 0 auto;
+  width: 100%;
+  
+  .themeisle-sale {
+    margin: 0 15px;
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

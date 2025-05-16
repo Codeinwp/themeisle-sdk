@@ -2,7 +2,7 @@ name: Build and publish the ZIP build file
 
 on:
   pull_request:
-    types: [ opened, synchronize, ready_for_review ]
+    types: [opened, synchronize, ready_for_review]
     branches-ignore:
       - "update_dependencies"
 jobs:
@@ -20,7 +20,11 @@ jobs:
           php-version: "7.4"
           extensions: simplexml
       - name: Check out source files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
       - name: Install composer deps
         run: composer install --no-dev --prefer-dist --no-progress --no-suggest
       - name: Install NPM deps

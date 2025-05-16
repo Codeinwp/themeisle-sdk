@@ -4,6 +4,9 @@
   padding-left: 0 !important;
 }
 
+.notice:not(.themeisle-sale) {
+  display: none;
+}
 
 .ti-about {
   --border: 1px solid #ccc;

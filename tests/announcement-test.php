@@ -1,183 +1,125 @@
 <?php
 /**
- * Announcements module feature test.
+ * Unit tests for the Announcements module.
  *
  * @package ThemeIsleSDK
  */
 
-/**
- * Test Announcements feature.
- */
+use ThemeisleSDK\Modules\Announcements;
+
 class Announcements_Test extends WP_UnitTestCase {
 	protected static $admin_id;
+	/** @var Announcements */
+	private $announcements;
 
-	/**
-	 * WP Instance setup.
-	 */
-	public static function wpSetUpBeforeClass( $factory ) {
-		self::$admin_id = $factory->user->create(
-			array(
-				'role' => 'administrator',
-			)
-		);
-		wp_set_current_user( self::$admin_id );
+	public static function wpSetUpBeforeClass( \WP_UnitTest_Factory $factory ) {
+		self::$admin_id = $factory->user->create( [ 'role' => 'administrator' ] );
 	}
 
 	public static function wpTearDownAfterClass() {
 		self::delete_user( self::$admin_id );
 	}
 
-	public function test_announcements_module_loading() {
-		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
-		\ThemeisleSDK\Loader::add_product( $file );
-		$modules = \ThemeisleSDK\Common\Module_Factory::get_modules_map();
-		$this->assertArrayHasKey( 'sample_theme', $modules );
-		$modules['sample_theme'] = array_filter(
-			$modules['sample_theme'],
-			[ $this, 'filter_value' ]
+	public function set_up() {
+		parent::set_up();
+		wp_set_current_user( self::$admin_id );
+		$this->announcements = new Announcements();
+	}
+
+	public function tear_down() {
+		remove_all_filters( 'themeisle_sdk_current_date' );
+		remove_all_filters( 'themeisle_sdk_current_time' );
+		remove_all_filters( 'themeisle_sdk_blackfriday_data' );
+
+		// Reset private static flag
+		$ref  = new \ReflectionClass( Announcements::class );
+		$prop = $ref->getProperty( 'notice_loaded' );
+		$prop->setAccessible( true );
+		$prop->setValue( false );
+
+		parent::tear_down();
+	}
+
+	public function test_can_show_notice_without_dismiss() {
+		$today = new DateTime( '2025-03-10' );
+		delete_user_meta( self::$admin_id, 'themeisle_sdk_dismissed_notice_black_friday' );
+		$this->assertTrue(
+			$this->announcements->can_show_notice( $today, self::$admin_id ),
+			'Notice should show when user has not dismissed.'
 		);
-		$this->assertCount( 0, $modules['sample_theme'] );
 	}
 
-	private function filter_value( $value ) {
-		if ( ! is_object( $value ) ) {
-			return false;
-		}
-		return ( get_class( $value ) === 'ThemeisleSDK\\Modules\\Announcements' );
-	}
-
-	/**
-	 * Test if module can load a product.
-	 */
-	public function test_announcement_product_loading() {
-
-		$file = dirname( __FILE__ ) . '/sample_products/sample_theme/style.css';
-
-		\ThemeisleSDK\Loader::add_product( $file );
-
-		$modules = \ThemeisleSDK\Common\Module_Factory::get_modules_map();
-
-		$this->assertArrayHasKey( 'sample_theme', $modules );
-		$this->assertGreaterThan( 0, count( $modules['sample_theme'] ) );
-
-	}
-
-	public function test_announcement_event_black_friday() {
-		$module = new \ThemeisleSDK\Modules\Announcements();
-
-		$announcements = $module->get_announcements_for_plugins();
-
-		$this->assertArrayHasKey( 'black_friday', $announcements );
-
-		// The event should not be active before the event start date.
-		$module->time = '2024-10-10 00:00:00';
-		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );
-
-		// The event should not be active after the event end date.
-		$module->time = '2024-12-4 00:00:00';
-		$this->assertFalse( $module->is_active( $announcements['black_friday'] ) );
-
-		// The event should be active between the event start and end date.
-		$module->time = '2024-11-28 00:00:00';
-		$this->assertTrue( $module->is_active( $announcements['black_friday'] ) );
-	}
-
-	public function test_announcement_without_end_date() {
-		$module = new \ThemeisleSDK\Modules\Announcements();
-
-		$dates = array(
-			'start' => '2024-11-28 00:00:00',
+	public function test_can_show_notice_when_dismissed_same_year() {
+		$today = new DateTime( '2025-03-10' );
+		update_user_meta(
+			self::$admin_id,
+			'themeisle_sdk_dismissed_notice_black_friday',
+			strtotime( '2025-01-01' )
 		);
-
-		// The event should not be active before the event start date.
-		$module->time = '2024-10-10 00:00:00';
-		$this->assertFalse( $module->is_active( $dates ) );
-
-		// The event should be active after the event start date.
-		$module->time = '2024-11-28 00:00:01';
-		$this->assertTrue( $module->is_active( $dates ) );
-	}
-
-	public function test_announcement_without_start_date() {
-		$module = new \ThemeisleSDK\Modules\Announcements();
-
-		$dates = array(
-			'end' => '2024-11-28 00:00:00',
+		$this->assertFalse(
+			$this->announcements->can_show_notice( $today, self::$admin_id ),
+			'Notice should not show when dismissed this year.'
 		);
-
-		// The event should be active before the event end date.
-		$module->time = '2024-11-27 23:59:59';
-		$this->assertTrue( $module->is_active( $dates ) );
-
-		// The event should not be active after the event end date.
-		$module->time = '2024-11-28 00:00:01';
-		$this->assertFalse( $module->is_active( $dates ) );
 	}
 
-	public function test_announcement_without_start_and_end_date() {
-		$module = new \ThemeisleSDK\Modules\Announcements();
-
-		$dates = array();
-
-		// The event should not be active without start and end date.
-		$module->time = '2024-11-27 23:59:59';
-		$this->assertFalse( $module->is_active( $dates ) );
-	}
-
-	public function test_get_announcements_for_plugins() {
-		// Setup dates using UTC time
-		$start = gmdate( 'Y-m-d H:i:s', strtotime( '-1 day', time() ) );
-		$end   = gmdate( 'Y-m-d H:i:s', strtotime( 'tomorrow', time() ) );
+	public function test_get_black_friday_dates_and_duration() {
+		$start = $this->announcements->get_start_date( new DateTime( '2025-01-01' ) );
+		$this->assertEquals( '2025-11-24', $start->format( 'Y-m-d' ) );
 		
-		$module = new \ThemeisleSDK\Modules\Announcements(
-			array(
-				'black_friday' => array(
-					'start'    => $start,
-					'end'      => $end,
-					'rendered' => false,
-				),
-			)
-		);
+		$end = $this->announcements->get_end_date( $start );
+		$this->assertEquals( '2025-12-01 23:59:59', $end->format( 'Y-m-d H:i:s' ) );
 
-		// Get announcements and verify structure
-		$announcements = $module->get_announcements_for_plugins();
-		
-		// Check if black friday announcement exists and is active
-		$this->assertArrayHasKey( 'black_friday', $announcements );
-		$this->assertTrue( ! empty( $announcements['black_friday']['active'] ) );
+		// check sale window boundaries
+		$this->assertFalse( $this->announcements->is_black_friday_sale( new DateTime( '2025-11-23' ) ) );
+		$this->assertTrue( $this->announcements->is_black_friday_sale( new DateTime( '2025-11-24' ) ) );
+		$this->assertTrue( $this->announcements->is_black_friday_sale( new DateTime( '2025-11-28' ) ) );
+		$this->assertTrue( $this->announcements->is_black_friday_sale( new DateTime( '2025-12-01' ) ) );
+		$this->assertFalse( $this->announcements->is_black_friday_sale( new DateTime( '2025-12-02' ) ) );
+	}
 
-		// Verify required URL and banner fields exist for neve product
-		$this->assertArrayHasKey( 'neve_dashboard_url', $announcements['black_friday'] );
-		
-		// Verify URLs are valid
-		foreach ( $announcements['black_friday'] as $key => $value ) {
-			if ( strpos( $key, '_url' ) !== false ) {
-				$this->assertNotEmpty( filter_var( $value, FILTER_VALIDATE_URL ) );
+	public function test_get_remaining_time_for_event() {
+		$base = new DateTime( '2025-12-01 10:00:00' );
+		add_filter(
+			'themeisle_sdk_current_date',
+			function() use ( $base ) {
+				return $base;
 			}
-		}
-	}
-
-	public function test_render_banner() {
-		$module = new \ThemeisleSDK\Modules\Announcements();
-
-		$test_settings = array(
-			'cta_url'      => 'https://example.com',
-			'img_src'      => 'https://example.com/image.jpg',
-			'urgency_text' => 'Test urgency text',
 		);
 
-		$rendered = $module->render_banner( $test_settings );
-		
-		$this->assertStringContainsString( 'href="' . $test_settings['cta_url'] . '"', $rendered );
-		$this->assertStringContainsString( 'src="' . $test_settings['img_src'] . '"', $rendered );
-		$this->assertStringContainsString( $test_settings['urgency_text'], $rendered );
-		
-		$this->assertStringContainsString( 'class="tsdk-banner-cta"', $rendered );
-		$this->assertStringContainsString( 'class="tsdk-banner-img"', $rendered );
-		$this->assertStringContainsString( 'class="tsdk-banner-urgency-text"', $rendered );
+		$end  = new DateTime( '2025-12-02 00:00:00' );
+		$diff = $this->announcements->get_remaining_time_for_event( $end );
+		$this->assertNotEmpty( $diff );
+		$this->assertStringContainsString( 'hour', $diff );
+	}
 
-		// Test with empty settings
-		$empty_rendered = $module->render_banner();
-		$this->assertEmpty( $empty_rendered );
+	public function test_load_announcements_registers_hooks_during_sale() {
+		add_filter(
+			'themeisle_sdk_current_date',
+			function() {
+				return new DateTime( '2025-11-25' );
+			}
+		);
+
+		$this->announcements->load_announcements();
+		$this->assertTrue(
+			has_action( 'admin_notices', [ $this->announcements, 'black_friday_notice_render' ] ) > 0
+		);
+		$this->assertTrue(
+			has_action( 'wp_ajax_themeisle_sdk_dismiss_black_friday_notice', [ $this->announcements, 'disable_notification_ajax' ] ) > 0
+		);
+	}
+
+	public function test_load_announcements_skips_outside_sale() {
+		add_filter(
+			'themeisle_sdk_current_date',
+			function() {
+				return new DateTime( '2025-10-15' );
+			}
+		);
+
+		$this->announcements->load_announcements();
+		$this->assertFalse(
+			has_action( 'admin_notices', [ $this->announcements, 'black_friday_notice_render' ] )
+		);
 	}
 }
