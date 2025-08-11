@@ -1,3 +1,7 @@
+##### [Version 3.3.48](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.47...v3.3.48) (2025-08-11)
+
+Development
+
 ##### [Version 3.3.47](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.46...v3.3.47) (2025-07-21)
 
 - Fixed review link
