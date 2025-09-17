@@ -139,6 +139,13 @@ class Product {
 		$install = get_option( $this->get_key() . '_install', 0 );
 		if ( 0 === $install ) {
 			$install = time();
+			/**
+			 * Action to be triggered when the product is first activated.
+			 *
+			 * @param string $basefile The basefile of the product.
+			 */
+			do_action( 'themeisle_sdk_first_activation', $basefile );
+
 			update_option( $this->get_key() . '_install', time() );
 		}
 		$this->install                               = $install;
