@@ -395,7 +395,7 @@ final class Loader {
 	/**
 	 * Activate the product routine.
 	 *
-	 * @param string $file The base file of the product. 
+	 * @param string $file The base file of the product.
 	 *
 	 * @return void
 	 */
