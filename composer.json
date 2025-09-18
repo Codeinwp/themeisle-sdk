@@ -1,6 +1,6 @@
 {
   "name": "codeinwp/themeisle-sdk",
-  "description": "ThemeIsle SDK",
+  "description": "Themeisle SDK",
   "type": "library",
   "keywords": [
     "wordpress"
