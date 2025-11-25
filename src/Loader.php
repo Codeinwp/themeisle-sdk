@@ -351,7 +351,7 @@ final class Loader {
 	 * Localize the labels.
 	 */
 	public static function localize_labels() {
-		$originals = self::$labels;
+		$originals        = self::$labels;
 		$all_translations = [];
 
 		global $wp_filter;
@@ -359,7 +359,7 @@ final class Loader {
 			foreach ( $wp_filter['themeisle_sdk_labels']->callbacks as $priority => $hooks ) {
 				foreach ( $hooks as $hook ) {
 					// Each callback gets fresh originals, not previous callback's output
-					$result = call_user_func( $hook['function'], $originals );
+					$result             = call_user_func( $hook['function'], $originals );
 					$all_translations[] = $result;
 				}
 			}
@@ -393,7 +393,7 @@ final class Loader {
 	 *
 	 * @param array $current The current labels.
 	 * @param array $new The new labels.
-	 * @param array $originals The original labels. 
+	 * @param array $originals The original labels.
 	 * @return array The merged labels.
 	 */
 	private static function merge_if_translated( $current, $new, $originals ) {
@@ -416,7 +416,7 @@ final class Loader {
 				// Only accept if:
 				// 1. New value is actually translated (differs from original)
 				// 2. Current value is NOT already translated
-				$is_new_translated = ( $value !== $originals[ $key ] );
+				$is_new_translated       = ( $value !== $originals[ $key ] );
 				$is_current_untranslated = ( $current[ $key ] === $originals[ $key ] );
 				
 				if ( $is_new_translated && $is_current_untranslated ) {
