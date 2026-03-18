@@ -24,3 +24,5 @@ artifact
 .git
 composer.json
 docs
+skills
+agents.md

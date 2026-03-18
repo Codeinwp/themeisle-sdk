@@ -64,6 +64,7 @@ final class Loader {
 		'announcements',
 		'featured_plugins',
 		'float_widget',
+		'migrator',
 	];
 	/**
 	 * Holds the labels for the modules.
