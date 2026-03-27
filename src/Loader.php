@@ -251,9 +251,9 @@ final class Loader {
 			'cta' => 'Rollback to v%s',
 		],
 		'logger'           => [
-			'notice' => 'Do you enjoy <b>{product}</b>? Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected.',
-			'cta_y'  => 'Sure, I would love to help.',
-			'cta_n'  => 'No, thanks.',
+			'notice' => 'Help improve <b>{product}</b> by sharing anonymous usage data about your setup. No personal data collected.',
+			'cta_y'  => 'Count me in',
+			'cta_n'  => 'No thanks',
 		],
 		'about_us'         => [
 			'title'            => 'About Us',
