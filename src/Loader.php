@@ -73,10 +73,11 @@ final class Loader {
 	 */
 	public static $labels = [
 		'announcements'    => [
-			'notice_link_label' => 'See the Offer',
-			'max_savings'       => 'Our biggest sale of the year: <strong>%s OFF everything!</strong>  Don\'t miss this limited-time offer.',
-			'black_friday'      => 'Black Friday Sale',
-			'time_left'         => '%s left',
+			'notice_link_label'   => 'See the deals',
+			'max_savings'         => 'Best WordPress Black Friday deals of %s — themes, plugins, hosting. Curated by the Themeisle team.',
+			'black_friday'        => 'Black Friday Sale',
+			'time_left'           => '%s left',
+			'plugin_meta_message' => 'Black Friday Sale - 60% OFF',
 		],
 		'compatibilities'  => [
 			'notice'        => '%s requires a newer version of %s. Please %supdate%s %s %s to the latest version.',
