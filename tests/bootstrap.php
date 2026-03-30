@@ -8,6 +8,11 @@
 // Determine the tests directory (from a WP dev checkout).
 // Try the WP_TESTS_DIR environment variable first.
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
+
+if ( class_exists( '\Yoast\PHPUnitPolyfills\Autoload' ) === false ) {
+	require_once dirname( dirname( __FILE__ ) ) . '/vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php';
+}
+
 // See if we're installed inside an existing WP dev instance.
 if ( ! $_tests_dir ) {
 	$_try_tests_dir = dirname( __FILE__ ) . '/../../../../../tests/phpunit';

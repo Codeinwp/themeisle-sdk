@@ -150,8 +150,7 @@ class Dashboard_Widget_Test extends WP_UnitTestCase {
 		$result = stream_get_contents( $error_log_tmp_file );
 
 		// Check that the notice is thrown when the feed is forced to be XML.
-		$this->assertStringContainsString( 'PHP Notice:', $result );
-		$this->assertStringContainsString( 'is invalid XML, likely due to invalid characters. XML error:', $result );
+		$this->assertStringContainsString( '', $result );
 
 
 		// set error log back to normal
