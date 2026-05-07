@@ -318,4 +318,140 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$this->assertEquals( 1, $lms_count, 'There should be only one LMS plugin in the results.' );
 	}
 
+	/**
+	 * Test LMS plugin is prepended for the expanded LMS search keywords.
+	 *
+	 * @dataProvider lms_search_keyword_provider
+	 *
+	 * @param string $search Search query.
+	 */
+	public function test_lms_plugin_is_prepended_on_expanded_lms_search_keywords( $search ) {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$lms_plugin = (object) [
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
+			'version' => '1.0.0',
+			'author'  => 'masteriyo',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $lms_plugin ] );
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array(),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => $search,
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'learning-management-system', $result->plugins[0]->slug, 'LMS plugin should be prepended.' );
+	}
+
+	/**
+	 * Test LMS plugin is prepended in search even if another LMS plugin is active.
+	 */
+	public function test_lms_search_prepend_ignores_active_lms_plugins() {
+		wp_set_current_user( self::$admin_id );
+
+		$active_plugins = get_option( 'active_plugins', array() );
+		update_option( 'active_plugins', array_unique( array_merge( (array) $active_plugins, array( 'tutor/tutor.php' ) ) ) );
+
+		try {
+			$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+				->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+				->getMock();
+
+			$lms_plugin = (object) [
+				'name'    => 'Masteriyo',
+				'slug'    => 'learning-management-system',
+				'version' => '1.0.0',
+				'author'  => 'masteriyo',
+			];
+
+			$module->method( 'get_plugins_filtered_from_author' )
+				->willReturn( [ $lms_plugin ] );
+
+			$result = $module->filter_plugin_api_results(
+				(object) [
+					'plugins' => array(),
+					'info'    => [ 'results' => 10 ],
+				],
+				'query_plugins',
+				(object) [
+					'search' => 'training',
+					'page'   => 1,
+				]
+			);
+
+			$this->assertEquals( 'learning-management-system', $result->plugins[0]->slug, 'LMS plugin should be prepended.' );
+		} finally {
+			update_option( 'active_plugins', $active_plugins );
+		}
+	}
+
+	/**
+	 * Test LMS plugin is not prepended for partial search keyword matches.
+	 */
+	public function test_lms_plugin_is_not_prepended_on_partial_search_keyword_matches() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$module->expects( $this->never() )
+			->method( 'get_plugins_filtered_from_author' );
+
+		$plugin = (object) [
+			'name'    => 'Other Plugin',
+			'slug'    => 'other-plugin',
+			'version' => '1.0.0',
+			'author'  => 'someone',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array( $plugin ),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => 'classic discourse',
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'other-plugin', $result->plugins[0]->slug, 'LMS plugin should not be prepended.' );
+	}
+
+	/**
+	 * LMS search keyword provider.
+	 *
+	 * @return array
+	 */
+	public function lms_search_keyword_provider() {
+		return array(
+			array( 'best lms plugin' ),
+			array( 'learn platform' ),
+			array( 'course builder' ),
+			array( 'courses builder' ),
+			array( 'learning platform' ),
+			array( 'academy' ),
+			array( 'training' ),
+			array( 'student portal' ),
+			array( 'students portal' ),
+			array( 'quiz maker' ),
+		);
+	}
+
 }

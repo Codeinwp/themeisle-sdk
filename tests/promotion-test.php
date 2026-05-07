@@ -24,6 +24,13 @@ class Promotion_Test extends WP_UnitTestCase {
 	private $product;
 
 	/**
+	 * Original blogdescription value, saved before each test.
+	 *
+	 * @var string $original_blogdescription
+	 */
+	private $original_blogdescription;
+
+	/**
 	 * Set up.
 	 * Create a test user.
 	 *
@@ -31,7 +38,11 @@ class Promotion_Test extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->author_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+		$this->author_id                = $this->factory->user->create( array( 'role' => 'editor' ) );
+		$this->original_blogdescription = get_option( 'blogdescription', '' );
+		update_option( 'blogdescription', '' );
+		delete_transient( 'tisdk_page_title_signals_v1' );
+		delete_transient( 'tisdk_lms_page_title_signal_v1' );
 	}
 
 
@@ -44,6 +55,9 @@ class Promotion_Test extends WP_UnitTestCase {
 	public function tearDown(): void {
 		parent::tearDown();
 		wp_delete_user( $this->author_id, true );
+		update_option( 'blogdescription', $this->original_blogdescription );
+		delete_transient( 'tisdk_page_title_signals_v1' );
+		delete_transient( 'tisdk_lms_page_title_signal_v1' );
 	}
 
 	/**
@@ -196,6 +210,213 @@ class Promotion_Test extends WP_UnitTestCase {
 
 		$this->assertContains( 'masteriyo-plugins-install', $promos );
 
+	}
+
+	public function testMasteriyoPromoShownForExactLmsTagline() {
+		update_option( 'blogdescription', 'LMS platform' );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoShownForPageTitle() {
+		$this->factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_author' => 1,
+				'post_title'  => 'Student Training',
+				'post_status' => 'publish',
+			)
+		);
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoNotShownForPartialLmsTaglineMatch() {
+		update_option( 'blogdescription', 'Films' );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoNotShownForProblematicPartialTaglineMatches() {
+		update_option( 'blogdescription', 'Classic Discourse' );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoNotShownForPartialLmsPageTitleMatch() {
+		$this->factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_author' => 1,
+				'post_title'  => 'Films',
+				'post_status' => 'publish',
+			)
+		);
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoNotShownForProblematicPartialPageTitleMatches() {
+		$this->factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_author' => 1,
+				'post_title'  => 'Classic Discourse',
+				'post_status' => 'publish',
+			)
+		);
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+	}
+
+	public function testMasteriyoPromoConditionsSkipPageLookupOutsidePluginInstall() {
+		$this->factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_author' => 1,
+				'post_title'  => 'Student Training',
+				'post_status' => 'publish',
+			)
+		);
+
+		$this->setup_screen();
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$this->assertFalse( get_transient( 'tisdk_page_title_signals_v1' ) );
+		$this->assertFalse( get_transient( 'tisdk_lms_page_title_signal_v1' ) );
+	}
+
+	public function testMasteriyoPromoNotShownWhenLmsPluginActive() {
+		update_option( 'blogdescription', 'Courses' );
+
+		$active_plugins = get_option( 'active_plugins', array() );
+		update_option( 'active_plugins', array_unique( array_merge( (array) $active_plugins, array( 'tutor/tutor.php' ) ) ) );
+
+		try {
+			wp_set_current_user( 1 );
+			set_current_screen( 'plugin-install' );
+
+			$promotions = new \ThemeisleSDK\Modules\Promotions();
+			$product    = $this->get_product();
+			$this->assertTrue( $promotions->can_load( $product ) );
+
+			$promotions->load( $product );
+			$promotions->load_available();
+
+			$promos = $promotions->promotions;
+
+			$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+		} finally {
+			update_option( 'active_plugins', $active_plugins );
+		}
+	}
+
+	public function testMasteriyoPromoSkipsPageLookupWhenLmsPluginActive() {
+		$this->factory->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_author' => 1,
+				'post_title'  => 'Student Training',
+				'post_status' => 'publish',
+			)
+		);
+
+		$active_plugins = get_option( 'active_plugins', array() );
+		update_option( 'active_plugins', array_unique( array_merge( (array) $active_plugins, array( 'tutor/tutor.php' ) ) ) );
+
+		try {
+			wp_set_current_user( 1 );
+			set_current_screen( 'plugin-install' );
+
+			$promotions = new \ThemeisleSDK\Modules\Promotions();
+			$product    = $this->get_product();
+			$this->assertTrue( $promotions->can_load( $product ) );
+
+			$promotions->load( $product );
+			$promotions->load_available();
+
+			$promos = $promotions->promotions;
+
+			$this->assertNotContains( 'masteriyo-plugins-install', $promos );
+			$this->assertFalse( get_transient( 'tisdk_lms_page_title_signal_v1' ) );
+		} finally {
+			update_option( 'active_plugins', $active_plugins );
+		}
 	}
 
 	public function testVisualizerBlockDirectorySuggestionForChartQueries() {
