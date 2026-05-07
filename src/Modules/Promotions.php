@@ -202,12 +202,211 @@ class Promotions extends Abstract_Module {
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_attachment_field' ), 10, 2 );
 		add_action( 'current_screen', [ $this, 'load_available' ] );
 		add_action( 'elementor/editor/after_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_visualizer_block_editor_shim' ), 100 );
 		add_action( 'wp_ajax_tisdk_update_option', array( $this, 'dismiss_promotion' ) );
+		add_filter( 'plugins_api_result', array( $this, 'inject_visualizer_block_directory_suggestion' ), 10, 3 );
+		add_filter( 'option_visualizer-activated', array( $this, 'suppress_visualizer_onboarding_in_editor' ) );
 		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
 
 		if ( get_option( $this->option_neve, false ) !== true ) {
 			add_action( 'wp_ajax_themeisle_sdk_dismiss_notice', 'ThemeisleSDK\Modules\Notification::regular_dismiss' );
 		}
+	}
+
+
+	/**
+	 * Inject Visualizer as the first block-directory suggestion for chart queries.
+	 *
+	 * @param object|WP_Error $res    Response object or WP_Error.
+	 * @param string          $action The API action.
+	 * @param object          $args   The API arguments.
+	 * @return object|WP_Error
+	 */
+	public function inject_visualizer_block_directory_suggestion( $res, $action, $args ) {
+		if ( 'query_plugins' !== $action || ! is_object( $args ) || empty( $args->block ) ) {
+			return $res;
+		}
+
+		if ( ! $this->should_suggest_visualizer( $args->block ) ) {
+			return $res;
+		}
+
+		if ( $this->is_plugin_installed( 'visualizer' ) ) {
+			return $res;
+		}
+
+		$plugin = $this->get_visualizer_block_directory_data();
+		if ( empty( $plugin ) ) {
+			return $res;
+		}
+
+		if ( is_wp_error( $res ) ) {
+			$res = (object) array( 'plugins' => array() );
+		}
+
+		if ( ! isset( $res->plugins ) || ! is_array( $res->plugins ) ) {
+			$res->plugins = array();
+		}
+
+		$res->plugins = array_values(
+			array_filter(
+				$res->plugins,
+				function ( $existing ) use ( $plugin ) {
+					return ! isset( $existing['slug'] ) || $existing['slug'] !== $plugin['slug'];
+				}
+			)
+		);
+
+		array_unshift( $res->plugins, $plugin );
+
+		return $res;
+	}
+
+	/**
+	 * Check if the query should trigger the Visualizer suggestion.
+	 *
+	 * @param string $term Search term.
+	 * @return bool
+	 */
+	private function should_suggest_visualizer( $term ) {
+		$term = strtolower( (string) $term );
+		return false !== strpos( $term, 'chart' ) || false !== strpos( $term, 'visualizer' ) || false !== strpos( $term, 'visualization' ) || false !== strpos( $term, 'graph' );
+	}
+
+	/**
+	 * Build the plugin data for Visualizer block directory results.
+	 *
+	 * @return array
+	 */
+	private function get_visualizer_block_directory_data() {
+		$slug        = 'visualizer';
+		$plugin_info = $this->call_plugin_api( $slug );
+
+		if ( is_wp_error( $plugin_info ) || empty( $plugin_info ) ) {
+			return array();
+		}
+
+		$icons = array();
+		if ( ! empty( $plugin_info->icons ) ) {
+			if ( ! empty( $plugin_info->icons['1x'] ) ) {
+				$icons['1x'] = $plugin_info->icons['1x'];
+			}
+			if ( ! empty( $plugin_info->icons['2x'] ) ) {
+				$icons['2x'] = $plugin_info->icons['2x'];
+			}
+		}
+
+		$name = isset( $plugin_info->name ) ? $plugin_info->name : 'Visualizer';
+
+		return array(
+			'slug'                => $slug,
+			'name'                => $name,
+			'short_description'   => isset( $plugin_info->short_description ) ? $plugin_info->short_description : '',
+			'author'              => isset( $plugin_info->author ) ? wp_strip_all_tags( $plugin_info->author ) : '',
+			'rating'              => isset( $plugin_info->rating ) ? (int) $plugin_info->rating : 0,
+			'num_ratings'         => isset( $plugin_info->num_ratings ) ? (int) $plugin_info->num_ratings : 0,
+			'active_installs'     => isset( $plugin_info->active_installs ) ? (int) $plugin_info->active_installs : 0,
+			'author_block_rating' => isset( $plugin_info->author_block_rating ) ? (int) $plugin_info->author_block_rating : 0,
+			'author_block_count'  => isset( $plugin_info->author_block_count ) ? (int) $plugin_info->author_block_count : 0,
+			'icons'               => $icons,
+			'last_updated'        => isset( $plugin_info->last_updated ) ? $plugin_info->last_updated : gmdate( 'Y-m-d H:i:s' ),
+			'blocks'              => array(
+				array(
+					'name'  => 'visualizer/chart',
+					'title' => $name,
+				),
+			),
+		);
+	}
+
+
+	/**
+	 * Prevent Visualizer onboarding redirects while in the block editor.
+	 *
+	 * @param mixed $value Option value.
+	 * @return mixed
+	 */
+	public function suppress_visualizer_onboarding_in_editor( $value ) {
+		if ( ! $this->is_block_editor_screen() ) {
+			return $value;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Add a small compatibility shim for Visualizer's block editor bundle.
+	 *
+	 * Visualizer's "Display an existing chart" flow reads
+	 * `google.visualization.Version` before the Google Charts loader has fully
+	 * populated `google.visualization`, which can throw after dynamic install.
+	 *
+	 * @return void
+	 */
+	public function enqueue_visualizer_block_editor_shim() {
+		global $themeisle_sdk_max_version;
+
+		if ( ! $this->is_block_editor_screen() ) {
+			return;
+		}
+
+		if ( ! wp_script_is( 'visualizer-gutenberg-block', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_register_script(
+			'ti-sdk-visualizer-editor-shim',
+			'',
+			array(),
+			$themeisle_sdk_max_version,
+			true
+		);
+		wp_enqueue_script( 'ti-sdk-visualizer-editor-shim' );
+		wp_add_inline_script(
+			'ti-sdk-visualizer-editor-shim',
+			'window.google = window.google || {}; window.google.visualization = window.google.visualization || {}; window.google.visualization.Version = window.google.visualization.Version || "current";'
+		);
+	}
+
+	/**
+	 * Check if the current admin screen is the block editor.
+	 *
+	 * @return bool
+	 */
+	private function is_block_editor_screen() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return $this->is_block_editor_request();
+		}
+
+		$screen = get_current_screen();
+		if ( is_object( $screen ) && method_exists( $screen, 'is_block_editor' ) && $screen->is_block_editor() ) {
+			return true;
+		}
+
+		return $this->is_block_editor_request();
+	}
+
+	/**
+	 * Detect block editor requests before the current screen is available.
+	 *
+	 * @return bool
+	 */
+	private function is_block_editor_request() {
+		global $pagenow;
+
+		if ( 'post-new.php' === $pagenow ) {
+			$post_type = isset( $_GET['post_type'] ) ? sanitize_key( $_GET['post_type'] ) : 'post';
+
+			return function_exists( 'use_block_editor_for_post_type' ) ? use_block_editor_for_post_type( $post_type ) : true;
+		}
+
+		if ( 'post.php' === $pagenow && isset( $_GET['post'] ) ) {
+			$post_id = absint( $_GET['post'] );
+
+			return function_exists( 'use_block_editor_for_post' ) ? use_block_editor_for_post( $post_id ) : true;
+		}
+
+		return false;
 	}
 
 	/**

@@ -198,6 +198,103 @@ class Promotion_Test extends WP_UnitTestCase {
 
 	}
 
+	public function testVisualizerBlockDirectorySuggestionForChartQueries() {
+		$promotions = new class() extends \ThemeisleSDK\Modules\Promotions {
+			public function call_plugin_api( $slug ) {
+				return (object) array(
+					'name'                => 'Visualizer',
+					'short_description'   => 'Charts and graphs.',
+					'author'              => '<a href="https://themeisle.com">ThemeIsle</a>',
+					'rating'              => 100,
+					'num_ratings'         => 12,
+					'active_installs'     => 10000,
+					'author_block_rating' => 100,
+					'author_block_count'  => 1,
+					'icons'               => array(
+						'1x' => 'https://ps.w.org/visualizer/assets/icon-128x128.png',
+						'2x' => 'https://ps.w.org/visualizer/assets/icon-256x256.png',
+					),
+					'last_updated'        => '2026-01-01 00:00:00',
+				);
+			}
+
+			public function is_plugin_installed( $plugin ) {
+				return false;
+			}
+		};
+
+		$args     = (object) array( 'block' => 'charts' );
+		$response = (object) array(
+			'plugins' => array(
+				array(
+					'slug' => 'some-other-plugin',
+				),
+			),
+		);
+
+		$result = $promotions->inject_visualizer_block_directory_suggestion( $response, 'query_plugins', $args );
+
+		$this->assertSame( 'visualizer', $result->plugins[0]['slug'] );
+		$this->assertSame( 'visualizer/chart', $result->plugins[0]['blocks'][0]['name'] );
+	}
+
+	public function testVisualizerBlockDirectorySuggestionForVisualizerQueries() {
+		$promotions = new class() extends \ThemeisleSDK\Modules\Promotions {
+			public function call_plugin_api( $slug ) {
+				return (object) array(
+					'name'              => 'Visualizer',
+					'short_description' => 'Charts and graphs.',
+					'author'            => '<a href="https://themeisle.com">ThemeIsle</a>',
+					'rating'            => 100,
+					'num_ratings'       => 12,
+					'active_installs'   => 10000,
+					'icons'             => array(),
+					'last_updated'      => '2026-01-01 00:00:00',
+				);
+			}
+
+			public function is_plugin_installed( $plugin ) {
+				return false;
+			}
+		};
+
+		$args   = (object) array( 'block' => 'visualizer' );
+		$result = $promotions->inject_visualizer_block_directory_suggestion( (object) array( 'plugins' => array() ), 'query_plugins', $args );
+
+		$this->assertCount( 1, $result->plugins );
+		$this->assertSame( 'visualizer', $result->plugins[0]['slug'] );
+	}
+
+	public function testVisualizerOnboardingIsSuppressedOnNewBlockEditorRequests() {
+		global $pagenow;
+
+		$pagenow           = 'post-new.php';
+		$_GET['post_type'] = 'post';
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+
+		$this->assertFalse( $promotions->suppress_visualizer_onboarding_in_editor( true ) );
+	}
+
+	public function testVisualizerBlockEditorShimIsEnqueued() {
+		global $pagenow, $wp_scripts;
+
+		$pagenow           = 'post-new.php';
+		$_GET['post_type'] = 'post';
+		wp_register_script( 'visualizer-gutenberg-block', '', array(), '1.0.0', true );
+		wp_enqueue_script( 'visualizer-gutenberg-block' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$promotions->enqueue_visualizer_block_editor_shim();
+
+		$this->assertTrue( wp_script_is( 'ti-sdk-visualizer-editor-shim', 'enqueued' ) );
+		$inline_scripts = $wp_scripts->registered['ti-sdk-visualizer-editor-shim']->extra['after'] ?? array();
+		$this->assertStringContainsString(
+			'window.google.visualization.Version',
+			implode( "\n", $inline_scripts )
+		);
+	}
+
 	private function get_product() {
 		$file = dirname( __FILE__ ) . '/sample_products/sample_plugin/plugin_file.php';
 

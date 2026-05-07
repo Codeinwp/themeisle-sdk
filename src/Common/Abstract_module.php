@@ -141,7 +141,8 @@ abstract class Abstract_Module {
 					'slug'   => $slug,
 					'fields' => array(
 						'downloaded'        => false,
-						'rating'            => false,
+						'rating'            => true,
+						'ratings'           => true,
 						'description'       => false,
 						'short_description' => true,
 						'donate_link'       => false,
