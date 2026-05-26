@@ -139,7 +139,6 @@ class Dashboard_Widget extends Abstract_Module {
 				background-repeat: no-repeat;
 				background-position: 2% 50%;
 				background-size: 25px;
-				padding-left: 39px;
 			}
 
 			#themeisle .inside {
