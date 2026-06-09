@@ -14,6 +14,45 @@ export default function Hero() {
     const [loading, setLoading] = useState(false);
     const [hasSubscribed, setHasSubscribed] = useState(false);
 
+    const services = [
+        {
+            title: 'Website Design',
+            subtitle: 'Built for your business',
+            href: 'https://themeisle.com/wordpress-website-design/',
+            icon: 'dashicons-admin-site'
+        },
+        {
+            title: 'Support',
+            subtitle: 'On-demand expert help',
+            href: 'https://themeisle.com/wordpress-support/',
+            icon: 'dashicons-sos'
+        },
+        {
+            title: 'Speed Optimization',
+            subtitle: 'Core Web Vitals boost',
+            href: 'https://themeisle.com/wordpress-speed-optimization/',
+            icon: 'dashicons-dashboard'
+        },
+        {
+            title: 'SEO Foundation',
+            subtitle: 'Rank & get found',
+            href: 'https://themeisle.com/wordpress-seo-foundation/',
+            icon: 'dashicons-search'
+        },
+        {
+            title: 'Maintenance',
+            subtitle: 'Updates, backups, security',
+            href: 'https://themeisle.com/wordpress-maintenance/',
+            icon: 'dashicons-shield'
+        },
+        {
+            title: 'Hacked Site Repair',
+            subtitle: 'Malware removed fast',
+            href: 'https://themeisle.com/wordpress-hacked-site-repair/',
+            icon: 'dashicons-lock'
+        }
+    ];
+
     const submit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -79,5 +118,51 @@ export default function Hero() {
                 </form>
             </div>
         </div>
+
+        <section className="services-card" aria-label="Themeisle services">
+            <div className="services-header">
+                <div>
+                    <div className="trustpilot" aria-label="Rated excellent on Trustpilot">
+                        <span className="trustpilot-rated">Rated</span>
+                        <span className="trustpilot-score">4.8</span>
+                        <span className="trustpilot-stars" aria-hidden="true">★★★★★</span>
+                        <span className="trustpilot-on">on</span>
+                        <span className="trustpilot-brand">Trustpilot</span>
+                    </div>
+                    <h2>Expert WordPress services from the Themeisle team</h2>
+                    <p>Done for you by the same people who build your plugins and themes.</p>
+                </div>
+                <Button
+                    isPrimary
+                    href="https://themeisle.com/services/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="services-cta"
+                >
+                    Explore all services
+                </Button>
+            </div>
+
+            <div className="services-grid">
+                {services.map((service) => (
+                    <a
+                        key={service.title}
+                        href={service.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="service-item"
+                    >
+                        <div className="service-icon-wrap">
+                            <span className={`dashicons ${service.icon}`} aria-hidden="true"/>
+                        </div>
+                        <div className="service-content">
+                            <h3>{service.title}</h3>
+                            <p>{service.subtitle}</p>
+                        </div>
+                        <span className="service-arrow" aria-hidden="true">→</span>
+                    </a>
+                ))}
+            </div>
+        </section>
     </div>);
 }
