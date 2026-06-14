@@ -7,7 +7,7 @@ export default function Hero() {
     } = window.tiSDKAboutData;
 
     const {
-        heroHeader, heroTextFirst, heroTextSecond, teamImageCaption, newsHeading, emailPlaceholder, signMeUp,
+        heroHeader, heroTextFirst, heroTextSecond, teamImageCaption, newsHeading, emailPlaceholder, signMeUp, services: servicesStrings,
     } = strings;
 
     const [email, setEmail] = useState('');
@@ -16,38 +16,38 @@ export default function Hero() {
 
     const services = [
         {
-            title: 'Website Design',
-            subtitle: 'Built for your business',
+            title: servicesStrings.items.websiteDesign.title,
+            subtitle: servicesStrings.items.websiteDesign.subtitle,
             href: 'https://themeisle.com/wordpress-website-design/',
             icon: 'dashicons-admin-site'
         },
         {
-            title: 'Support',
-            subtitle: 'On-demand expert help',
+            title: servicesStrings.items.support.title,
+            subtitle: servicesStrings.items.support.subtitle,
             href: 'https://themeisle.com/wordpress-support/',
             icon: 'dashicons-sos'
         },
         {
-            title: 'Speed Optimization',
-            subtitle: 'Core Web Vitals boost',
+            title: servicesStrings.items.speed.title,
+            subtitle: servicesStrings.items.speed.subtitle,
             href: 'https://themeisle.com/wordpress-speed-optimization/',
             icon: 'dashicons-dashboard'
         },
         {
-            title: 'SEO Foundation',
-            subtitle: 'Rank & get found',
+            title: servicesStrings.items.seo.title,
+            subtitle: servicesStrings.items.seo.subtitle,
             href: 'https://themeisle.com/wordpress-seo-foundation/',
             icon: 'dashicons-search'
         },
         {
-            title: 'Maintenance',
-            subtitle: 'Updates, backups, security',
+            title: servicesStrings.items.maintenance.title,
+            subtitle: servicesStrings.items.maintenance.subtitle,
             href: 'https://themeisle.com/wordpress-maintenance/',
             icon: 'dashicons-shield'
         },
         {
-            title: 'Hacked Site Repair',
-            subtitle: 'Malware removed fast',
+            title: servicesStrings.items.hackedSite.title,
+            subtitle: servicesStrings.items.hackedSite.subtitle,
             href: 'https://themeisle.com/wordpress-hacked-site-repair/',
             icon: 'dashicons-lock'
         }
@@ -119,18 +119,18 @@ export default function Hero() {
             </div>
         </div>
 
-        <section className="services-card" aria-label="Themeisle services">
+        <section className="services-card" aria-label={servicesStrings.ariaLabel}>
             <div className="services-header">
                 <div>
-                    <div className="trustpilot" aria-label="Rated excellent on Trustpilot">
-                        <span className="trustpilot-rated">Rated</span>
+                    <div className="trustpilot" aria-label={servicesStrings.trustpilotLabel}>
+                        <span className="trustpilot-rated">{servicesStrings.trustpilotRated}</span>
                         <span className="trustpilot-score">4.8</span>
                         <span className="trustpilot-stars" aria-hidden="true">★★★★★</span>
-                        <span className="trustpilot-on">on</span>
-                        <span className="trustpilot-brand">Trustpilot</span>
+                        <span className="trustpilot-on">{servicesStrings.trustpilotOn}</span>
+                        <span className="trustpilot-brand">{servicesStrings.trustpilotBrand}</span>
                     </div>
-                    <h2>Expert WordPress services from the Themeisle team</h2>
-                    <p>Done for you by the same people who build your plugins and themes.</p>
+                    <h2>{servicesStrings.heading}</h2>
+                    <p>{servicesStrings.description}</p>
                 </div>
                 <Button
                     isPrimary
@@ -139,7 +139,7 @@ export default function Hero() {
                     rel="noopener noreferrer"
                     className="services-cta"
                 >
-                    Explore all services
+                    {servicesStrings.cta}
                 </Button>
             </div>
 

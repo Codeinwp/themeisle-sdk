@@ -268,6 +268,42 @@ final class Loader {
 			'newsHeading'      => 'Stay connected for news & updates!',
 			'emailPlaceholder' => 'Your email address',
 			'signMeUp'         => 'Sign me up',
+			'services'         => [
+				'ariaLabel'       => 'Themeisle services',
+				'trustpilotLabel' => 'Rated excellent on Trustpilot',
+				'trustpilotRated' => 'Rated',
+				'trustpilotOn'    => 'on',
+				'trustpilotBrand' => 'Trustpilot',
+				'heading'         => 'Expert WordPress services from the Themeisle team',
+				'description'     => 'Done for you by the same people who build your plugins and themes.',
+				'cta'             => 'Explore all services',
+				'items'           => [
+					'websiteDesign' => [
+						'title'    => 'Website Design',
+						'subtitle' => 'Built for your business',
+					],
+					'support'       => [
+						'title'    => 'Support',
+						'subtitle' => 'On-demand expert help',
+					],
+					'speed'         => [
+						'title'    => 'Speed Optimization',
+						'subtitle' => 'Core Web Vitals boost',
+					],
+					'seo'           => [
+						'title'    => 'SEO Foundation',
+						'subtitle' => 'Rank & get found',
+					],
+					'maintenance'   => [
+						'title'    => 'Maintenance',
+						'subtitle' => 'Updates, backups, security',
+					],
+					'hackedSite'    => [
+						'title'    => 'Hacked Site Repair',
+						'subtitle' => 'Malware removed fast',
+					],
+				],
+			],
 			'installNow'       => 'Install Now',
 			'activate'         => 'Activate',
 			'learnMore'        => 'Learn More',
