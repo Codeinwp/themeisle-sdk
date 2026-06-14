@@ -217,20 +217,15 @@
       }
     }
 
-    &:focus {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-
     &:hover,
-    &:focus,
     &:focus-visible {
       background: #f8fafc;
     }
 
     &:focus-visible {
-      outline: none !important;
-      box-shadow: none !important;
+      outline: 2px solid var(--link-color);
+      outline-offset: 2px;
+      box-shadow: none;
     }
 
     &:active {
