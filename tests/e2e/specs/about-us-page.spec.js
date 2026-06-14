@@ -33,5 +33,9 @@ test.describe( 'About Us Module', () => {
 		await expect( servicesSection.locator( '.services-header h2' ) ).toBeVisible();
 		await expect( servicesSection.getByRole( 'link', { name: 'Explore all services' }) ).toBeVisible();
 		await expect( servicesSection.locator( '.service-item' ).count() ).resolves.toBe( 6 );
+		await expect( servicesSection.getByRole( 'heading', { name: 'Website Design' }) ).toBeVisible();
+		await expect( servicesSection.getByText( 'Built for your business' ) ).toBeVisible();
+		await expect( servicesSection.getByRole( 'heading', { name: 'Hacked Site Repair' }) ).toBeVisible();
+		await expect( servicesSection.getByText( 'Malware removed fast' ) ).toBeVisible();
 	});
 });
