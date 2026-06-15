@@ -1,8 +1,6 @@
 ##### [Version 3.3.52](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.51...v3.3.52) (2026-05-14)
 
-- Add SPC to plugin path list
-- Add Visualizer Block Directory Promotion
-- Expand LMS Promo Targeting
+- Add About Us services section
 
 ##### [Version 3.3.51](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.50...v3.3.51) (2026-03-30)
 
