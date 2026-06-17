@@ -26,5 +26,16 @@ test.describe( 'About Us Module', () => {
 
 		// Landing Kit link is visible.
 		await expect( page.getByRole( 'link', { name: 'Learn More' }) ).toBeVisible();
+
+		// Services section is visible.
+		const servicesSection = page.locator( '.services-card' );
+		await expect( servicesSection ).toBeVisible();
+		await expect( servicesSection.locator( '.services-header h2' ) ).toBeVisible();
+		await expect( servicesSection.getByRole( 'link', { name: 'Explore all services' }) ).toBeVisible();
+		await expect( servicesSection.locator( '.service-item' ).count() ).resolves.toBe( 6 );
+		await expect( servicesSection.getByRole( 'heading', { name: 'Website Design' }) ).toBeVisible();
+		await expect( servicesSection.getByText( 'Built for your business' ) ).toBeVisible();
+		await expect( servicesSection.getByRole( 'heading', { name: 'Hacked Site Repair' }) ).toBeVisible();
+		await expect( servicesSection.getByText( 'Malware removed fast' ) ).toBeVisible();
 	});
 });
