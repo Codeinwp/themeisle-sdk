@@ -64,10 +64,8 @@ test.describe( 'Promotions', () => {
 
 		// Check Optimole promotion in Image Core block settings.
 		await editor.insertBlock({ name: 'core/image' });
-		const imageBlock = editor.canvas.locator( '[data-type="core/image"]' ).last();
-		await editor.selectBlocks( imageBlock );
-		await editor.openDocumentSettingsSidebar();
-		const optimoleNotice = page.getByRole( 'region', { name: 'Editor settings' }).locator( '.ti-sdk-om-notice' );
+		await page.getByRole( 'tab', { name: 'Settings' } ).click();
+		const optimoleNotice = page.locator( '.ti-sdk-om-notice' );
 
 		await expect( optimoleNotice.getByRole( 'button', { name: 'Install Optimole' }) ).toBeVisible();
 		await expect( optimoleNotice.getByRole( 'link', { name: 'Learn More' }) ).toBeVisible();

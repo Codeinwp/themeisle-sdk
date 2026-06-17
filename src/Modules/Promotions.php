@@ -209,7 +209,7 @@ class Promotions extends Abstract_Module {
 		add_filter( 'themeisle_sdk_ran_promos', '__return_true' );
 
 		if ( get_option( $this->option_neve, false ) !== true ) {
-			add_action( 'wp_ajax_themeisle_sdk_dismiss_notice', 'ThemeisleSDK\Modules\Notification::regular_dismiss' );
+			add_action( 'wp_ajax_themeisle_sdk_dismiss_notice', 'ThemeisleSDK\Modules\Notification::dismiss' );
 		}
 	}
 
