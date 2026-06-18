@@ -64,6 +64,7 @@ test.describe( 'Promotions', () => {
 
 		// Check Optimole promotion in Image Core block settings.
 		await editor.insertBlock({ name: 'core/image' });
+		await page.getByRole( 'tab', { name: 'Settings' } ).click();
 		const optimoleNotice = page.locator( '.ti-sdk-om-notice' );
 
 		await expect( optimoleNotice.getByRole( 'button', { name: 'Install Optimole' }) ).toBeVisible();
