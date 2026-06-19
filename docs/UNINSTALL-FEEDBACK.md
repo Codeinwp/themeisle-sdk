@@ -76,6 +76,21 @@ add_filter( 'themeisle_sdk_labels', function( $labels ) {
 } );
 ```
 
+## Appending Markup Below the Heading
+
+Use this action to output extra content inside `.popup--header`, directly below the `<h5>`. The heading itself is customized via `themeisle_sdk_labels` (see above). For themes, the close toggle button is always rendered by the SDK after your markup.
+
+```php
+add_action( 'your_product_key_uninstall_feedback_popup_header_after_heading', function( $product, $context ) {
+    if ( 'plugin' !== $context ) {
+        return;
+    }
+    echo '<p class="my-uninstall-subtitle">' . esc_html__( 'Your feedback helps us improve.', 'text-domain' ) . '</p>';
+}, 10, 2 );
+```
+
+Arguments: `$product` (`ThemeisleSDK\Product`), `$context` (`'theme'` or `'plugin'`). You are responsible for escaping any output.
+
 ## Customizing the Info Disclosure Link
 
 ```php

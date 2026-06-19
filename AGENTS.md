@@ -121,6 +121,12 @@ The merge logic ensures the first real translation wins; later callbacks cannot 
 | `tsdk_utmify_{content}` | Override UTM params for a URL |
 | `tsdk_utmify_url_{content}` | Override final UTM-ified URL |
 
+## Common Action Reference
+
+| Action | Purpose |
+|--------|---------|
+| `{product_key}_uninstall_feedback_popup_header_after_heading` | Output markup below the uninstall popup heading (`$product`, `$context`) |
+
 ## Global Helper Functions
 
 Defined in `load.php`, available everywhere after `init`:
