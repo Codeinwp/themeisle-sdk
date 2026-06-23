@@ -40,4 +40,17 @@ add_filter( 'your_product_slug_themeisle_sdk_info_collect_cta', function() {
 } );
 ```
 
+## Appending Markup Below the Heading
+
+```php
+add_action( 'your_product_key_uninstall_feedback_popup_header_after_heading', function( $product, $context ) {
+    if ( 'plugin' !== $context ) {
+        return;
+    }
+    echo '<p class="my-uninstall-subtitle">' . esc_html__( 'Your feedback helps us improve.', 'text-domain' ) . '</p>';
+}, 10, 2 );
+```
+
+Arguments: `$product`, `$context` (`'theme'` or `'plugin'`). Escape your own output.
+
 Data sent to `https://api.themeisle.com/tracking/uninstall`: product name/version, site URL, install age, selected reason.
