@@ -1,3 +1,7 @@
+##### [Version 3.3.54](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.53...v3.3.54) (2026-06-23)
+
+- Adds hook to uninstall feedback popup header & fixes JS interference
+
 ##### [Version 3.3.53](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.52...v3.3.53) (2026-06-18)
 
 - Fixes dashboard widget header placement on latest WordPress core version;
