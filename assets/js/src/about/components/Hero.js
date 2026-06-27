@@ -3,7 +3,7 @@ import {Button} from '@wordpress/components';
 
 export default function Hero() {
     const {
-        strings, teamImage, homeUrl, pageSlug
+        strings, teamImage, homeUrl, pageSlug, services: serviceLinks = {}
     } = window.tiSDKAboutData;
 
     const {
@@ -18,37 +18,37 @@ export default function Hero() {
         {
             title: 'Website Design',
             subtitle: 'Built for your business',
-            href: 'https://themeisle.com/wordpress-website-design/',
+            href: serviceLinks.websiteDesignUrl || 'https://themeisle.com/wordpress-website-design/',
             icon: 'dashicons-admin-site'
         },
         {
             title: 'Support',
             subtitle: 'On-demand expert help',
-            href: 'https://themeisle.com/wordpress-support/',
+            href: serviceLinks.supportUrl || 'https://themeisle.com/wordpress-support/',
             icon: 'dashicons-sos'
         },
         {
             title: 'Speed Optimization',
             subtitle: 'Core Web Vitals boost',
-            href: 'https://themeisle.com/wordpress-speed-optimization/',
+            href: serviceLinks.speedUrl || 'https://themeisle.com/wordpress-speed-optimization/',
             icon: 'dashicons-dashboard'
         },
         {
             title: 'SEO Foundation',
             subtitle: 'Rank & get found',
-            href: 'https://themeisle.com/wordpress-seo-foundation/',
+            href: serviceLinks.seoFoundationUrl || 'https://themeisle.com/wordpress-seo-foundation/',
             icon: 'dashicons-search'
         },
         {
             title: 'Maintenance',
             subtitle: 'Updates, backups, security',
-            href: 'https://themeisle.com/wordpress-maintenance/',
+            href: serviceLinks.maintenanceUrl || 'https://themeisle.com/wordpress-maintenance/',
             icon: 'dashicons-shield'
         },
         {
             title: 'Hacked Site Repair',
             subtitle: 'Malware removed fast',
-            href: 'https://themeisle.com/wordpress-hacked-site-repair/',
+            href: serviceLinks.hackedRepairUrl || 'https://themeisle.com/wordpress-hacked-site-repair/',
             icon: 'dashicons-lock'
         }
     ];
@@ -134,7 +134,7 @@ export default function Hero() {
                 </div>
                 <Button
                     isPrimary
-                    href="https://themeisle.com/services/"
+                    href={serviceLinks.exploreAllUrl || 'https://themeisle.com/services/'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="services-cta"
