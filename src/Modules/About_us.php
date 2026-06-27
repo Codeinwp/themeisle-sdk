@@ -235,6 +235,7 @@ class About_Us extends Abstract_Module {
 				'newsHeading'      => Loader::$labels['about_us']['newsHeading'],
 				'emailPlaceholder' => Loader::$labels['about_us']['emailPlaceholder'],
 				'signMeUp'         => Loader::$labels['about_us']['signMeUp'],
+				'services'         => Loader::$labels['about_us']['services'],
 				'installNow'       => Loader::$labels['about_us']['installNow'],
 				'activate'         => Loader::$labels['about_us']['activate'],
 				'learnMore'        => Loader::$labels['about_us']['learnMore'],
