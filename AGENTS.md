@@ -64,7 +64,7 @@ add_filter( 'themeisle_sdk_labels', function( $labels ) {
 
 The merge logic ensures the first real translation wins; later callbacks cannot overwrite already-translated values.
 
-## All 18 Modules
+## All 19 Modules
 
 | Module | File | Loads when | Doc |
 |--------|------|-----------|-----|
@@ -86,6 +86,7 @@ The merge logic ensures the first real translation wins; later callbacks cannot 
 | `script_loader` | `Script_loader.php` | Always | [docs/TELEMETRY.md](docs/TELEMETRY.md) |
 | `translate` | `Translate.php` | Always | — |
 | `translations` | `Translations.php` | Always | — |
+| `migrator` | `Migrator.php` | First complete request per product version when a migrations path is registered | [docs/MIGRATOR.md](docs/MIGRATOR.md) |
 
 ## Common Filter Reference
 
@@ -109,6 +110,8 @@ The merge logic ensures the first real translation wins; later callbacks cannot 
 | `{product_key}_dissallowed_promotions` | Block specific promotion slugs |
 | `{product_slug}_sdk_enable_logger` | Enable/disable logger for product |
 | `{product_slug}_sdk_should_review` | Enable/disable review prompt |
+| `{product_slug}_sdk_migrations_path` | Register the absolute migrations directory path |
+| `{product_slug}_sdk_enable_migrator` | Enable/disable the migrator module |
 | `{product_key}_enable_licenser` | Enable/disable licenser module |
 | `{product_key}_hide_license_field` | Hide license field on settings page |
 | `{product_key}_hide_license_notices` | Suppress license admin notices |
@@ -153,6 +156,8 @@ All options use `{product_key}` where key = slug with hyphens replaced by unders
 | `{key}_license_data` | JSON object from license API |
 | `{key}_license_status` | `valid` \| `not_active` \| `active_expired` |
 | `{key}_logger_flag` | `yes` \| `no` |
+| `{key}_ran_migrations` | Successfully executed migration filenames |
+| `{key}_migrated_version` | Last product version whose migrations fully completed |
 | `themeisle_sdk_notifications` | Notification queue metadata |
 | `themeisle_sdk_promotions` | Promotion dismiss timestamps |
 | `themeisle_sdk_promotions_{promo}_installed` | Whether a promoted plugin was installed |
