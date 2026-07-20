@@ -39,9 +39,13 @@ class Migrator_Test extends WP_UnitTestCase {
 	public function tearDown(): void {
 		parent::tearDown();
 		delete_option( 'sample_plugin_ran_migrations' );
+		delete_option( 'sample_plugin_migrated_version' );
+		delete_option( 'sample_plugin_migration_lock' );
 		delete_option( 'sample_plugin_migrated' );
 		delete_option( 'sample_plugin_skippable_ran' );
+		delete_option( 'sample_plugin_failure_attempts' );
 		delete_option( 'sample_plugin_version' );
+		wp_cache_delete( 'sample_plugin_migration_lock', 'themeisle_sdk_migrations' );
 		remove_all_filters( 'sample_plugin_sdk_migrations_path' );
 		remove_all_filters( 'sample_plugin_sdk_enable_migrator' );
 	}
@@ -91,19 +95,20 @@ class Migrator_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * The load() method returns the migrator instance and registers admin_init hook.
+	 * The load() method returns the migrator instance and registers wp_loaded hook.
 	 */
 	public function test_load_returns_self() {
 		$product  = new \ThemeisleSDK\Product( $this->plugin_file );
 		$migrator = new \ThemeisleSDK\Modules\Migrator();
 		$result   = $migrator->load( $product );
 		$this->assertInstanceOf( 'ThemeisleSDK\\Modules\\Migrator', $result );
+		$this->assertNotFalse( has_action( 'wp_loaded', array( $migrator, 'run_pending' ) ) );
 	}
 
 	/**
-	 * The run_pending() method does nothing when no upgrade action was fired this request.
+	 * Pending migrations run even when the product update action fired on an earlier request.
 	 */
-	public function test_run_pending_does_nothing_without_upgrade_action() {
+	public function test_run_pending_does_not_require_update_action_on_current_request() {
 		$this->register_migrations_path();
 
 		// Pre-seed the stored version to match the plugin version so the Product
@@ -116,8 +121,9 @@ class Migrator_Test extends WP_UnitTestCase {
 
 		$migrator->run_pending();
 
-		$this->assertFalse( get_option( 'sample_plugin_migrated' ) );
-		$this->assertEmpty( get_option( 'sample_plugin_ran_migrations', array() ) );
+		$this->assertEquals( 'yes', get_option( 'sample_plugin_migrated' ) );
+		$this->assertContains( '2024_01_01_000000_sample_migration', get_option( 'sample_plugin_ran_migrations', array() ) );
+		$this->assertEquals( '1.1.1', get_option( 'sample_plugin_migrated_version' ) );
 	}
 
 	/**
@@ -127,6 +133,7 @@ class Migrator_Test extends WP_UnitTestCase {
 		$migrator = $this->get_migrator();
 		$migrator->run_pending();
 		$this->assertFalse( get_option( 'sample_plugin_ran_migrations' ) );
+		$this->assertFalse( get_option( 'sample_plugin_migrated_version' ) );
 	}
 
 	/**
@@ -142,6 +149,21 @@ class Migrator_Test extends WP_UnitTestCase {
 
 		$ran = get_option( 'sample_plugin_ran_migrations' );
 		$this->assertContains( '2024_01_01_000000_sample_migration', $ran );
+		$this->assertEquals( '1.1.1', get_option( 'sample_plugin_migrated_version' ) );
+	}
+
+	/**
+	 * A completed product version does not scan or execute migrations again.
+	 */
+	public function test_run_pending_skips_completed_product_version() {
+		$this->register_migrations_path();
+		update_option( 'sample_plugin_migrated_version', '1.1.1' );
+
+		$migrator = $this->get_migrator();
+		$migrator->run_pending();
+
+		$this->assertFalse( get_option( 'sample_plugin_migrated' ) );
+		$this->assertFalse( get_option( 'sample_plugin_ran_migrations' ) );
 	}
 
 	/**
@@ -163,6 +185,7 @@ class Migrator_Test extends WP_UnitTestCase {
 
 		// up() should not have been called — option remains absent.
 		$this->assertFalse( get_option( 'sample_plugin_migrated' ) );
+		$this->assertEquals( '1.1.1', get_option( 'sample_plugin_migrated_version' ) );
 	}
 
 	/**
@@ -180,6 +203,7 @@ class Migrator_Test extends WP_UnitTestCase {
 		// skippable migration must NOT be recorded (should_run = false → not tracked).
 		$ran = get_option( 'sample_plugin_ran_migrations', array() );
 		$this->assertNotContains( '2024_01_02_000000_skippable_migration', $ran );
+		$this->assertEquals( '1.1.1', get_option( 'sample_plugin_migrated_version' ) );
 	}
 
 	/**
@@ -235,9 +259,9 @@ class Migrator_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A file that does not return an Abstract_Migration instance is safely skipped.
+	 * An invalid migration file keeps the product version pending for a retry.
 	 */
-	public function test_invalid_migration_file_is_skipped() {
+	public function test_invalid_migration_file_keeps_version_pending() {
 		// Create a temp directory with an invalid migration file.
 		$tmp_dir = sys_get_temp_dir() . '/sdk_migrator_test_' . uniqid();
 		mkdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
@@ -256,9 +280,128 @@ class Migrator_Test extends WP_UnitTestCase {
 
 		$ran = get_option( 'sample_plugin_ran_migrations', array() );
 		$this->assertEmpty( $ran );
+		$this->assertFalse( get_option( 'sample_plugin_migrated_version' ) );
 
 		// Cleanup.
 		unlink( $tmp_dir . '/2024_01_01_000000_bad_migration.php' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
 		rmdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+	}
+
+	/**
+	 * A valid empty directory completes the current product version.
+	 */
+	public function test_empty_migrations_directory_marks_version_complete() {
+		$tmp_dir = sys_get_temp_dir() . '/sdk_migrator_test_' . uniqid();
+		mkdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+
+		add_filter(
+			'sample_plugin_sdk_migrations_path',
+			function() use ( $tmp_dir ) {
+				return $tmp_dir;
+			}
+		);
+
+		$migrator = $this->get_migrator();
+		$migrator->run_pending();
+
+		$this->assertEquals( '1.1.1', get_option( 'sample_plugin_migrated_version' ) );
+
+		rmdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+	}
+
+	/**
+	 * A failed migration is unrecorded and retries on the next request.
+	 */
+	public function test_failed_migration_retries_on_next_request() {
+		$tmp_dir = sys_get_temp_dir() . '/sdk_migrator_test_' . uniqid();
+		mkdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+
+		$source = <<<'PHP'
+<?php
+return new class extends \ThemeisleSDK\Modules\Abstract_Migration {
+	public function up() {
+		$attempts = (int) get_option( 'sample_plugin_failure_attempts', 0 );
+		update_option( 'sample_plugin_failure_attempts', $attempts + 1 );
+		throw new \RuntimeException( 'Intentional migration failure.' );
+	}
+};
+PHP;
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+		file_put_contents( $tmp_dir . '/2024_01_01_000000_failing_migration.php', $source );
+
+		add_filter(
+			'sample_plugin_sdk_migrations_path',
+			function() use ( $tmp_dir ) {
+				return $tmp_dir;
+			}
+		);
+
+		$migrator = $this->get_migrator();
+		$migrator->run_pending();
+
+		$this->assertEquals( 1, get_option( 'sample_plugin_failure_attempts' ) );
+		$this->assertFalse( get_option( 'sample_plugin_migrated_version' ) );
+		$this->assertEmpty( get_option( 'sample_plugin_ran_migrations', array() ) );
+
+		$migrator->run_pending();
+
+		$this->assertEquals( 2, get_option( 'sample_plugin_failure_attempts' ) );
+		$this->assertFalse( get_option( 'sample_plugin_migrated_version' ) );
+
+		unlink( $tmp_dir . '/2024_01_01_000000_failing_migration.php' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
+		rmdir( $tmp_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+	}
+
+	/**
+	 * Only one migrator instance can hold the product lock at a time.
+	 */
+	public function test_migration_lock_prevents_concurrent_execution() {
+		$first  = $this->get_migrator();
+		$second = $this->get_migrator();
+
+		$acquire = new ReflectionMethod( 'ThemeisleSDK\\Modules\\Migrator', 'acquire_lock' );
+		$release = new ReflectionMethod( 'ThemeisleSDK\\Modules\\Migrator', 'release_lock' );
+		$acquire->setAccessible( true );
+		$release->setAccessible( true );
+
+		$this->assertTrue( $acquire->invoke( $first ) );
+		$this->assertFalse( $acquire->invoke( $second ) );
+
+		$release->invoke( $first );
+		$this->assertTrue( $acquire->invoke( $second ) );
+		$release->invoke( $second );
+	}
+
+	/**
+	 * An expired database lock can be replaced by a later request.
+	 */
+	public function test_expired_migration_lock_is_recovered() {
+		global $wpdb;
+
+		$migrator = $this->get_migrator();
+		$expired  = wp_json_encode(
+			array(
+				'token'   => 'expired-token',
+				'expires' => time() - 1,
+			)
+		);
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, %s)",
+				'sample_plugin_migration_lock',
+				$expired,
+				'no'
+			)
+		);
+
+		$acquire = new ReflectionMethod( 'ThemeisleSDK\\Modules\\Migrator', 'acquire_lock' );
+		$release = new ReflectionMethod( 'ThemeisleSDK\\Modules\\Migrator', 'release_lock' );
+		$acquire->setAccessible( true );
+		$release->setAccessible( true );
+
+		$this->assertTrue( $acquire->invoke( $migrator ) );
+		$release->invoke( $migrator );
 	}
 }

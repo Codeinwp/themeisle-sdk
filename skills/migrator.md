@@ -5,7 +5,7 @@ description: Use when writing or configuring database migrations for a WordPress
 
 # ThemeIsle SDK — Migrator Module
 
-Runs PHP migration files automatically when the plugin version changes. Migrations are tracked in `wp_options` — no custom tables needed.
+Runs PHP migration files automatically on the first complete WordPress request for each plugin version. Migrations are tracked in `wp_options` — no custom tables needed.
 
 ## Activation
 
@@ -50,7 +50,7 @@ return new class extends \ThemeisleSDK\Modules\Abstract_Migration {
         }
     }
 
-    // Optional: return false to skip without recording (migration will retry next upgrade)
+    // Optional: return false to skip without recording (rechecked next version)
     public function should_run() {
         return (bool) get_option( 'my_plugin_old_key' );
     }
@@ -67,8 +67,10 @@ Available inside `up()`:
 
 ## How It Works
 
-- Runs on `admin_init`, but **only when the plugin version has changed** (guarded by `did_action("themeisle_sdk_update_{slug}")`).
+- Runs on `wp_loaded` when the current product version differs from `{product_key}_migrated_version`.
 - Ran migration names are stored in `{product_key}_ran_migrations` (hyphens → underscores in key).
 - A migration runs if its filename (without `.php`) is not in the ran list **and** `should_run()` returns `true`.
-- After `up()` succeeds the name is appended. If `up()` throws, the name is not recorded and the migration retries on the next upgrade.
-- `should_run() = false` skips the migration **without** recording it — useful for idempotent checks.
+- After `up()` succeeds the name is appended. If `up()` throws, the name and migrated version are not recorded and the migration retries on the next complete request.
+- The migrated version is updated only after every pending migration succeeds.
+- `should_run() = false` skips the migration **without** recording it and is checked again on the next product version.
+- A cross-request lock prevents concurrent requests from executing the same migration.

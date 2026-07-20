@@ -1,6 +1,6 @@
 # Migrator Module
 
-The Migrator module lets products ship PHP migration files that run automatically on admin page loads. Migrations are tracked via `wp_options` — no custom database tables are required.
+The Migrator module lets products ship PHP migration files that run automatically on the first complete WordPress request for each product version. Migrations are tracked via `wp_options` — no custom database tables are required.
 
 ## Registering Your Migrations Directory
 
@@ -82,10 +82,11 @@ Inside `up()` and `down()` you have access to:
 
 ## How Tracking Works
 
-Ran migration names are stored in a single wp_option:
+Ran migration names and the last fully migrated product version are stored in `wp_options`:
 
 ```
 {product_key}_ran_migrations  →  [ '2024_03_15_120000_rename_settings_option', ... ]
+{product_key}_migrated_version → '1.2.3'
 ```
 
 `product_key` is the product slug with hyphens replaced by underscores.
@@ -94,11 +95,17 @@ A migration runs if **both** conditions are met:
 1. Its filename (without `.php`) is **not** in the ran list.
 2. `should_run()` returns `true`.
 
-After `up()` succeeds the name is appended to the option. If `up()` throws an exception, the name is **not** recorded and the migration will retry on the next admin page load.
+After `up()` succeeds the name is appended to the option. The migrated product version is updated only after every pending migration finishes successfully. If `up()` throws an exception, the name is **not** recorded and the migration retries on the next complete request.
+
+If `should_run()` returns `false`, the file is not recorded, but the current product version can still complete. The condition will be checked again on the next product version.
 
 ## Execution Timing
 
-Migrations run on `admin_init`, which fires on every WordPress admin page load. The check is cheap: it reads one option and compares an array of filenames.
+Migrations run on `wp_loaded`, after WordPress, the active products, and the SDK have finished loading. This includes normal frontend, admin, REST, AJAX, and cron requests. The migrator compares the current product version with `{product_key}_migrated_version` and returns immediately when they match.
+
+Execution no longer depends on the request-local `themeisle_sdk_update_{slug}` action. A request that exits before `wp_loaded`, an unavailable migrations directory, or a failed migration leaves the product version pending so a later request can retry it.
+
+A cross-request lock prevents concurrent requests from executing the same migration. Persistent object-cache installations use an atomic cache add; other installations use a database-backed lock with stale-lock recovery.
 
 ## Disabling the Module
 
@@ -123,4 +130,4 @@ foreach ( $modules['my-plugin'] as $module ) {
 }
 ```
 
-`rollback()` calls `down()` on the migration and removes it from the ran list, so it will execute again on the next `admin_init`.
+`rollback()` calls `down()` on the migration and removes it from the ran list, so it can execute again after a future product version change.
