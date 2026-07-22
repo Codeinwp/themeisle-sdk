@@ -365,7 +365,7 @@ class About_Us extends Abstract_Module {
 				'name' => 'Feedzy',
 			],
 			'insert-php'                          => [
-				'name' => 'Insert PHP Code Snippet',
+				'name' => 'Woody Code Snippets',
 			],
 			'wpcf7-redirect'                      => [
 				'name' => 'Redirection for Contact Form 7',
