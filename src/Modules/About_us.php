@@ -364,6 +364,15 @@ class About_Us extends Abstract_Module {
 			'feedzy-rss-feeds'                    => [
 				'name' => 'Feedzy',
 			],
+			'insert-php'                          => [
+				'name' => 'Insert PHP Code Snippet',
+			],
+			'wpcf7-redirect'                      => [
+				'name' => 'Redirection for Contact Form 7',
+			],
+			'anti-spam'                           => [
+				'name' => 'Anti-Spam',
+			],
 			'woocommerce-product-addon'           => [
 				'name'      => 'PPOM',
 				'condition' => class_exists( 'WooCommerce', false ),
@@ -449,6 +458,54 @@ class About_Us extends Abstract_Module {
 				$products[ $slug ]['name'] = $api_data->name;
 			}
 		}
+
+		$status_priority = [
+			'not-installed' => 0,
+			'installed'     => 1,
+			'active'        => 2,
+		];
+
+		$common_products_priority = [
+			'neve'                  => 0,
+			'otter-blocks'          => 1,
+			'wp-cloudflare-page-cache' => 2,
+			'optimole-wp'           => 3,
+			'hyve-lite'             => 4,
+			'wp-full-stripe-free'   => 5,
+			'insert-php'            => 6, // Woody plugin slug on WP.org.
+		];
+
+		uksort(
+			$products,
+			function ( $left_slug, $right_slug ) use ( $products, $status_priority, $common_products_priority ) {
+				$left_status  = isset( $products[ $left_slug ]['status'] ) ? $products[ $left_slug ]['status'] : 'not-installed';
+				$right_status = isset( $products[ $right_slug ]['status'] ) ? $products[ $right_slug ]['status'] : 'not-installed';
+				$left_active  = 'active' === $left_status;
+				$right_active = 'active' === $right_status;
+
+				if ( $left_active !== $right_active ) {
+					return $left_active ? 1 : -1;
+				}
+
+				$left_common_weight  = isset( $common_products_priority[ $left_slug ] ) ? $common_products_priority[ $left_slug ] : 99;
+				$right_common_weight = isset( $common_products_priority[ $right_slug ] ) ? $common_products_priority[ $right_slug ] : 99;
+
+				if ( $left_common_weight !== $right_common_weight ) {
+					return $left_common_weight <=> $right_common_weight;
+				}
+
+				if ( 99 === $left_common_weight ) {
+					$left_status_weight  = isset( $status_priority[ $left_status ] ) ? $status_priority[ $left_status ] : 99;
+					$right_status_weight = isset( $status_priority[ $right_status ] ) ? $status_priority[ $right_status ] : 99;
+
+					if ( $left_status_weight !== $right_status_weight ) {
+						return $left_status_weight <=> $right_status_weight;
+					}
+				}
+
+				return strcmp( $left_slug, $right_slug );
+			}
+		);
 
 		return $products;
 	}
