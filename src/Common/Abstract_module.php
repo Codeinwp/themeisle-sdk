@@ -258,7 +258,7 @@ abstract class Abstract_Module {
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 		if ( function_exists( 'get_plugins' ) ) {
-			$plugins = get_plugins( $slug );
+			$plugins = get_plugins( '/' . $slug );
 
 			if ( ! empty( $plugins ) ) {
 				$plugin_files = array_keys( $plugins );
