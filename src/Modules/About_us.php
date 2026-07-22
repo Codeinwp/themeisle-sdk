@@ -371,7 +371,7 @@ class About_Us extends Abstract_Module {
 				'name' => 'Redirection for Contact Form 7',
 			],
 			'anti-spam'                           => [
-				'name' => 'Anti-Spam',
+				'name' => 'Titan Anti-spam & Security',
 			],
 			'woocommerce-product-addon'           => [
 				'name'      => 'PPOM',
