@@ -52,10 +52,33 @@ class Translate_Link extends WP_UnitTestCase {
 			'locale',
 			function () {
 				return 'da_DK';
-			} 
+			}
 		);
 		$url = 'https://example.com';
 		$this->assertEquals( 'https://example.com', tsdk_translate_link( $url ) );
+	}
+
+	public function test_default_languages() {
+		$locales = [
+			'de_DE'        => 'de',
+			'de_DE_formal' => 'de',
+			'es_ES'        => 'es',
+			'fr_FR'        => 'fr',
+			'it_IT'        => 'it',
+			'ja'           => 'ja',
+			'nl_NL'        => 'nl',
+			'nl_NL_formal' => 'nl',
+			'ro_RO'        => 'ro',
+		];
+		$url     = 'https://example.com/some/path';
+		foreach ( $locales as $locale => $code ) {
+			$filter = function () use ( $locale ) {
+				return $locale;
+			};
+			add_filter( 'locale', $filter );
+			$this->assertEquals( 'https://example.com/' . $code . '/some/path', tsdk_translate_link( $url ) );
+			remove_filter( 'locale', $filter );
+		}
 	}
 
 }
