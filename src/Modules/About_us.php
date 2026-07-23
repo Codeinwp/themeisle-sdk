@@ -41,6 +41,40 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class About_Us extends Abstract_Module {
 	/**
+	 * Sort weight for products that are not explicitly ranked.
+	 *
+	 * @var int
+	 */
+	const SORT_WEIGHT_UNRANKED = 99;
+
+	/**
+	 * Hand-picked display order for featured products, keyed by WP.org slug.
+	 *
+	 * @var array
+	 */
+	const COMMON_PRODUCTS_PRIORITY = [
+		'neve'                     => 0,
+		'otter-blocks'             => 1,
+		'wp-cloudflare-page-cache' => 2,
+		'optimole-wp'              => 3,
+		'hyve-lite'                => 4,
+		'wp-full-stripe-free'      => 5,
+		'insert-php'               => 6, // Woody plugin slug on WP.org.
+		'anti-spam'                => 7, // Titan Anti-spam & Security plugin slug on WP.org.
+	];
+
+	/**
+	 * Sort weight per install status, lowest shows first.
+	 *
+	 * @var array
+	 */
+	const STATUS_PRIORITY = [
+		'not-installed' => 0,
+		'installed'     => 1,
+		'active'        => 2,
+	];
+
+	/**
 	 * About data.
 	 *
 	 * @var array $about_data About page data, received from the filter.
@@ -459,55 +493,37 @@ class About_Us extends Abstract_Module {
 			}
 		}
 
-		$status_priority = [
-			'not-installed' => 0,
-			'installed'     => 1,
-			'active'        => 2,
-		];
-
-		$common_products_priority = [
-			'neve'                  => 0,
-			'otter-blocks'          => 1,
-			'wp-cloudflare-page-cache' => 2,
-			'optimole-wp'           => 3,
-			'hyve-lite'             => 4,
-			'wp-full-stripe-free'   => 5,
-			'insert-php'            => 6, // Woody plugin slug on WP.org.
-		];
-
 		uksort(
 			$products,
-			function ( $left_slug, $right_slug ) use ( $products, $status_priority, $common_products_priority ) {
-				$left_status  = isset( $products[ $left_slug ]['status'] ) ? $products[ $left_slug ]['status'] : 'not-installed';
-				$right_status = isset( $products[ $right_slug ]['status'] ) ? $products[ $right_slug ]['status'] : 'not-installed';
-				$left_active  = 'active' === $left_status;
-				$right_active = 'active' === $right_status;
-
-				if ( $left_active !== $right_active ) {
-					return $left_active ? 1 : -1;
-				}
-
-				$left_common_weight  = isset( $common_products_priority[ $left_slug ] ) ? $common_products_priority[ $left_slug ] : 99;
-				$right_common_weight = isset( $common_products_priority[ $right_slug ] ) ? $common_products_priority[ $right_slug ] : 99;
-
-				if ( $left_common_weight !== $right_common_weight ) {
-					return $left_common_weight <=> $right_common_weight;
-				}
-
-				if ( 99 === $left_common_weight ) {
-					$left_status_weight  = isset( $status_priority[ $left_status ] ) ? $status_priority[ $left_status ] : 99;
-					$right_status_weight = isset( $status_priority[ $right_status ] ) ? $status_priority[ $right_status ] : 99;
-
-					if ( $left_status_weight !== $right_status_weight ) {
-						return $left_status_weight <=> $right_status_weight;
-					}
-				}
-
-				return strcmp( $left_slug, $right_slug );
+			function ( $left_slug, $right_slug ) use ( $products ) {
+				return $this->get_product_sort_key( $left_slug, $products )
+					<=> $this->get_product_sort_key( $right_slug, $products );
 			}
 		);
 
 		return $products;
+	}
+
+	/**
+	 * Build a comparable sort key tuple for a product slug.
+	 *
+	 * @param string $slug     Product slug.
+	 * @param array  $products All products keyed by slug.
+	 *
+	 * @return array
+	 */
+	private function get_product_sort_key( $slug, $products ) {
+		$status        = isset( $products[ $slug ]['status'] ) ? $products[ $slug ]['status'] : 'not-installed';
+		$is_active     = 'active' === $status ? 1 : 0;
+		$common_weight = isset( self::COMMON_PRODUCTS_PRIORITY[ $slug ] ) ? self::COMMON_PRODUCTS_PRIORITY[ $slug ] : self::SORT_WEIGHT_UNRANKED;
+
+		// Install status only breaks ties between unranked products.
+		$status_weight = self::SORT_WEIGHT_UNRANKED === $common_weight
+			? ( isset( self::STATUS_PRIORITY[ $status ] ) ? self::STATUS_PRIORITY[ $status ] : self::SORT_WEIGHT_UNRANKED )
+			: 0;
+
+		// Tuple order = sort precedence: active last, featured rank, status, then slug.
+		return array( $is_active, $common_weight, $status_weight, $slug );
 	}
 
 	/**
