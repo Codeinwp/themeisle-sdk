@@ -701,6 +701,7 @@ class Uninstall_Feedback extends Abstract_Module {
 					sprintf( Loader::$labels['uninstall']['disclosure']['website'], '<strong>', '</strong>', '<code>', get_site_url(), '</code>' ),
 					sprintf( Loader::$labels['uninstall']['disclosure']['usage'], '<strong>', '</strong>', '<code>', ( time() - $this->product->get_install_time() ), 's</code>' ),
 					sprintf( Loader::$labels['uninstall']['disclosure']['reason'], '<strong>', '</strong>', '<i>', '</i>' ),
+					sprintf( Loader::$labels['uninstall']['disclosure']['diagnostics'], '<strong>', '</strong>' ),
 				],
 			],
 			$disclosure_new_labels
@@ -786,6 +787,20 @@ class Uninstall_Feedback extends Abstract_Module {
 		$attributes['version']     = $version;
 		$attributes['url']         = get_site_url();
 		$attributes['active_time'] = ( time() - $this->product->get_install_time() );
+
+		/**
+		 * Piggyback the compact crash summary on the same request, regardless
+		 * of the logging consent — disclosed in the survey data collection
+		 * notice. Only crashes attributed to this product are ever stored.
+		 */
+		if ( class_exists( 'ThemeisleSDK\Modules\Crash_Reporter' ) ) {
+			$crashes = Crash_Reporter::get_uninstall_summary( $this->product );
+			if ( ! empty( $crashes ) ) {
+				$attributes['crashes'] = wp_json_encode( $crashes );
+			}
+		}
+
+		$attributes = apply_filters( 'themeisle_sdk_uninstall_feedback_data', $attributes, $this->product );
 
 		$response = wp_remote_post(
 			self::FEEDBACK_ENDPOINT,
