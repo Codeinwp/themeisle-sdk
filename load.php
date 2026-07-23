@@ -294,6 +294,13 @@ if ( ! function_exists( 'tsdk_translate_link' ) ) {
 		$url, $type = 'path', $available_languages = [
 			'de_DE'        => 'de',
 			'de_DE_formal' => 'de',
+			'es_ES'        => 'es',
+			'fr_FR'        => 'fr',
+			'it_IT'        => 'it',
+			'ja'           => 'ja',
+			'nl_NL'        => 'nl',
+			'nl_NL_formal' => 'nl',
+			'ro_RO'        => 'ro',
 		]
 	) {
 		$language = get_user_locale();
