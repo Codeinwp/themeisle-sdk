@@ -46,6 +46,7 @@ final class Loader {
 	 * @var array The modules which SDK will be using.
 	 */
 	private static $available_modules = [
+		'crash_reporter',
 		'script_loader',
 		'dashboard_widget',
 		'rollback',
@@ -198,11 +199,12 @@ final class Loader {
 			'button_submit'  => 'Submit &amp; Deactivate',
 			'button_cancel'  => 'Skip &amp; Deactivate',
 			'disclosure'     => [
-				'title'   => 'Below is a detailed view of all data that Themeisle will receive if you fill in this survey. No email address or IP addresses are transmitted after you submit the survey.',
-				'version' => '%s %s version %s %s %s %s',
-				'website' => '%sCurrent website:%s %s %s %s',
-				'usage'   => '%sUsage time:%s %s %s%s',
-				'reason'  => '%s Uninstall reason %s %s Selected reason from the above survey %s ',
+				'title'       => 'Below is a detailed view of all data that Themeisle will receive if you fill in this survey. No email address or IP addresses are transmitted after you submit the survey.',
+				'version'     => '%s %s version %s %s %s %s',
+				'website'     => '%sCurrent website:%s %s %s %s',
+				'usage'       => '%sUsage time:%s %s %s%s',
+				'reason'      => '%s Uninstall reason %s %s Selected reason from the above survey %s ',
+				'diagnostics' => '%sCrash diagnostics:%s Anonymized technical details of errors recorded for this product, if any.',
 			],
 
 			'options'        => [

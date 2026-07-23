@@ -64,10 +64,11 @@ add_filter( 'themeisle_sdk_labels', function( $labels ) {
 
 The merge logic ensures the first real translation wins; later callbacks cannot overwrite already-translated values.
 
-## All 19 Modules
+## All 20 Modules
 
 | Module | File | Loads when | Doc |
 |--------|------|-----------|-----|
+| `crash_reporter` | `Crash_reporter.php` | Always (filterable); sending needs `{key}_logger_flag` consent | [docs/CRASH-REPORTER.md](docs/CRASH-REPORTER.md) |
 | `licenser` | `Licenser.php` | `Requires License: yes` in header | [docs/LICENSER.md](docs/LICENSER.md) |
 | `logger` | `Logger.php` | Always (filterable) | [docs/LOGGER.md](docs/LOGGER.md) |
 | `notification` | `Notification.php` | Installed >100h, admin user | [docs/NOTIFICATIONS.md](docs/NOTIFICATIONS.md) |
@@ -156,6 +157,7 @@ All options use `{product_key}` where key = slug with hyphens replaced by unders
 | `{key}_license_data` | JSON object from license API |
 | `{key}_license_status` | `valid` \| `not_active` \| `active_expired` |
 | `{key}_logger_flag` | `yes` \| `no` |
+| `{key}_crash_data` | Sanitized crash aggregates (never autoloaded) |
 | `{key}_ran_migrations` | Successfully executed migration filenames |
 | `{key}_migrated_version` | Last product version whose migrations fully completed |
 | `themeisle_sdk_notifications` | Notification queue metadata |
@@ -173,6 +175,7 @@ https://api.themeisle.com/license/versions/{product}/{key}/{url}/{version}
 https://api.themeisle.com/tracking/log
 https://api.themeisle.com/tracking/events
 https://api.themeisle.com/tracking/uninstall
+https://api.themeisle.com/tracking/crashes
 ```
 
 ## Tests
