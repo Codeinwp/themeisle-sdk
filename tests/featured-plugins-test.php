@@ -435,6 +435,217 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test featured results are prepended without trimming the original results.
+	 */
+	public function test_featured_results_are_prepended_without_trimming() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->get_module_with_mocked_featured_plugins();
+
+		$existing = (object) [
+			'name' => 'Existing Plugin',
+			'slug' => 'existing-plugin',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => [ $existing ],
+				'info'    => [ 'results' => 1 ],
+			],
+			'query_plugins',
+			(object) [
+				'page'       => 1,
+				'per_page'   => 36,
+				'browse'     => 'featured',
+				'wp_version' => '6.4',
+			]
+		);
+
+		$this->assertCount( 3, $result->plugins, 'No original result should be trimmed.' );
+		$this->assertEquals( 'optimole-wp', $result->plugins[0]->slug, 'Featured plugins should be prepended.' );
+		$this->assertEquals( 'otter-blocks', $result->plugins[1]->slug, 'Featured plugins should be prepended.' );
+		$this->assertEquals( 'existing-plugin', $result->plugins[2]->slug, 'Original results should follow the featured ones.' );
+		$this->assertEquals( 3, $result->info['results'], 'Results count should include the injected plugins.' );
+	}
+
+	/**
+	 * Test featured results are deduplicated when already present in the original list.
+	 */
+	public function test_featured_results_dedup_existing_entries() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->get_module_with_mocked_featured_plugins();
+
+		$existing_optimole = (object) [
+			'name' => 'Optimole',
+			'slug' => 'optimole-wp',
+		];
+		$existing_other    = (object) [
+			'name' => 'Other Plugin',
+			'slug' => 'other-plugin',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => [ $existing_optimole, $existing_other ],
+				'info'    => [ 'results' => 2 ],
+			],
+			'query_plugins',
+			(object) [
+				'page'       => 1,
+				'per_page'   => 36,
+				'browse'     => 'featured',
+				'wp_version' => '6.4',
+			]
+		);
+
+		$this->assertCount( 3, $result->plugins, 'Duplicate featured plugins should be removed from the original list.' );
+		$this->assertEquals( 'optimole-wp', $result->plugins[0]->slug, 'Featured plugins should be prepended.' );
+		$this->assertEquals( 'otter-blocks', $result->plugins[1]->slug, 'Featured plugins should be prepended.' );
+		$this->assertEquals( 'other-plugin', $result->plugins[2]->slug, 'Original results should follow the featured ones.' );
+		$this->assertEquals( 3, $result->info['results'], 'Results count should reflect the deduplicated list.' );
+	}
+
+	/**
+	 * Test featured plugins are not injected on secondary pages.
+	 */
+	public function test_featured_results_not_injected_on_secondary_pages() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$module->expects( $this->never() )
+			->method( 'get_plugins_filtered_from_author' );
+
+		$existing = (object) [
+			'name' => 'Existing Plugin',
+			'slug' => 'existing-plugin',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => [ $existing ],
+				'info'    => [ 'results' => 40 ],
+			],
+			'query_plugins',
+			(object) [
+				'page'       => 2,
+				'per_page'   => 36,
+				'browse'     => 'featured',
+				'wp_version' => '6.4',
+			]
+		);
+
+		$this->assertCount( 1, $result->plugins, 'Secondary pages should not receive injected plugins.' );
+		$this->assertEquals( 'existing-plugin', $result->plugins[0]->slug );
+		$this->assertEquals( 40, $result->info['results'], 'Results count should not change on secondary pages.' );
+	}
+
+	/**
+	 * Test the results count is bumped when the LMS plugin is added on search.
+	 */
+	public function test_lms_search_adjusts_results_count() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$lms_plugin = (object) [
+			'name' => 'Masteriyo',
+			'slug' => 'learning-management-system',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $lms_plugin ] );
+
+		$args = (object) [
+			'search' => 'best lms plugin',
+			'page'   => 1,
+		];
+
+		// The LMS plugin is added on top: count goes up by one.
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array(),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			$args
+		);
+		$this->assertEquals( 11, $result->info['results'], 'Results count should be bumped when the LMS plugin is added.' );
+
+		// The LMS plugin replaces an existing copy: count stays the same.
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => [ clone $lms_plugin ],
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			$args
+		);
+		$this->assertEquals( 10, $result->info['results'], 'Results count should not change when the LMS plugin replaces a duplicate.' );
+	}
+
+	/**
+	 * Test that empty author results are cached to avoid repeated remote requests.
+	 */
+	public function test_empty_author_results_are_cached() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = new \ThemeisleSDK\Modules\Featured_Plugins();
+
+		$module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array(),
+				'info'    => [ 'results' => 0 ],
+			],
+			'query_plugins',
+			(object) [
+				'page'       => 1,
+				'per_page'   => 36,
+				'browse'     => 'featured',
+				'wp_version' => '6.4',
+			]
+		);
+
+		// The mocked plugins_api returns no matching slugs, so the filtered lists are empty and should still be cached.
+		$this->assertSame( array(), get_transient( 'themeisle_sdk_featured_plugins_Optimole' ), 'Empty Optimole results should be cached.' );
+		$this->assertSame( array(), get_transient( 'themeisle_sdk_featured_plugins_Themeisle' ), 'Empty Themeisle results should be cached.' );
+	}
+
+	/**
+	 * Build a module mock returning one Optimole and one Themeisle featured plugin.
+	 *
+	 * @return \ThemeisleSDK\Modules\Featured_Plugins
+	 */
+	private function get_module_with_mocked_featured_plugins() {
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$optimole = (object) [
+			'name' => 'Optimole',
+			'slug' => 'optimole-wp',
+		];
+		$otter    = (object) [
+			'name' => 'Otter Blocks',
+			'slug' => 'otter-blocks',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturnCallback(
+				function( $args, $filter_slugs = [], $author = 'Themeisle' ) use ( $optimole, $otter ) {
+					return 'Optimole' === $author ? [ $optimole ] : [ $otter ];
+				}
+			);
+
+		return $module;
+	}
+
+	/**
 	 * LMS search keyword provider.
 	 *
 	 * @return array
