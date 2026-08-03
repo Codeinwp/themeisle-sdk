@@ -263,7 +263,9 @@ abstract class Abstract_Module {
 			if ( ! empty( $plugins ) ) {
 				$plugin_files = array_keys( $plugins );
 				$plugin_file  = $slug . '/' . reset( $plugin_files );
+
 				$this->resolved_plugin_paths[ $slug ] = $plugin_file;
+
 				return $this->resolved_plugin_paths[ $slug ];
 			}
 		}
