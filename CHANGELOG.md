@@ -1,3 +1,7 @@
+##### [Version 3.3.59](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.58...v3.3.59) (2026-08-21)
+
+- Guard repeated promotion loading
+
 ##### [Version 3.3.58](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.57...v3.3.58) (2026-07-29)
 
 Development
