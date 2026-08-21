@@ -121,6 +121,66 @@ class Promotion_Test extends WP_UnitTestCase {
 		$this->assertTrue( ! empty( $themeisle_sdk_promotions['showPromotion'] ) );
 	}
 
+	/**
+	 * Test that repeated current screen events do not process flattened state.
+	 *
+	 * @return void
+	 */
+	public function testPromotionLoadingIsIdempotent() {
+		$this->setup_screen();
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+
+		$this->assertTrue( $promotions->can_load( $product ) );
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$loaded_promotions = $promotions->promotions;
+		$this->assertNotEmpty( $loaded_promotions );
+
+		$promotions->load_available();
+
+		$this->assertSame( $loaded_promotions, $promotions->promotions );
+	}
+
+	/**
+	 * Test that malformed optional promotion data is ignored.
+	 *
+	 * @return void
+	 */
+	public function testMalformedPromotionDataIsIgnored() {
+		$this->setup_screen();
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+
+		$this->assertTrue( $promotions->can_load( $product ) );
+		$promotions->load( $product );
+
+		$promotions->promotions = array(
+			'valid-group'          => array(
+				'valid-promo' => array(
+					'screen' => 'editor',
+					'always' => true,
+				),
+			),
+			'invalid-group'        => 'promo-slug',
+			'invalid-entry'        => array(
+				'promo-slug' => 'not-an-array',
+			),
+			'missing-screen-entry' => array(
+				'promo-slug' => array(
+					'always' => true,
+				),
+			),
+		);
+
+		$promotions->load_available();
+
+		$this->assertSame( array( 'valid-promo' ), $promotions->promotions );
+	}
+
 	public function testPromotionDisallowFilter() {
 		$this->setup_screen();
 
