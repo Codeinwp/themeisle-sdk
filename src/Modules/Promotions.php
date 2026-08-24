@@ -1119,6 +1119,7 @@ class Promotions extends Abstract_Module {
 				'showPromotion'          => $this->loaded_promo,
 				'optionKey'              => $this->option_main,
 				'product'                => $this->product->get_name(),
+				'slug'                   => Logger::get_telemetry_slug( $this->product ),
 				'option'                 => empty( $saved ) ? new \stdClass() : $saved,
 				'nonce'                  => wp_create_nonce( 'wp_rest' ),
 				'assets'                 => $themeisle_sdk_src . 'assets/images/',

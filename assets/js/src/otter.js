@@ -7,6 +7,8 @@ import {addFilter} from '@wordpress/hooks';
 
 import useSettings from './common/useSettings.js';
 import {installPluginOrTheme, activatePlugin} from './common/utils.js';
+import {trackPromoInteraction} from './common/promoEvents.js';
+import {useImpression} from './common/useImpression.js';
 
 const style = {
     button: {
@@ -73,6 +75,8 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
         const [installStatus, setInstallStatus] = useState('default');
         const [hasSkipped, setHasSkipped] = useState(false);
         const [getOption, updateOption, status] = useSettings();
+        const activePromo = window.themeisleSDKPromotions.showPromotion;
+        const impressionRef = useImpression('string' === typeof activePromo ? activePromo : '', 'otter-blocks');
 
 
         const onSkip = () => {
@@ -95,10 +99,12 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
         }
         
         const install = async () => {
+            trackPromoInteraction('cta-install', activePromo, 'otter-blocks');
             setLoading(true);
-            await installPluginOrTheme('otter-blocks');
+            const installResult = await installPluginOrTheme('otter-blocks');
             updateOption('themeisle_sdk_promotions_otter_installed', !Boolean(getOption('themeisle_sdk_promotions_otter_installed')));
-            await activatePlugin(window.themeisleSDKPromotions.otterActivationUrl);
+            const activation = await activatePlugin(window.themeisleSDKPromotions.otterActivationUrl);
+            trackPromoInteraction(installResult?.success && activation?.success ? 'install-success' : 'install-fail', activePromo, 'otter-blocks');
             setLoading(false);
             setInstallStatus('installed');
         };
@@ -139,14 +145,19 @@ const withInspectorControls = createHigherOrderComponent((BlockEdit) => {
                                     title={upsell.title}
                                     initialOpen={false}
                                 >
-                                    <p>{upsell.description}</p>
+                                    <div ref={impressionRef}>
+                                        <p>{upsell.description}</p>
 
-                                    <Install/>
+                                        <Install/>
 
-                                    <img style={style.image}
-                                            src={window.themeisleSDKPromotions.assets + upsell.image}/>
+                                        <img style={style.image}
+                                                src={window.themeisleSDKPromotions.assets + upsell.image}/>
 
-                                    <Footer onClick={() => setHasSkipped(true)}/>
+                                        <Footer onClick={() => {
+                                            trackPromoInteraction('dismiss', key, 'otter-blocks');
+                                            setHasSkipped(true);
+                                        }}/>
+                                    </div>
                                 </PanelBody>
                             );
                         }

@@ -2,6 +2,8 @@ import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import useSettings from "./useSettings";
 import { activatePlugin, installPluginOrTheme } from './utils';
+import { trackPromoInteraction } from './promoEvents';
+import { useImpression } from './useImpression';
 
 const PromotionNotice = ({
     title,
@@ -20,8 +22,10 @@ const PromotionNotice = ({
     const [ dismissed, setDismissed ] = useState( false );
     const [ progress, setProgress ] = useState( null );
     const [ getOption, updateOption ] = useSettings();
+    const impressionRef = useImpression( optionInstallKey, pluginSlug );
 
     const dismissNotice = async () => {
+        trackPromoInteraction( 'dismiss', optionInstallKey, pluginSlug );
         setDismissed( true );
         const newValue = { ...option };
         newValue[optionInstallKey] = new Date().getTime() / 1000 | 0;
@@ -36,10 +40,12 @@ const PromotionNotice = ({
 
     const installPluginRequest = async e => {
         e.preventDefault();
+        trackPromoInteraction( 'cta-install', optionInstallKey, pluginSlug );
         setProgress( 'installing' );
-        await installPluginOrTheme( pluginSlug );
+        const install = await installPluginOrTheme( pluginSlug );
         setProgress( 'activating' );
-        await activatePlugin( activationUrl );
+        const activation = await activatePlugin( activationUrl );
+        trackPromoInteraction( install?.success && activation?.success ? 'install-success' : 'install-fail', optionInstallKey, pluginSlug );
         updateOption( installedOptionKey, ! Boolean( getOption( installedOptionKey ) ) );
         setProgress('done');
     };
@@ -57,6 +63,7 @@ const PromotionNotice = ({
                 variant="primary"
                 href={ dashboardUrl }
                 target="_blank"
+                onClick={ () => trackPromoInteraction( 'cta-gotodash', optionInstallKey, pluginSlug ) }
             >
               { labels[labelKey].gotodash }
             </Button>
@@ -85,6 +92,7 @@ const PromotionNotice = ({
                 variant="link"
                 target="_blank"
                 href={learnMoreUrl}
+                onClick={ () => trackPromoInteraction( 'cta-learn-more', optionInstallKey, pluginSlug ) }
             >
                 <span className="dashicons dashicons-external"/>
                 <span>{ labels.learnmore }</span>
@@ -103,7 +111,7 @@ const PromotionNotice = ({
                 <span className="dashicons-no-alt dashicons"/>
                 <span className="screen-reader-text">{ labels[labelKey].dismisscta }</span>
             </Button>
-            <div className="content">
+            <div className="content" ref={ impressionRef }>
                 <div>
                     <p>{ title }</p>
                     <p className="description">{labels[labelKey].message}</p>

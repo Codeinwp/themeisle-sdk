@@ -246,7 +246,10 @@ export class EventTrackingAccumulator {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify( payload )
+			body: JSON.stringify( payload ),
+
+			// Let unload/pre-navigation flushes finish; payloads are far below the keepalive body cap.
+			keepalive: true
 		});
 	};
 

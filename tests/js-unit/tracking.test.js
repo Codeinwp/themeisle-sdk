@@ -58,6 +58,17 @@ describe( 'EventTrackingAccumulator', () => {
 		expect( accumulator.events.size ).toBe( 0 );
 	});
 
+	test( 'should send events with keepalive so unload flushes survive navigation', async() => {
+		accumulator._add({ slug: 'test-product', action: 'block-created' });
+
+		await accumulator.uploadEvents();
+
+		expect( global.fetch ).toHaveBeenCalledWith(
+			expect.any( String ),
+			expect.objectContaining({ keepalive: true })
+		);
+	});
+
 	test( 'should send events when limit is reached', async() => {
 		for ( let i = 0; i < accumulator.eventsLimit; i++ ) {
 			accumulator._add({ slug: 'test-product', action: `action-${i}` });

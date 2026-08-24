@@ -207,6 +207,22 @@ class Logger extends Abstract_Module {
 	}
 
 	/**
+	 * Get the slug under which a product is registered for JS telemetry (tiTrk).
+	 *
+	 * Telemetry entries are keyed by the first hyphen-separated segment of the
+	 * product slug; emitters must use the same value or events are dropped.
+	 *
+	 * @param \ThemeisleSDK\Product $product Product to compute the telemetry slug for.
+	 *
+	 * @return string
+	 */
+	public static function get_telemetry_slug( $product ) {
+		$parts = explode( '-', $product->get_slug() );
+
+		return $parts[0];
+	}
+
+	/**
 	 * Load telemetry.
 	 *
 	 * @return void
@@ -240,8 +256,7 @@ class Logger extends Abstract_Module {
 
 				if ( 'yes' === get_option( $product->get_key() . '_logger_flag', 'no' ) ) {
 
-					$main_slug  = explode( '-', $product_slug );
-					$main_slug  = $main_slug[0];
+					$main_slug  = self::get_telemetry_slug( $product );
 					$track_hash = Licenser::create_license_hash( str_replace( '-', '_', ! empty( $pro_slug ) ? $pro_slug : $product_slug ) );
 
 					// Check if product was already tracked.

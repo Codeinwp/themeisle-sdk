@@ -3,6 +3,8 @@ import {Button} from '@wordpress/components';
 
 import {activatePlugin, installPluginOrTheme} from "../common/utils";
 import useSettings from "../common/useSettings";
+import {trackPromoInteraction} from "../common/promoEvents";
+import {useImpression} from "../common/useImpression";
 
 export default function RedirectionForCF7({type, onDismiss}) {
   const {
@@ -17,8 +19,10 @@ export default function RedirectionForCF7({type, onDismiss}) {
   const [dismissed, setDismissed] = useState(false);
   const [progress, setProgress] = useState(null);
   const [getOption, updateOption] = useSettings();
+  const impressionRef = useImpression(type, 'wpcf7-redirect');
 
   const dismissNotice = async () => {
+    trackPromoInteraction('dismiss', type, 'wpcf7-redirect');
     setDismissed(true);
     const newValue = {...option};
     newValue[type] = new Date().getTime() / 1000 | 0;
@@ -32,11 +36,13 @@ export default function RedirectionForCF7({type, onDismiss}) {
 
   const installPluginRequest = async (e) => {
     e.preventDefault();
+    trackPromoInteraction('cta-install', type, 'wpcf7-redirect');
     setProgress('installing');
-    await installPluginOrTheme('wpcf7-redirect');
+    const install = await installPluginOrTheme('wpcf7-redirect');
 
     setProgress('activating');
-    await activatePlugin(rfCF7ActivationUrl);
+    const activation = await activatePlugin(rfCF7ActivationUrl);
+    trackPromoInteraction(install?.success && activation?.success ? 'install-success' : 'install-fail', type, 'wpcf7-redirect');
 
     updateOption('themeisle_sdk_promotions_redirection_cf7_installed', !Boolean(getOption('themeisle_sdk_promotions_redirection_cf7_installed')));
 
@@ -51,7 +57,7 @@ export default function RedirectionForCF7({type, onDismiss}) {
     return progress === 'done' ? (
         <div className="done">
           <p> {labels.all_set}</p>
-          <Button icon="external" variant="primary" href={cf7Dash} target="_blank">
+          <Button icon="external" variant="primary" href={cf7Dash} target="_blank" onClick={() => trackPromoInteraction('cta-gotodash', type, 'wpcf7-redirect')}>
             {labels.redirectionCF7.gotodash}
           </Button>
         </div>
@@ -72,7 +78,7 @@ export default function RedirectionForCF7({type, onDismiss}) {
         <Button isPrimary onClick={installPluginRequest}>
           {labels.redirectionCF7.gst}
         </Button>
-        <Button isLink target="_blank" href="https://wordpress.org/plugins/wpcf7-redirect/">
+        <Button isLink target="_blank" href="https://wordpress.org/plugins/wpcf7-redirect/" onClick={() => trackPromoInteraction('cta-learn-more', type, 'wpcf7-redirect')}>
           <span className="dashicons dashicons-external"/>
           <span> {labels.learnmore}</span>
         </Button>
@@ -89,7 +95,7 @@ export default function RedirectionForCF7({type, onDismiss}) {
           <span className="dashicons-no-alt dashicons"/>
           <span className="screen-reader-text">{labels.redirectionCF7.dismisscta}</span>
         </Button>
-        <div className="content">
+        <div className="content" ref={impressionRef}>
           <div>
             <p>{title}</p>
             <p className="description">{labels.redirectionCF7.message}</p>

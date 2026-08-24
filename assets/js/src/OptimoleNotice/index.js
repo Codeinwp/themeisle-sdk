@@ -4,6 +4,8 @@ import {Button} from '@wordpress/components';
 import './style.scss';
 import {activatePlugin, installPluginOrTheme} from "../common/utils";
 import useSettings from "../common/useSettings";
+import {trackPromoInteraction} from "../common/promoEvents";
+import {useImpression} from "../common/useImpression";
 
 export default function OptimoleNotice({stacked = false, type, onDismiss, onSuccess, initialStatus = null}) {
   const {
@@ -17,8 +19,10 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
   const [dismissed, setDismissed] = useState(false);
   const [progress, setProgress] = useState(initialStatus);
   const [getOption, updateOption] = useSettings();
+  const impressionRef = useImpression(type, 'optimole-wp');
 
   const dismissNotice = async () => {
+    trackPromoInteraction('dismiss', type, 'optimole-wp');
     setDismissed(true);
     const newValue = {...option};
     newValue[type] = new Date().getTime() / 1000 | 0;
@@ -32,11 +36,13 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
 
   const installAndActivate = async (e) => {
     e.preventDefault();
+    trackPromoInteraction('cta-install', type, 'optimole-wp');
     setProgress('installing');
-    await installPluginOrTheme('optimole-wp');
+    const install = await installPluginOrTheme('optimole-wp');
 
     setProgress('activating');
-    await activatePlugin(optimoleActivationUrl);
+    const activation = await activatePlugin(optimoleActivationUrl);
+    trackPromoInteraction(install?.success && activation?.success ? 'install-success' : 'install-fail', type, 'optimole-wp');
 
     updateOption('themeisle_sdk_promotions_optimole_installed', true).then(() => {
       setProgress('done');
@@ -51,7 +57,7 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
     return progress === 'done' ? (
         <div className="done">
           <p> {labels.all_set}</p>
-          <Button icon="external" isPrimary href={optimoleDash} target="_blank">
+          <Button icon="external" isPrimary href={optimoleDash} target="_blank" onClick={() => trackPromoInteraction('cta-gotodash', type, 'optimole-wp')}>
             {labels.optimole.gotodash}
           </Button>
         </div>
@@ -80,7 +86,7 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
         <Button isPrimary onClick={installAndActivate} className={ stacked ? 'cta' : ''}>
           {labels.optimole.installOptimole}
         </Button>
-        <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp">
+        <Button isLink target="_blank" href="https://wordpress.org/plugins/optimole-wp" onClick={() => trackPromoInteraction('cta-learn-more', type, 'optimole-wp')}>
           <span className="dashicons dashicons-external"/>
           <span> {labels.learnmore}</span>
         </Button>
@@ -88,7 +94,7 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
   )
 
   const stackedNotice = (
-      <div className="ti-om-stack-wrap ti-sdk-om-notice">
+      <div className="ti-om-stack-wrap ti-sdk-om-notice" ref={impressionRef}>
         <div className="om-stack-notice">
           {dismissButton()}
           <i>{title}</i>
@@ -103,7 +109,7 @@ export default function OptimoleNotice({stacked = false, type, onDismiss, onSucc
   const notice = (
       <>
         {dismissButton()}
-        <div className="content">
+        <div className="content" ref={impressionRef}>
           <div>
             <p>{title}</p>
             <p className="description">

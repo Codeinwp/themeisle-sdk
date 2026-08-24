@@ -2,12 +2,16 @@ import { Fragment, render, useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { activatePlugin, installPluginOrTheme } from "./common/utils";
 import useSettings from './common/useSettings';
+import { trackPromoInteraction } from './common/promoEvents';
+import { useImpression } from './common/useImpression';
 
 const ROPNotice = ({ onDismiss = () => {} }) => {
 	const [ status, setStatus ] = useState( '' );
 	const [getOption, updateOption] = useSettings();
+	const impressionRef = useImpression( 'rop-posts', 'tweet-old-post' );
 
 	const dismissNotice = async () => {
+		trackPromoInteraction( 'dismiss', 'rop-posts', 'tweet-old-post' );
 		const newValue = { ...window.themeisleSDKPromotions.option };
 		newValue['rop-posts'] = new Date().getTime() / 1000 | 0;
 		window.themeisleSDKPromotions.option = newValue;
@@ -30,7 +34,7 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 				<span className="screen-reader-text">Dismiss this notice.</span>
 			</Button>
 
-			<p>Boost your content's reach effortlessly! Introducing <b>Revive Social</b>, a cutting-edge plugin from the makers of { window.themeisleSDKPromotions.product }. Seamlessly auto-share old & new content across social media, driving traffic like never before.</p>
+			<p ref={ impressionRef }>Boost your content's reach effortlessly! Introducing <b>Revive Social</b>, a cutting-edge plugin from the makers of { window.themeisleSDKPromotions.product }. Seamlessly auto-share old & new content across social media, driving traffic like never before.</p>
 
 			<div className="rop-notice-actions">
 				{ 'installed' !== status ? (
@@ -38,9 +42,11 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 						variant="primary"
 						isBusy={ 'installing' === status }
 						onClick={ async() => {
+							trackPromoInteraction( 'cta-install', 'rop-posts', 'tweet-old-post' );
 							setStatus( 'installing' );
-							await installPluginOrTheme('tweet-old-post');
-							await activatePlugin( window.themeisleSDKPromotions.ropActivationUrl );
+							const install = await installPluginOrTheme('tweet-old-post');
+							const activation = await activatePlugin( window.themeisleSDKPromotions.ropActivationUrl );
+							trackPromoInteraction( install?.success && activation?.success ? 'install-success' : 'install-fail', 'rop-posts', 'tweet-old-post' );
 							updateOption('themeisle_sdk_promotions_rop_installed', !Boolean(getOption('themeisle_sdk_promotions_rop_installed')));
 							setStatus( 'installed' );
 						} }
@@ -51,6 +57,7 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 					<Button
 						variant="primary"
 						href={ window.themeisleSDKPromotions.ropDash }
+						onClick={ () => trackPromoInteraction( 'cta-gotodash', 'rop-posts', 'tweet-old-post' ) }
 					>
 						Visit Dashboard
 					</Button>
@@ -60,6 +67,7 @@ const ROPNotice = ({ onDismiss = () => {} }) => {
 					variant="link"
 					target="_blank"
 					href="https://wordpress.org/plugins/tweet-old-post/"
+					onClick={ () => trackPromoInteraction( 'cta-learn-more', 'rop-posts', 'tweet-old-post' ) }
 				>
 					<span className="dashicons dashicons-external"/>
 					<span>Learn more</span>

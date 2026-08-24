@@ -2,6 +2,8 @@ import {Fragment, render, useState} from "@wordpress/element";
 import {Button} from "@wordpress/components";
 import useSettings from "./common/useSettings";
 import {activatePlugin, installPluginOrTheme} from "./common/utils";
+import {trackPromoInteraction} from "./common/promoEvents";
+import {useImpression} from "./common/useImpression";
 
 const NeveFSENotice = ({onDismiss = () => {}}) => {
   const {
@@ -14,8 +16,10 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
 
   const [getOption, updateOption] = useSettings();
   const [progress, setProgress] = useState(null);
+  const impressionRef = useImpression("neve-themes-popular", "neve");
 
   const dismissNotice = async () => {
+    trackPromoInteraction("dismiss", "neve-themes-popular", "neve");
     const newValue = {...window.themeisleSDKPromotions.option};
     newValue["neve-themes-popular"] = (new Date().getTime() / 1000) | 0;
     window.themeisleSDKPromotions.option = newValue
@@ -30,6 +34,7 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
     e.preventDefault();
 
     if (neveAction === 'activate') {
+      trackPromoInteraction("cta-activate", "neve-themes-popular", "neve");
       setProgress('activating');
       updateOption('themeisle_sdk_promotions_neve_installed', true).then(() => {
           window.location.href = activateNeveURL;
@@ -37,8 +42,10 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
       return;
     }
 
+    trackPromoInteraction("cta-install", "neve-themes-popular", "neve");
     setProgress('installing');
     installPluginOrTheme('neve', true).then(r => {
+      trackPromoInteraction(r?.success ? "install-success" : "install-fail", "neve-themes-popular", "neve");
       setProgress('activating');
       updateOption('themeisle_sdk_promotions_neve_installed', true).then(() => {
         window.location.href = r.data.activateUrl;
@@ -59,7 +66,7 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
           {labels.redirectionCF7.dismisscta}
         </span>
         </Button>
-        <div className="content">
+        <div className="content" ref={impressionRef}>
           <div>
             <p>{title}</p>
             <p className="description">
@@ -74,7 +81,7 @@ const NeveFSENotice = ({onDismiss = () => {}}) => {
                 {neveAction === 'install' && labels.installActivate}
                 {neveAction === 'activate' && labels.activate}
               </Button>
-              <Button variant="link" href={window.themeisleSDKPromotions.nevePreviewURL}>
+              <Button variant="link" href={window.themeisleSDKPromotions.nevePreviewURL} onClick={() => trackPromoInteraction("cta-preview", "neve-themes-popular", "neve")}>
                 {labels.preview}
               </Button>
             </div>}

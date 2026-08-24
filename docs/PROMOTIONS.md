@@ -95,3 +95,24 @@ add_filter( 'themeisle_sdk_labels', function( $labels ) {
     return $labels;
 } );
 ```
+
+## Telemetry Events
+
+Promotion lifecycle events are recorded through the SDK's `tiTrk` tracker (see [TELEMETRY.md](TELEMETRY.md)) via `assets/js/src/common/promoEvents.js`. Prerequisites — events flow only when **all** hold, and are dropped silently otherwise:
+
+1. A product on the site opts into telemetry: `add_filter( 'themeisle_sdk_enable_telemetry', '__return_true' )`.
+2. The **host product** (the one whose Promotions instance loaded) has logger consent: `{product_key}_logger_flag === 'yes'` (auto-`yes` for pro/licensed setups, opt-in notice otherwise).
+
+Event shape (`GROUP BY featureComponent, featureValue` gives per-promo counts per action):
+
+| field | value |
+|---|---|
+| `feature` | `promotions` |
+| `featureComponent` | promotion key (`om-media`, `hyve-plugins-install`, `blocks-css`, …) |
+| `featureValue` | `impression` · `cta-install` · `cta-activate` · `cta-learn-more` · `cta-preview` · `cta-gotodash` · `install-success` · `install-fail` · `dismiss` |
+| `groupID` | slug of the **promoted** plugin (`optimole-wp`, `hyve-lite`, …) — aggregate across host products with this |
+| `slug` / `license` (auto) | host product's telemetry slug and track hash (`free` or license hash) |
+
+`impression` means *seen*: the notice was at least half visible for one second (IntersectionObserver). Collapsed panels and below-the-fold notices don't count.
+
+**Read the numbers as directional rates, not a census.** Events only arrive from consented sites (skews pro), batches are lost when a page dies before flush or the endpoint is blocked, and there is no per-event timestamp or session id — so `install-success / impression` per `featureComponent` is a comparative signal between promos, not an absolute conversion funnel. Server-rendered surfaces emit nothing: the `feedzy-import` row, the WooCommerce Suggestions tab (`ppom`, `sparks-*`), and the Visualizer search injection.
