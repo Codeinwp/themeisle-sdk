@@ -3,7 +3,7 @@
   "description": "Themeisle SDK library.",
   "type": "library",
   "keywords": [
-    "wordpress"
+    "WordPress"
   ],
   "homepage": "https://github.com/Codeinwp/themeisle-sdk",
   "license": "GPL-2.0+",
@@ -14,7 +14,7 @@
       "homepage": "https://themeisle.com"
     }
   ],
-  "version": "3.3.58",
+  "version": "3.3.59",
   "require-dev": {
     "codeinwp/phpcs-ruleset": "dev-main",
     "yoast/phpunit-polyfills": "^4.0"
