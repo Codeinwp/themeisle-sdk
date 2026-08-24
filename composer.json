@@ -3,7 +3,7 @@
   "description": "Themeisle SDK library.",
   "type": "library",
   "keywords": [
-    "wordpress"
+    "WordPress"
   ],
   "homepage": "https://github.com/Codeinwp/themeisle-sdk",
   "license": "GPL-2.0+",
