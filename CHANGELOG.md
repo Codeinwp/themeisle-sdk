@@ -611,7 +611,7 @@ Fix rollback call for private products
 
 ### Bug Fixes
 
-* **build:** fix exit code when is running outside wordpress context ([d298bb5](https://github.com/Codeinwp/themeisle-sdk/commit/d298bb5))
+* **build:** fix exit code when is running outside WordPress context ([d298bb5](https://github.com/Codeinwp/themeisle-sdk/commit/d298bb5))
 
 ## [3.0.2](https://github.com/Codeinwp/themeisle-sdk/compare/v3.0.1...v3.0.2) (2018-12-28)
 
