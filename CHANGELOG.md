@@ -1,3 +1,7 @@
+##### [Version 3.3.61](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.60...v3.3.61) (2026-08-24)
+
+- Fix stale plugin update notices after upgrades ([#336](https://github.com/Codeinwp/themeisle-sdk-main/issues/336))
+
 ##### [Version 3.3.60](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.59...v3.3.60) (2026-08-24)
 
 Fixes lowercase wordpress occurrences shipped to consumer themes (CHANGELOG.md and composer.json keywords), flagged as REQUIRED errors by the latest Theme Check plugin.
