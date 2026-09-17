@@ -445,6 +445,9 @@ class About_Us extends Abstract_Module {
 			'wp-full-stripe-free'                 => [
 				'name' => 'WP Full Pay',
 			],
+			'easy-mcp-ai'                         => [
+				'name' => 'Easy MCP AI',
+			],
 		];
 
 		foreach ( $products as $slug => $product ) {
@@ -475,6 +478,11 @@ class About_Us extends Abstract_Module {
 			$products[ $slug ]['status']         = $this->is_plugin_installed( $slug ) ? 'installed' : 'not-installed';
 			$products[ $slug ]['status']         = $this->is_plugin_active( $slug ) ? 'active' : $products[ $slug ]['status'];
 			$products[ $slug ]['activationLink'] = $this->get_plugin_activation_link( $slug );
+
+			if ( 'easy-mcp-ai' === $slug ) {
+				// The shared builder stamps optimole_reference_key on every non-Otter slug; carry Easy MCP attribution instead.
+				$products[ $slug ]['activationLink'] = add_query_arg( 'easy_mcp_reference_key', 'a-' . $this->product->get_key(), remove_query_arg( 'optimole_reference_key', $products[ $slug ]['activationLink'] ) );
+			}
 
 
 			if ( isset( $product['skip_api'] ) ) {

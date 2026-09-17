@@ -45,6 +45,7 @@ abstract class Abstract_Module {
 		'wp-full-stripe-free'                 => 'wp-full-stripe-free/wp-full-stripe.php',
 		'learning-management-system'          => 'learning-management-system/lms.php',
 		'wp-cloudflare-page-cache'            => 'wp-cloudflare-page-cache/wp-cloudflare-super-page-cache.php',
+		'easy-mcp-ai'                         => 'easy-mcp-ai/easy-mcp-ai.php',
 	];
 
 	/**
