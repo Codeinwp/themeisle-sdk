@@ -58,6 +58,7 @@ class Promotion_Test extends WP_UnitTestCase {
 		update_option( 'blogdescription', $this->original_blogdescription );
 		delete_transient( 'tisdk_page_title_signals_v1' );
 		delete_transient( 'tisdk_lms_page_title_signal_v1' );
+		unset( $_GET['tab'] );
 	}
 
 	/**
@@ -574,6 +575,225 @@ class Promotion_Test extends WP_UnitTestCase {
 			'window.google.visualization.Version',
 			implode( "\n", $inline_scripts )
 		);
+	}
+
+	public function testEasyMcpPromoNotShownWithoutSignal() {
+		$_GET['tab'] = 'popular';
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertNotContains( 'easy-mcp-plugins-install', $promos );
+	}
+
+	public function testEasyMcpPromoShownForApplicationPassword() {
+		$_GET['tab'] = 'popular';
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		\WP_Application_Passwords::create_new_application_password( 1, array( 'name' => 'Test App' ) );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertContains( 'easy-mcp-plugins-install', $promos );
+	}
+
+	public function testEasyMcpPromoShownForInstalledAiPlugin() {
+		$_GET['tab'] = 'popular';
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		$ai_plugin_dir = WP_CONTENT_DIR . '/plugins/ai-engine';
+		$created       = ! is_dir( $ai_plugin_dir ) && mkdir( $ai_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+
+		try {
+			wp_set_current_user( 1 );
+			set_current_screen( 'plugin-install' );
+
+			$promotions = new \ThemeisleSDK\Modules\Promotions();
+			$product    = $this->get_product();
+			$this->assertTrue( $promotions->can_load( $product ) );
+
+			$promotions->load( $product );
+			$promotions->load_available();
+
+			$promos = $promotions->promotions;
+
+			$this->assertContains( 'easy-mcp-plugins-install', $promos );
+		} finally {
+			if ( $created ) {
+				rmdir( $ai_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+			}
+		}
+	}
+
+	public function testEasyMcpPromoNotShownWithCompetitorMcpPlugin() {
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		\WP_Application_Passwords::create_new_application_password( 1, array( 'name' => 'Test App' ) );
+
+		$mcp_plugin_dir = WP_CONTENT_DIR . '/plugins/royal-mcp';
+		$created        = ! is_dir( $mcp_plugin_dir ) && mkdir( $mcp_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+
+		try {
+			wp_set_current_user( 1 );
+			set_current_screen( 'plugin-install' );
+			$_GET['tab'] = 'popular';
+
+			$promotions = new \ThemeisleSDK\Modules\Promotions();
+			$product    = $this->get_product();
+			$this->assertTrue( $promotions->can_load( $product ) );
+
+			$promotions->load( $product );
+			$promotions->load_available();
+
+			$promos = $promotions->promotions;
+
+			$this->assertNotContains( 'easy-mcp-plugins-install', $promos );
+		} finally {
+			if ( $created ) {
+				rmdir( $mcp_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+			}
+		}
+	}
+
+	public function testEasyMcpNoticeSuppressedOnlyWhereCardActuallyShows() {
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'plugin-install' );
+		unset( $_GET['tab'] ); // Default tab is Featured.
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+
+		// Free-product site: the injection filter is not registered, so the notice renders on the Featured tab.
+		ob_start();
+		$promotions->render_easy_mcp_notice();
+		$this->assertStringContainsString( 'ti-easy-mcp-notice', ob_get_clean() );
+
+		// Paid-product site: the injection filter is registered, so the Featured tab already shows the card.
+		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_true' );
+
+		ob_start();
+		$promotions->render_easy_mcp_notice();
+		$this->assertSame( '', ob_get_clean() );
+
+		// A dual-keyword search renders the LMS card instead, so the notice is not suppressed.
+		$_GET['tab'] = 'search';
+		$_GET['s']   = 'ai course';
+
+		ob_start();
+		$promotions->render_easy_mcp_notice();
+		$this->assertStringContainsString( 'ti-easy-mcp-notice', ob_get_clean() );
+
+		// An AI-only search injects the Easy MCP card, so the notice is suppressed.
+		$_GET['s'] = 'mcp server';
+
+		ob_start();
+		$promotions->render_easy_mcp_notice();
+		$this->assertSame( '', ob_get_clean() );
+
+		// Unrelated searches containing 'ai', 'mcp' or 'llm' inside a word must not suppress the notice.
+		foreach ( array( 'email', 'order fulfillment', 'myMCPserver' ) as $search ) {
+			$_GET['s'] = $search;
+			ob_start();
+			$promotions->render_easy_mcp_notice();
+			$this->assertStringContainsString( 'ti-easy-mcp-notice', ob_get_clean() );
+		}
+
+		unset( $_GET['s'] );
+	}
+
+	public function testEasyMcpProfileNoticeNotSuppressedByFeaturedPluginFilter() {
+		wp_set_current_user( 1 );
+		set_current_screen( 'profile' );
+		unset( $_GET['tab'], $_GET['s'] );
+		add_filter( 'themeisle_sdk_plugin_api_filter_registered', '__return_true' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+
+		ob_start();
+		$promotions->render_easy_mcp_notice();
+		$this->assertStringContainsString( 'ti-easy-mcp-notice', ob_get_clean() );
+	}
+
+	public function testEasyMcpProfilePromoShown() {
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		// CI's test environment has no SSL and a non-local environment type.
+		add_filter( 'wp_is_application_passwords_available', '__return_true' );
+
+		wp_set_current_user( 1 );
+		set_current_screen( 'profile' );
+
+		$promotions = new \ThemeisleSDK\Modules\Promotions();
+		$product    = $this->get_product();
+		$this->assertTrue( $promotions->can_load( $product ) );
+
+		$promotions->load( $product );
+		$promotions->load_available();
+
+		$promos = $promotions->promotions;
+
+		$this->assertContains( 'easy-mcp-profile', $promos );
+	}
+
+	public function testEasyMcpProfilePromoNotShownWithCompetitor() {
+		if ( version_compare( get_bloginfo( 'version' ), '7.0', '<' ) ) {
+			$this->markTestSkipped( 'Easy MCP promo requires WordPress 7.0+.' );
+		}
+
+		// CI's test environment has no SSL and a non-local environment type.
+		add_filter( 'wp_is_application_passwords_available', '__return_true' );
+
+		$mcp_plugin_dir = WP_CONTENT_DIR . '/plugins/vibe-ai';
+		$created        = ! is_dir( $mcp_plugin_dir ) && mkdir( $mcp_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+
+		try {
+			wp_set_current_user( 1 );
+			set_current_screen( 'profile' );
+
+			$promotions = new \ThemeisleSDK\Modules\Promotions();
+			$product    = $this->get_product();
+
+			$promotions->can_load( $product );
+			$promotions->load( $product );
+			$promotions->load_available();
+
+			$promos = $promotions->promotions;
+
+			$this->assertNotContains( 'easy-mcp-profile', $promos );
+		} finally {
+			if ( $created ) {
+				rmdir( $mcp_plugin_dir ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_rmdir
+			}
+		}
 	}
 
 	private function get_product() {

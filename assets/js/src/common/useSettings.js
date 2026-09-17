@@ -1,6 +1,8 @@
 /**
  * WordPress dependencies.
  */
+import apiFetch from '@wordpress/api-fetch';
+
 import {
 	dispatch,
 	useSelect
@@ -54,29 +56,12 @@ const useSettings = () => {
 		const data = { [optionName]: optionValue };
 		
 		try {
-			const response = await fetch( '/wp-json/wp/v2/settings', {
+			const settings = await apiFetch({
+				path: '/wp/v2/settings',
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': wpApiSettings.nonce,
-				},
-				body: JSON.stringify(data),
+				data,
 			});
 
-			if (!response.ok) {
-				setStatus( 'error' );
-				createNotice(
-					'error',
-					'Could not save the settings.',
-					{
-						isDismissible: true,
-						type: 'snackbar'
-					}
-				);
-			}
-
-			const settings = await response.json();
-			
 			setStatus( 'loaded' );
 			createNotice(
 				'success',
@@ -86,9 +71,18 @@ const useSettings = () => {
 					type: 'snackbar'
 				}
 			);
-			
+
 			setSettings( settings );
 		} catch (error) {
+			setStatus( 'error' );
+			createNotice(
+				'error',
+				'Could not save the settings.',
+				{
+					isDismissible: true,
+					type: 'snackbar'
+				}
+			);
 			console.error('Error updating option:', error);
 		}
 	};

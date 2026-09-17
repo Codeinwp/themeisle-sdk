@@ -185,6 +185,12 @@ final class Loader {
 				'dismisscta' => 'Dismiss this notice.',
 				'message'    => 'Transform your site into a learning hub with Masteriyo LMS. Build engaging courses with intuitive tools, track student progress effortlessly, and grow your education business with powerful marketing features and seamless payment integration.',
 			],
+			'easy_mcp'        => [
+				'gotodash'   => 'Go to Easy MCP Dashboard',
+				'install'    => 'Install Easy MCP AI',
+				'dismisscta' => 'Dismiss this notice.',
+				'message'    => 'Connect Claude, ChatGPT, and other AI assistants to this site with Easy MCP AI — a free MCP server that lets your AI manage content, media, and SEO data, with per-scope permissions and a full audit trail.',
+			],
 		],
 		'welcome'          => [
 			'ctan'    => 'No, thanks.',

@@ -7,3 +7,4 @@ import './hyve.js';
 import './feedzy.js';
 import './wp-full-pay.js';
 import './masteriyo.js';
+import './easy-mcp.js';

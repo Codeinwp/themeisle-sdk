@@ -113,6 +113,13 @@ class Promotions extends Abstract_Module {
 	private $option_masteriyo = 'themeisle_sdk_promotions_masteriyo_installed';
 
 	/**
+	 * Option key for Easy MCP AI promos.
+	 *
+	 * @var string
+	 */
+	private $option_easy_mcp = 'themeisle_sdk_promotions_easy_mcp_installed';
+
+	/**
 	 * Loaded promotion.
 	 *
 	 * @var string
@@ -167,6 +174,7 @@ class Promotions extends Abstract_Module {
 		$promotions_to_load[] = 'wp_full_pay';
 		$promotions_to_load[] = 'feedzy_import';
 		$promotions_to_load[] = 'learning-management-system';
+		$promotions_to_load[] = 'easy-mcp';
 
 		if ( defined( 'NEVE_VERSION' ) || defined( 'WPMM_PATH' ) || defined( 'OTTER_BLOCKS_VERSION' ) || defined( 'OBFX_URL' ) ) {
 			$promotions_to_load[] = 'feedzy_embed';
@@ -477,6 +485,10 @@ class Promotions extends Abstract_Module {
 			update_option( 'wp_full_pay_reference_key', sanitize_key( $_GET['wp_full_pay_reference_key'] ) );
 		}
 
+		if ( isset( $_GET['easy_mcp_reference_key'] ) ) {
+			update_option( 'easy_mcp_reference_key', sanitize_key( $_GET['easy_mcp_reference_key'] ) );
+		}
+
 		if ( isset( $_GET['feedzy_reference_key'] ) || ( isset( $_GET['from'], $_GET['plugin'] ) && $_GET['from'] === 'import' && str_starts_with( sanitize_key( $_GET['plugin'] ), 'feedzy' ) ) ) {
 			update_option( 'feedzy_reference_key', sanitize_key( $_GET['feedzy_reference_key'] ?? 'i-' . $this->product->get_key() ) );
 			update_option( $this->option_feedzy, 1 );
@@ -580,6 +592,16 @@ class Promotions extends Abstract_Module {
 				'default'           => false,
 			)
 		);
+		register_setting(
+			'themeisle_sdk_settings',
+			$this->option_easy_mcp,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'show_in_rest'      => true,
+				'default'           => false,
+			)
+		);
 	}
 
 	/**
@@ -652,6 +674,12 @@ class Promotions extends Abstract_Module {
 		$had_feedzy_from_promo     = get_option( $this->option_feedzy, false );
 		$had_masteriyo_from_promo  = get_option( $this->option_masteriyo, false );
 		$has_masteriyo_conditions  = $is_min_php_7_2 && ! $had_masteriyo_from_promo && ! $this->has_active_lms_plugin() && $can_check_plugin_install && $this->has_lms_tagline();
+		$has_easy_mcp              = defined( 'EASY_MCP_AI_VERSION' ) || $this->any_plugin_dir_exists( array( 'easy-mcp-ai' ) );
+		$had_easy_mcp_from_promo   = get_option( $this->option_easy_mcp, false );
+		$has_easy_mcp_base         = $is_min_php_7_4 && ! $has_easy_mcp && ! $had_easy_mcp_from_promo && version_compare( get_bloginfo( 'version' ), '7.0', '>=' );
+		$has_easy_mcp_conditions   = $has_easy_mcp_base && $can_check_plugin_install && ! $this->has_mcp_plugin_installed() && $this->has_ai_usage_signal();
+		// On the own-profile screen the Application Passwords section itself is the intent signal.
+		$has_easy_mcp_profile_conditions = $this->can_check_profile_promo() && $has_easy_mcp_base && wp_is_application_passwords_available_for_user( wp_get_current_user() ) && ! $this->has_mcp_plugin_installed();
 
 		$all = [
 			'optimole'                   => [
@@ -765,6 +793,16 @@ class Promotions extends Abstract_Module {
 					'screen' => 'plugin-install',
 				],
 			],
+			'easy-mcp'                   => [
+				'easy-mcp-plugins-install' => [
+					'env'    => $has_easy_mcp_conditions,
+					'screen' => 'plugin-install',
+				],
+				'easy-mcp-profile'         => [
+					'env'    => $has_easy_mcp_profile_conditions,
+					'screen' => 'profile',
+				],
+			],
 		];
 
 		foreach ( $all as $slug => $data ) {
@@ -832,6 +870,7 @@ class Promotions extends Abstract_Module {
 		$is_editor         = method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor();
 		$is_theme_install  = isset( $current_screen->id ) && ( $current_screen->id === 'theme-install' );
 		$is_plugin_install = isset( $current_screen->id ) && ( $current_screen->id === 'plugin-install' );
+		$is_profile        = isset( $current_screen->id ) && $current_screen->id === 'profile';
 		$is_product        = isset( $current_screen->id ) && $current_screen->id === 'product';
 		$is_import         = isset( $current_screen->id ) && $current_screen->id === 'import';
 		$is_cf7_install    = isset( $current_screen->id ) && function_exists( 'str_contains' ) ? str_contains( $current_screen->id, 'page_wpcf7' ) : false;
@@ -923,6 +962,11 @@ class Promotions extends Abstract_Module {
 							unset( $this->promotions[ $slug ][ $key ] );
 						}
 						break;
+					case 'profile':
+						if ( ! $is_profile ) {
+							unset( $this->promotions[ $slug ][ $key ] );
+						}
+						break;
 				}
 			}
 
@@ -973,6 +1017,10 @@ class Promotions extends Abstract_Module {
 
 			if ( $this->get_upsells_dismiss_time( 'masteriyo-plugins-install' ) === false ) {
 				add_action( 'admin_notices', [ $this, 'render_masteriyo_notice' ] );
+			}
+
+			if ( $this->get_upsells_dismiss_time( 'easy-mcp-plugins-install' ) === false || $this->get_upsells_dismiss_time( 'easy-mcp-profile' ) === false ) {
+				add_action( 'admin_notices', [ $this, 'render_easy_mcp_notice' ] );
 			}
 
 			add_action( 'load-import.php', [ $this, 'add_import' ] );
@@ -1043,6 +1091,11 @@ class Promotions extends Abstract_Module {
 			case 'masteriyo-plugins-install':
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
 				add_action( 'admin_notices', [ $this, 'render_masteriyo_notice' ] );
+				break;
+			case 'easy-mcp-plugins-install':
+			case 'easy-mcp-profile':
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue' ] );
+				add_action( 'admin_notices', [ $this, 'render_easy_mcp_notice' ] );
 				break;
 		}
 	}
@@ -1139,6 +1192,8 @@ class Promotions extends Abstract_Module {
 				'wpFullPayDash'          => esc_url( add_query_arg( [ 'page' => 'wpfs-settings-stripe' ], admin_url( 'admin.php' ) ) ),
 				'masteriyoActivationUrl' => $this->get_plugin_activation_link( 'masteriyo' ),
 				'masteriyoDash'          => esc_url( add_query_arg( [ 'page' => 'masteriyo-onboard' ], admin_url( 'index.php' ) ) ),
+				'easyMcpActivationUrl'   => add_query_arg( 'easy_mcp_reference_key', 'n-' . $this->product->get_key(), remove_query_arg( 'optimole_reference_key', $this->get_plugin_activation_link( 'easy-mcp-ai' ) ) ),
+				'easyMcpDash'            => esc_url( add_query_arg( [ 'page' => 'easy-mcp-ai' ], admin_url( 'admin.php' ) ) ),
 				'nevePreviewURL'         => esc_url( add_query_arg( [ 'theme' => 'neve' ], admin_url( 'theme-install.php' ) ) ),
 				'neveAction'             => $neve_action,
 				'activateNeveURL'        => esc_url(
@@ -1203,6 +1258,18 @@ class Promotions extends Abstract_Module {
 	 */
 	public function render_masteriyo_notice() {
 		echo '<div id="ti-masteriyo-notice" class="notice notice-info ti-sdk-om-notice"></div>';
+	}
+
+	/**
+	 * Render Easy MCP AI notice.
+	 */
+	public function render_easy_mcp_notice() {
+		// Cards are injected only when a paid product loaded Featured_plugins; only then can this request already show one.
+		if ( apply_filters( 'themeisle_sdk_plugin_api_filter_registered', false ) && $this->is_easy_mcp_card_request() ) {
+			return;
+		}
+
+		echo '<div id="ti-easy-mcp-notice" class="notice notice-info ti-sdk-om-notice"></div>';
 	}
 
 	/**
@@ -1679,6 +1746,137 @@ class Promotions extends Abstract_Module {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if the site shows signs of AI usage.
+	 *
+	 * @return bool True if an AI plugin is installed or a REST API application password is in use.
+	 */
+	public function has_ai_usage_signal() {
+		return $this->has_ai_plugin_installed() || $this->has_application_password_in_use();
+	}
+
+	/**
+	 * Check if the current plugin-install request already surfaces the Easy MCP AI card,
+	 * so the notice is not stacked on top of it: the Featured tab injects the card on
+	 * WordPress 6.9+ and AI-related searches prepend it.
+	 *
+	 * @return bool True if the Easy MCP AI card is expected on the current request.
+	 */
+	private function is_easy_mcp_card_request() {
+		$current_screen = get_current_screen();
+		if ( ! isset( $current_screen->id ) || 'plugin-install' !== $current_screen->id ) {
+			return false;
+		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$tab    = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : '';
+		$search = isset( $_GET['s'] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) : '';
+		$paged  = isset( $_GET['paged'] ) ? (int) $_GET['paged'] : 1;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		// Cards are only injected on the first results page.
+		if ( $paged > 1 ) {
+			return false;
+		}
+
+		if ( '' === $tab || 'featured' === $tab ) {
+			return version_compare( get_bloginfo( 'version' ), '6.9', '>=' );
+		}
+
+		if ( '' !== $search ) {
+			return Featured_Plugins::matches_ai_search_keywords( $search ) && ! Featured_Plugins::matches_lms_search_keywords( $search );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a known AI plugin is installed, active or not.
+	 *
+	 * @return bool True if an AI plugin is installed, false otherwise.
+	 */
+	private function has_ai_plugin_installed() {
+		return $this->any_plugin_dir_exists(
+			array(
+				'ai-engine',
+				'gpt3-ai-content-generator',
+				'getgenie',
+				'bertha-ai',
+				'hyve',
+				'hyve-lite',
+			)
+		);
+	}
+
+	/**
+	 * Check if any of the given plugin slugs has a directory in the plugins folder.
+	 *
+	 * @param array $slugs Plugin slugs.
+	 *
+	 * @return bool True if at least one plugin directory exists, false otherwise.
+	 */
+	private function any_plugin_dir_exists( $slugs ) {
+		foreach ( $slugs as $slug ) {
+			if ( is_dir( WP_PLUGIN_DIR . '/' . $slug ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a REST API application password is in use on the site.
+	 *
+	 * @return bool True if an application password is in use, false otherwise.
+	 */
+	private function has_application_password_in_use() {
+		return class_exists( 'WP_Application_Passwords' ) && method_exists( 'WP_Application_Passwords', 'is_in_use' ) && \WP_Application_Passwords::is_in_use();
+	}
+
+	/**
+	 * Check if the current request is a profile screen where the Application
+	 * Passwords section lives — a user wiring up an external REST client.
+	 *
+	 * @return bool True if a profile promo can be displayed, false otherwise.
+	 */
+	private function can_check_profile_promo() {
+		if ( ! is_admin() || ! current_user_can( 'install_plugins' ) ) {
+			return false;
+		}
+
+		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( isset( $current_screen->id ) ) {
+			return 'profile' === $current_screen->id;
+		}
+
+		global $pagenow;
+
+		return isset( $pagenow ) && 'profile.php' === $pagenow;
+	}
+
+	/**
+	 * Check if a competing MCP server plugin is installed, active or not.
+	 *
+	 * AI Engine ships an optional MCP feature but is intentionally kept in the
+	 * AI-usage signals instead — its primary identity is an AI framework.
+	 *
+	 * @return bool True if an MCP server plugin is installed, false otherwise.
+	 */
+	private function has_mcp_plugin_installed() {
+		return $this->any_plugin_dir_exists(
+			array(
+				'vibe-ai',
+				'royal-mcp',
+				'stifli-flex-mcp',
+				'miniorange-secure-mcp-server',
+				'wsp-mcp-ai-agents-connector',
+				'cowboy-mcp',
+				'nibwp',
+			)
+		);
 	}
 
 	/**

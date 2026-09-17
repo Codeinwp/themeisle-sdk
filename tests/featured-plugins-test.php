@@ -638,7 +638,12 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 		$module->method( 'get_plugins_filtered_from_author' )
 			->willReturnCallback(
 				function( $args, $filter_slugs = [], $author = 'Themeisle' ) use ( $optimole, $otter ) {
-					return 'Optimole' === $author ? [ $optimole ] : [ $otter ];
+					$results = [
+						'Optimole'  => [ $optimole ],
+						'Themeisle' => [ $otter ],
+					];
+
+					return isset( $results[ $author ] ) ? $results[ $author ] : [];
 				}
 			);
 
@@ -662,6 +667,429 @@ class Featured_Plugins_Test extends WP_UnitTestCase {
 			array( 'student portal' ),
 			array( 'students portal' ),
 			array( 'quiz maker' ),
+		);
+	}
+
+	/**
+	 * Test Easy MCP plugin is prepended when searching for AI/MCP-related terms.
+	 */
+	public function test_easy_mcp_plugin_is_prepended_on_ai_search() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$easy_mcp_plugin = (object) [
+			'name'    => 'Easy MCP AI',
+			'slug'    => 'easy-mcp-ai',
+			'version' => '1.0.0',
+			'author'  => 'easymcpai',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $easy_mcp_plugin ] );
+
+		// Including a duplicate Easy MCP plugin to test deduplication.
+		$existing_plugin           = (object) [
+			'name'    => 'Other Plugin',
+			'slug'    => 'other-plugin',
+			'version' => '2.0.0',
+			'author'  => 'someone',
+		];
+		$duplicate_easy_mcp_plugin = (object) [
+			'name'    => 'Easy MCP AI',
+			'slug'    => 'easy-mcp-ai',
+			'version' => '1.0.0',
+			'author'  => 'easymcpai',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => [ $existing_plugin, $duplicate_easy_mcp_plugin ],
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => 'best mcp plugin',
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'easy-mcp-ai', $result->plugins[0]->slug, 'Easy MCP plugin should be prepended.' );
+		$this->assertEquals( 'other-plugin', $result->plugins[1]->slug, 'Other plugin should follow.' );
+		$easy_mcp_count = 0;
+		foreach ( $result->plugins as $plugin ) {
+			if ( isset( $plugin->slug ) && $plugin->slug === 'easy-mcp-ai' ) {
+				$easy_mcp_count++;
+			}
+		}
+		$this->assertEquals( 1, $easy_mcp_count, 'There should be only one Easy MCP plugin in the results.' );
+	}
+
+	/**
+	 * Test Easy MCP plugin is prepended for the AI/MCP search keywords.
+	 *
+	 * @dataProvider ai_search_keyword_provider
+	 *
+	 * @param string $search Search query.
+	 */
+	public function test_easy_mcp_plugin_is_prepended_on_ai_search_keywords( $search ) {
+		$this->assertTrue( \ThemeisleSDK\Modules\Featured_Plugins::matches_ai_search_keywords( $search ) );
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$easy_mcp_plugin = (object) [
+			'name'    => 'Easy MCP AI',
+			'slug'    => 'easy-mcp-ai',
+			'version' => '1.0.0',
+			'author'  => 'easymcpai',
+		];
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $easy_mcp_plugin ] );
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array(),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => $search,
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'easy-mcp-ai', $result->plugins[0]->slug, 'Easy MCP plugin should be prepended.' );
+	}
+
+	/**
+	 * Test Easy MCP plugin is not prepended for unrelated or partial keyword matches.
+	 *
+	 * @dataProvider non_ai_search_keyword_provider
+	 *
+	 * @param string $search Search query.
+	 */
+	public function test_easy_mcp_plugin_is_not_prepended_without_search_keyword_matches( $search ) {
+		$this->assertFalse( \ThemeisleSDK\Modules\Featured_Plugins::matches_ai_search_keywords( $search ) );
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$module->expects( $this->never() )
+			->method( 'get_plugins_filtered_from_author' );
+
+		$plugin = (object) [
+			'name'    => 'Other Plugin',
+			'slug'    => 'other-plugin',
+			'version' => '1.0.0',
+			'author'  => 'someone',
+		];
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array( $plugin ),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => $search,
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'other-plugin', $result->plugins[0]->slug, 'Easy MCP plugin should not be prepended.' );
+	}
+
+	/**
+	 * Build a module whose author queries return the given per-author results.
+	 *
+	 * @param array $results Author => plugins list map (missing authors return none).
+	 *
+	 * @return \ThemeisleSDK\Modules\Featured_Plugins
+	 */
+	private function get_module_with_mocked_author_results( $results ) {
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$module->method( 'get_plugins_filtered_from_author' )
+			->willReturnCallback(
+				function( $args, $filter_slugs = [], $author = 'Themeisle' ) use ( $results ) {
+					return isset( $results[ $author ] ) ? $results[ $author ] : [];
+				}
+			);
+
+		return $module;
+	}
+
+	/**
+	 * Test Easy MCP is appended after the existing injected plugins on WordPress 6.9+.
+	 */
+	public function test_easy_mcp_appended_in_featured_tab_on_wp_69() {
+		global $wp_version;
+		$original_wp_version = $wp_version;
+		$wp_version          = '6.9';
+
+		try {
+			wp_set_current_user( self::$admin_id );
+
+			$module = $this->get_module_with_mocked_author_results(
+				[
+					'Optimole'  => [
+						(object) [
+							'name' => 'Optimole',
+							'slug' => 'optimole-wp',
+						],
+					],
+					'Themeisle' => [
+						(object) [
+							'name' => 'Otter Blocks',
+							'slug' => 'otter-blocks',
+						],
+					],
+					'easymcpai' => [
+						(object) [
+							'name' => 'Easy MCP AI',
+							'slug' => 'easy-mcp-ai',
+						],
+					],
+				]
+			);
+
+			$result = $module->filter_plugin_api_results(
+				(object) [
+					'plugins' => [
+						(object) [
+							'name' => 'Existing Plugin',
+							'slug' => 'existing-plugin',
+						],
+					],
+					'info'    => [ 'results' => 1 ],
+				],
+				'query_plugins',
+				(object) [
+					'page'       => 1,
+					'per_page'   => 36,
+					'browse'     => 'featured',
+					'wp_version' => '6.9',
+				]
+			);
+
+			$this->assertCount( 4, $result->plugins );
+			$this->assertEquals( 'optimole-wp', $result->plugins[0]->slug );
+			$this->assertEquals( 'otter-blocks', $result->plugins[1]->slug );
+			$this->assertEquals( 'easy-mcp-ai', $result->plugins[2]->slug, 'Easy MCP should be appended after the existing injected plugins.' );
+			$this->assertEquals( 'existing-plugin', $result->plugins[3]->slug );
+			$this->assertEquals( 4, $result->info['results'] );
+		} finally {
+			$wp_version = $original_wp_version;
+		}
+	}
+
+	/**
+	 * Test Easy MCP is not injected in the Featured tab below WordPress 6.9.
+	 */
+	public function test_easy_mcp_not_in_featured_tab_below_wp_69() {
+		global $wp_version;
+		$original_wp_version = $wp_version;
+		$wp_version          = '6.8';
+
+		try {
+			wp_set_current_user( self::$admin_id );
+
+			$module = $this->get_module_with_mocked_author_results(
+				[
+					'Optimole'  => [
+						(object) [
+							'name' => 'Optimole',
+							'slug' => 'optimole-wp',
+						],
+					],
+					'Themeisle' => [
+						(object) [
+							'name' => 'Otter Blocks',
+							'slug' => 'otter-blocks',
+						],
+					],
+					'easymcpai' => [
+						(object) [
+							'name' => 'Easy MCP AI',
+							'slug' => 'easy-mcp-ai',
+						],
+					],
+				]
+			);
+
+			$result = $module->filter_plugin_api_results(
+				(object) [
+					'plugins' => [],
+					'info'    => [ 'results' => 0 ],
+				],
+				'query_plugins',
+				(object) [
+					'page'       => 1,
+					'per_page'   => 36,
+					'browse'     => 'featured',
+					'wp_version' => '6.8',
+				]
+			);
+
+			foreach ( $result->plugins as $plugin ) {
+				$this->assertNotEquals( 'easy-mcp-ai', $plugin->slug, 'Easy MCP should not be injected below WordPress 6.9.' );
+			}
+			$this->assertCount( 2, $result->plugins );
+		} finally {
+			$wp_version = $original_wp_version;
+		}
+	}
+
+	/**
+	 * Test the injected featured list is deduplicated by slug across author groups.
+	 */
+	public function test_featured_injected_authors_deduped_by_slug() {
+		global $wp_version;
+		$original_wp_version = $wp_version;
+		$wp_version          = '6.9';
+
+		try {
+			wp_set_current_user( self::$admin_id );
+
+			$otter  = (object) [
+				'name' => 'Otter Blocks',
+				'slug' => 'otter-blocks',
+			];
+			$module = $this->get_module_with_mocked_author_results(
+				[
+					'Optimole'  => [
+						(object) [
+							'name' => 'Optimole',
+							'slug' => 'optimole-wp',
+						],
+					],
+					'Themeisle' => [ $otter ],
+					'easymcpai' => [ $otter ],
+				]
+			);
+
+			$result = $module->filter_plugin_api_results(
+				(object) [
+					'plugins' => [],
+					'info'    => [ 'results' => 0 ],
+				],
+				'query_plugins',
+				(object) [
+					'page'       => 1,
+					'per_page'   => 36,
+					'browse'     => 'featured',
+					'wp_version' => '6.9',
+				]
+			);
+
+			$this->assertCount( 2, $result->plugins, 'Duplicate slugs across author groups should be removed.' );
+			$this->assertEquals( 'optimole-wp', $result->plugins[0]->slug );
+			$this->assertEquals( 'otter-blocks', $result->plugins[1]->slug );
+		} finally {
+			$wp_version = $original_wp_version;
+		}
+	}
+
+	/**
+	 * Test the LMS prepend keeps precedence on searches matching both keyword sets.
+	 */
+	public function test_lms_prepend_wins_on_dual_keyword_search() {
+		wp_set_current_user( self::$admin_id );
+
+		$module = $this->getMockBuilder( '\ThemeisleSDK\Modules\Featured_Plugins' )
+			->onlyMethods( [ 'get_plugins_filtered_from_author' ] )
+			->getMock();
+
+		$lms_plugin = (object) [
+			'name'    => 'Masteriyo',
+			'slug'    => 'learning-management-system',
+			'version' => '1.0.0',
+			'author'  => 'masteriyo',
+		];
+
+		$module->expects( $this->once() )
+			->method( 'get_plugins_filtered_from_author' )
+			->willReturn( [ $lms_plugin ] );
+
+		$result = $module->filter_plugin_api_results(
+			(object) [
+				'plugins' => array(),
+				'info'    => [ 'results' => 10 ],
+			],
+			'query_plugins',
+			(object) [
+				'search' => 'ai course',
+				'page'   => 1,
+			]
+		);
+
+		$this->assertEquals( 'learning-management-system', $result->plugins[0]->slug, 'LMS plugin should keep the top slot.' );
+		foreach ( $result->plugins as $plugin ) {
+			$this->assertNotEquals( 'easy-mcp-ai', isset( $plugin->slug ) ? $plugin->slug : '', 'Easy MCP plugin should not stack on a dual-keyword search.' );
+		}
+	}
+
+	/**
+	 * AI/MCP search keyword provider.
+	 *
+	 * @return array
+	 */
+	public function ai_search_keyword_provider() {
+		return array(
+			array( 'mcp server' ),
+			array( 'model context protocol' ),
+			array( 'ai assistant' ),
+			array( 'ai' ),
+			array( 'WordPress AI' ),
+			array( 'WordPress AI assistant' ),
+			array( 'connect claude' ),
+			array( 'chatgpt for wordpress' ),
+			array( 'llm tools' ),
+			array( 'Connect CLAUDE' ),
+			array( 'CHATGPT for WordPress' ),
+			array( 'LLM tools' ),
+			array( 'AI-powered' ),
+			array( 'WordPress/MCP' ),
+			array( '(Claude)' ),
+			array( 'connect Model Context Protocol tools' ),
+			array( 'claudecode' ),
+			array( 'chatgpt4' ),
+			array( 'ConnectClaudeCode' ),
+			array( 'myCHATGPT4plugin' ),
+			array( 'llms' ),
+			array( 'LLMs.txt' ),
+			array( 'wp-mcp' ),
+		);
+	}
+
+	/**
+	 * Unrelated searches where AI, MCP or LLM must not match inside another word.
+	 *
+	 * @return array
+	 */
+	public function non_ai_search_keyword_provider() {
+		return array(
+			array( 'contact forms' ),
+			array( 'email' ),
+			array( 'mailchimp' ),
+			array( 'maintenance mode' ),
+			array( 'paid memberships' ),
+			array( 'domain mapping' ),
+			array( 'email campaign maintenance' ),
+			array( 'order fulfillment' ),
+			array( 'installment payments' ),
+			array( 'myMCPserver' ),
+			array( 'myLLMtools' ),
 		);
 	}
 
