@@ -1,3 +1,7 @@
+##### [Version 3.3.62](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.61...v3.3.62) (2026-09-17)
+
+Development
+
 ##### [Version 3.3.61](https://github.com/Codeinwp/themeisle-sdk-main/compare/v3.3.60...v3.3.61) (2026-08-24)
 
 - Fix stale plugin update notices after upgrades ([#336](https://github.com/Codeinwp/themeisle-sdk-main/issues/336))
