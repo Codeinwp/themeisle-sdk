@@ -193,6 +193,7 @@ class Ai_Connect extends Abstract_Module {
 
 		add_action( 'themeisle_internal_page', array( __CLASS__, 'mark_internal_page' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'render_notice' ) );
+		add_action( 'in_admin_header', array( $this, 'ensure_notice_hook' ), PHP_INT_MAX );
 		// Late: after the products had their chance to fire themeisle_internal_page.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ), 999 );
 		// admin_footer runs BEFORE admin_print_footer_scripts, so the modal is in
@@ -213,8 +214,27 @@ class Ai_Connect extends Abstract_Module {
 	 * @return void
 	 */
 	public static function mark_internal_page( $product_slug, $page_slug = '' ) {
-		if ( is_string( $product_slug ) && '' === self::$internal_product ) {
-			self::$internal_product = $product_slug;
+		if ( ! is_string( $product_slug ) || '' !== self::$internal_product ) {
+			return;
+		}
+		// Some products pass their plugin basename ("dir/file.php") instead of
+		// the slug; the directory is the slug either way.
+		if ( false !== strpos( $product_slug, '/' ) ) {
+			$product_slug = dirname( $product_slug );
+		}
+		self::$internal_product = $product_slug;
+	}
+
+	/**
+	 * Some products clear every admin_notices callback on their own screens
+	 * (remove_all_actions on load-{$hook}), which takes ours with it. Put it
+	 * back just before the notices are printed.
+	 *
+	 * @return void
+	 */
+	public function ensure_notice_hook() {
+		if ( false === has_action( 'admin_notices', array( $this, 'render_notice' ) ) ) {
+			add_action( 'admin_notices', array( $this, 'render_notice' ) );
 		}
 	}
 

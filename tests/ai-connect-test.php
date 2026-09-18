@@ -42,6 +42,9 @@ class Ai_Connect_Test extends WP_UnitTestCase {
 		remove_all_filters( 'sample_plugin_ai_connect_metadata' );
 		remove_all_filters( 'sample_theme_ai_connect_metadata' );
 		remove_all_filters( 'plugin_row_meta' );
+		remove_all_actions( 'in_admin_header' );
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'admin_footer' );
 		update_option( 'active_plugins', array() );
 		delete_option( Ai_Connect::ABILITIES_OPTION );
 		delete_option( 'sample_plugin_install' );
@@ -210,6 +213,36 @@ class Ai_Connect_Test extends WP_UnitTestCase {
 		$html = $this->notice( $module );
 		$this->assertStringContainsString( 'data-ti-ai-notice', $html, 'On the product\'s own page.' );
 		$this->assertStringContainsString( '.notice:not(.ti-ai-notice)', $html, 'And there it hides the other notices.' );
+	}
+
+	public function test_a_product_that_passes_its_basename_as_the_slug_is_still_recognised() {
+		$product = $this->plugin();
+		$this->opt_in( $product );
+		$module = $this->loaded( $product );
+		set_current_screen( 'dashboard' );
+		do_action( 'themeisle_internal_page', $product->get_slug() . '/plugin_file.php', 'dashboard' );
+		$this->assertStringContainsString( 'data-ti-ai-notice', $this->notice( $module ) );
+	}
+
+	public function test_the_notice_survives_a_product_that_clears_admin_notices() {
+		$product = $this->plugin();
+		$this->opt_in( $product );
+		$module = $this->loaded( $product );
+		remove_all_actions( 'admin_notices' ); // What Orbit Fox does on load-{$hook} of its dashboard.
+		do_action( 'in_admin_header' );
+		ob_start();
+		do_action( 'admin_notices' );
+		$this->assertSame( 1, substr_count( ob_get_clean(), 'data-ti-ai-notice' ) );
+	}
+
+	public function test_the_notice_is_never_printed_twice() {
+		$product = $this->plugin();
+		$this->opt_in( $product );
+		$this->loaded( $product );
+		do_action( 'in_admin_header' );
+		ob_start();
+		do_action( 'admin_notices' );
+		$this->assertSame( 1, substr_count( ob_get_clean(), 'data-ti-ai-notice' ) );
 	}
 
 	public function test_other_notices_are_left_alone_on_the_plugins_list() {
