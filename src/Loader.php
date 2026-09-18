@@ -66,6 +66,7 @@ final class Loader {
 		'featured_plugins',
 		'float_widget',
 		'migrator',
+		'ai_connect',
 	];
 	/**
 	 * Holds the labels for the modules.
@@ -358,6 +359,38 @@ final class Loader {
 					],
 				],
 			],
+		],
+		'ai_connect'       => [
+			'row_link'         => 'Connect with your AI agent',
+			// translators: %s is the product name.
+			'notice_title'     => 'Manage %s with your AI agent.',
+			// translators: %s is a list of things the agent can do, e.g. "optimize new uploads, purge cached images or offload originals".
+			'notice_text'      => 'Ask Claude, ChatGPT or Cursor to %s.',
+			// translators: 1: comma-separated use cases, 2: the last use case.
+			'cases_join'       => '%1$s or %2$s',
+			'notice_button'    => 'Connect your AI agent',
+			'eyebrow'          => 'Works with Claude, ChatGPT, Cursor and any MCP agent',
+			// translators: %s is the product name.
+			'title'            => 'Use %s from your AI agent',
+			// translators: %s is the product name.
+			'lead'             => 'Enable the MCP connector, connect the agent you already use, and %s becomes something you can simply ask for.',
+			'enable'           => 'Enable Easy MCP Connector',
+			'enabling'         => 'Enabling…',
+			'enabled'          => 'Easy MCP Connector enabled',
+			'url_label'        => 'Your site’s MCP URL',
+			'copy'             => 'Copy',
+			'copied'           => 'Copied',
+			'close'            => 'Close',
+			'connect_heading'  => 'Connect your agent',
+			'connect_claude'   => 'Connect to Claude',
+			'connect_chatgpt'  => 'Connect to ChatGPT',
+			'connect_cursor'   => 'Add to Cursor',
+			'hint_off'         => 'Your agents can connect once the MCP connector is enabled.',
+			'hint_on'          => 'Each button opens your agent with this site pre-filled. ChatGPT asks you to paste the URL above.',
+			'prompts_off'      => 'Once enabled, you can ask your AI agent things like',
+			'prompts_on'       => 'Try asking',
+			'error_permission' => 'You are not allowed to do this.',
+			'error_install'    => 'The connector could not be enabled. Please try again.',
 		],
 		'float_widget'     => [
 			'button' => 'Toggle Help Widget for %s',

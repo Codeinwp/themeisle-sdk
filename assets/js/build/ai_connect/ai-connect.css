@@ -1,0 +1,60 @@
+/* Plugin-row link */
+.ti-ai-connect-open { font-weight: 600; }
+.ti-ai-sparkle { vertical-align: text-bottom; margin-right: 3px; }
+
+/* Admin notice — one line, button inline on the right */
+.ti-ai-notice { border-left-color: #2271b1; padding-right: 38px; }
+.ti-ai-notice-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ti-ai-notice-inner p { margin: 6px 0 !important; flex: 1 1 420px; }
+.wp-core-ui .ti-ai-notice .button { display: inline-flex; align-items: center; flex: none; margin: 4px 0; }
+.ti-ai-notice .button .ti-ai-sparkle { margin-right: 5px; color: #d63638; }
+
+/* Modal shell — sized and coloured like core's plugin-details modal */
+.ti-ai-modal[hidden] { display: none; }
+.ti-ai-modal { position: fixed; inset: 0; z-index: 100100; display: flex; align-items: flex-start; justify-content: center; padding: 48px 16px; overflow-y: auto; }
+.ti-ai-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .7); }
+.ti-ai-dialog { position: relative; background: #fff; width: 100%; max-width: 600px; box-shadow: 0 3px 6px rgba(0, 0, 0, .3); padding: 28px 32px 20px; color: #1d2327; }
+.ti-ai-close { position: absolute; top: 8px; right: 8px; border: 0; background: none; color: #646970; cursor: pointer; padding: 6px; }
+.ti-ai-close:hover, .ti-ai-close:focus { color: #135e96; }
+.ti-ai-dialog h2 { font-size: 22px; line-height: 1.3; margin: 0 0 8px; }
+.ti-ai-dialog h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #646970; margin: 20px 0 8px; }
+.ti-ai-lead { font-size: 14px; line-height: 1.6; margin: 0; }
+.ti-ai-eyebrow { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 8px; font-size: 12px; color: #646970; }
+.ti-ai-eyebrow .ti-ai-sparkle { color: #d63638; }
+
+/* Enable */
+.ti-ai-enable { margin: 18px 0 4px; }
+.ti-ai-error { margin: 8px 0 0; color: #d63638; }
+.ti-ai-error[hidden] { display: none; }
+.ti-ai-enabled-badge { display: none; align-items: center; gap: 6px; color: #00a32a; font-weight: 600; }
+.ti-ai-enabled-badge .dashicons { color: #00a32a; }
+[data-enabled="1"] [data-enable] { display: none; }
+[data-enabled="1"] .ti-ai-enabled-badge { display: inline-flex; }
+
+/* State-dependent bits */
+.ti-ai-dialog .ti-ai-when-on, .wp-core-ui .ti-ai-dialog .button.ti-ai-when-on { display: none; }
+.ti-ai-dialog[data-enabled="1"] .ti-ai-when-on, .wp-core-ui .ti-ai-dialog[data-enabled="1"] .button.ti-ai-when-on { display: revert; }
+[data-enabled="1"] .ti-ai-when-off { display: none; }
+[data-enabled="0"] .ti-ai-client { pointer-events: none; opacity: .5; }
+[data-enabled="0"] .ti-ai-copyrow input { color: #a7aaad; background: #f6f7f7; border-color: #dcdcde; -webkit-user-select: none; -moz-user-select: none; user-select: none; }
+.wp-core-ui .ti-ai-dialog[data-enabled="0"] .ti-ai-copyrow .button { pointer-events: none; opacity: .5; }
+[data-enabled="0"] .ti-ai-prompts li { color: #50575e; }
+
+.ti-ai-label { display: block; margin-top: 14px; font-weight: 600; }
+.ti-ai-copyrow { display: flex; gap: 6px; margin-top: 4px; }
+.ti-ai-copyrow input { flex: 1; }
+
+.ti-ai-clients { display: flex; flex-wrap: wrap; gap: 8px; }
+.ti-ai-client.button { display: inline-flex; align-items: center; gap: 8px; height: auto; padding: 6px 14px 6px 8px; }
+.ti-ai-logo { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font: 700 12px/1 sans-serif; color: #fff; }
+.ti-ai-logo-claude { background: #d97757; }
+.ti-ai-logo-chatgpt { background: #0fa47f; }
+.ti-ai-logo-cursor { background: #1d2327; font-size: 10px; }
+.ti-ai-hint { margin: 6px 0 0; color: #646970; font-size: 12px; }
+
+.ti-ai-prompts { margin: 0; padding: 0; list-style: none; }
+.ti-ai-prompts li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; margin-bottom: 6px; background: #f6f7f7; border-left: 3px solid #2271b1; font-style: italic; }
+.ti-ai-prompts .button { font-style: normal; flex: none; }
+
+.button.is-copied { color: #00a32a; border-color: #00a32a; }
+

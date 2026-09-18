@@ -64,7 +64,7 @@ add_filter( 'themeisle_sdk_labels', function( $labels ) {
 
 The merge logic ensures the first real translation wins; later callbacks cannot overwrite already-translated values.
 
-## All 20 Modules
+## All 21 Modules
 
 | Module | File | Loads when | Doc |
 |--------|------|-----------|-----|
@@ -78,6 +78,7 @@ The merge logic ensures the first real translation wins; later callbacks cannot 
 | `uninstall_feedback` | `Uninstall_feedback.php` | Always | [docs/UNINSTALL-FEEDBACK.md](docs/UNINSTALL-FEEDBACK.md) |
 | `about_us` | `About_us.php` | `{key}_about_us_metadata` filter returns data | [docs/ABOUT-US.md](docs/ABOUT-US.md) |
 | `float_widget` | `Float_widget.php` | `{key}_float_widget_metadata` filter returns data | [docs/FLOAT-WIDGET.md](docs/FLOAT-WIDGET.md) |
+| `ai_connect` | `Ai_connect.php` | `{key}_ai_connect_metadata` filter returns data, admin, Easy MCP not active | [docs/AI-CONNECT.md](docs/AI-CONNECT.md) |
 | `announcements` | `Announcements.php` | Not partner | [docs/ANNOUNCEMENTS.md](docs/ANNOUNCEMENTS.md) |
 | `welcome` | `Welcome.php` | `{key}_welcome_metadata` filter returns enabled data | [docs/WELCOME.md](docs/WELCOME.md) |
 | `compatibilities` | `Compatibilities.php` | Not partner, admin user | [docs/COMPATIBILITIES.md](docs/COMPATIBILITIES.md) |
