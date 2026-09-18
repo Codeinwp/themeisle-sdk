@@ -45,6 +45,8 @@ class Ai_Connect_Test extends WP_UnitTestCase {
 		remove_all_actions( 'in_admin_header' );
 		remove_all_actions( 'admin_notices' );
 		remove_all_actions( 'admin_footer' );
+		wp_dequeue_script( 'themeisle-sdk-ai-connect' );
+		wp_dequeue_style( 'themeisle-sdk-ai-connect' );
 		update_option( 'active_plugins', array() );
 		delete_option( Ai_Connect::ABILITIES_OPTION );
 		delete_option( 'sample_plugin_install' );
@@ -243,6 +245,34 @@ class Ai_Connect_Test extends WP_UnitTestCase {
 		ob_start();
 		do_action( 'admin_notices' );
 		$this->assertSame( 1, substr_count( ob_get_clean(), 'data-ti-ai-notice' ) );
+	}
+
+	/**
+	 * WP Full Pay fires themeisle_internal_page from admin_print_scripts-{hook},
+	 * after admin_enqueue_scripts: the notice rendered, its script did not load.
+	 */
+	public function test_assets_load_even_when_the_internal_page_is_announced_late() {
+		$product = $this->plugin();
+		$this->opt_in( $product );
+		$module = $this->loaded( $product );
+		set_current_screen( 'dashboard' );
+
+		do_action( 'admin_enqueue_scripts', 'toplevel_page_sample' );
+		$this->assertFalse( wp_script_is( 'themeisle-sdk-ai-connect', 'enqueued' ), 'Nothing is known about the page yet.' );
+
+		do_action( 'themeisle_internal_page', $product->get_slug(), 'dashboard' );
+		$this->assertStringContainsString( 'data-ti-ai-notice', $this->notice( $module ) );
+		$this->assertTrue( wp_script_is( 'themeisle-sdk-ai-connect', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'themeisle-sdk-ai-connect', 'enqueued' ) );
+	}
+
+	public function test_assets_are_not_loaded_on_unrelated_screens() {
+		$product = $this->plugin();
+		$this->opt_in( $product );
+		$this->loaded( $product );
+		set_current_screen( 'dashboard' );
+		do_action( 'admin_enqueue_scripts', 'index.php' );
+		$this->assertFalse( wp_script_is( 'themeisle-sdk-ai-connect', 'enqueued' ) );
 	}
 
 	public function test_other_notices_are_left_alone_on_the_plugins_list() {

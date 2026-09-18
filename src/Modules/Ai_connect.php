@@ -80,6 +80,13 @@ class Ai_Connect extends Abstract_Module {
 	private static $internal_product = '';
 
 	/**
+	 * Whether the assets were enqueued on this request.
+	 *
+	 * @var bool
+	 */
+	private static $enqueued = false;
+
+	/**
 	 * The product picked for this screen.
 	 *
 	 * @var array|null
@@ -360,6 +367,11 @@ class Ai_Connect extends Abstract_Module {
 		if ( ! $this->should_show_notice() ) {
 			return;
 		}
+		// Some products only fire themeisle_internal_page while their scripts
+		// print, after admin_enqueue_scripts: the page was unknown when assets
+		// were decided. Both are footer-safe, so enqueue them now.
+		$this->enqueue();
+
 		$current = self::current();
 		$labels  = Loader::$labels['ai_connect'];
 		$cases   = $current['data']['notice_cases'];
@@ -396,9 +408,10 @@ class Ai_Connect extends Abstract_Module {
 	 * @return void
 	 */
 	public function enqueue() {
-		if ( ! $this->is_relevant_screen() ) {
+		if ( self::$enqueued || ! $this->is_relevant_screen() ) {
 			return;
 		}
+		self::$enqueued = true;
 
 		$handle = 'themeisle-sdk-ai-connect';
 		$base   = $this->get_sdk_uri() . 'assets/js/build/ai_connect/';
@@ -661,5 +674,6 @@ class Ai_Connect extends Abstract_Module {
 		self::$hooked           = false;
 		self::$internal_product = '';
 		self::$current          = null;
+		self::$enqueued         = false;
 	}
 }
