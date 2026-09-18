@@ -13,6 +13,7 @@ add_filter( '<product_key>_ai_connect_metadata', function () {
 		'notice_cases' => [ 'optimize new uploads', 'purge cached images', 'offload originals to the cloud' ], // up to 3
 		'prompts'      => [ 'Show me my Optimole delivery settings and explain what each one does.' ], // up to 5
 		'abilities'    => [ 'optimole/get-delivery-settings' ], // optional
+		'internal_slug' => 'optimole-wp', // optional, only when the product passes another slug to themeisle_internal_page
 	];
 } );
 ```

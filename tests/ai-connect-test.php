@@ -226,6 +226,15 @@ class Ai_Connect_Test extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-ti-ai-notice', $this->notice( $module ) );
 	}
 
+	public function test_a_product_can_declare_the_slug_it_uses_for_its_internal_pages() {
+		$product = $this->plugin();
+		$this->opt_in( $product, array_merge( self::META, array( 'internal_slug' => 'mlo' ) ) );
+		$module = $this->loaded( $product );
+		set_current_screen( 'dashboard' );
+		do_action( 'themeisle_internal_page', 'mlo', 'dashboard' );
+		$this->assertStringContainsString( 'data-ti-ai-notice', $this->notice( $module ) );
+	}
+
 	public function test_the_notice_survives_a_product_that_clears_admin_notices() {
 		$product = $this->plugin();
 		$this->opt_in( $product );

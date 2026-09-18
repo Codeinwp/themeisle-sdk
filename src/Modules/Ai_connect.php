@@ -16,6 +16,7 @@
  *       'notice_cases' => [ 'optimize new uploads', 'purge cached images', 'offload originals' ], // 2-3 short use cases
  *       'prompts'      => [ 'Show me my delivery settings ...', ... ], // ready-to-copy prompts
  *       'abilities'    => [ 'optimole/get-delivery-settings', ... ], // optional, ability names switched on in Easy MCP on Enable
+ *       'internal_slug' => 'mlo', // optional, the slug the product passes to themeisle_internal_page when it is not its install slug
  *  ]
  * }
  *
@@ -166,11 +167,14 @@ class Ai_Connect extends Abstract_Module {
 
 		$name = isset( $data['name'] ) && is_string( $data['name'] ) && '' !== trim( $data['name'] ) ? trim( wp_strip_all_tags( $data['name'] ) ) : $product->get_friendly_name();
 
+		$internal_slug = isset( $data['internal_slug'] ) && is_string( $data['internal_slug'] ) ? sanitize_key( $data['internal_slug'] ) : '';
+
 		return array(
-			'name'         => $name,
-			'notice_cases' => $cases,
-			'prompts'      => $prompts,
-			'abilities'    => $abilities,
+			'name'          => $name,
+			'notice_cases'  => $cases,
+			'prompts'       => $prompts,
+			'abilities'     => $abilities,
+			'internal_slug' => '' !== $internal_slug ? $internal_slug : $product->get_slug(),
 		);
 	}
 
@@ -279,7 +283,7 @@ class Ai_Connect extends Abstract_Module {
 
 		if ( '' !== self::$internal_product ) {
 			foreach ( self::$registered as $entry ) {
-				if ( $entry['product']->get_slug() === self::$internal_product ) {
+				if ( $entry['product']->get_slug() === self::$internal_product || $entry['data']['internal_slug'] === self::$internal_product ) {
 					self::$current = $entry;
 					break;
 				}
